@@ -370,39 +370,42 @@ SkipVFPrintf(FILE *file, register const char *fmt, va_list pvar)
     (void) vfprintf(file, fmt, pvar);
 }
 
+#define do_skip_vfprintf(file, fmt, lastarg) do {			      \
+    va_list ap;								      \
+    va_start(ap, lastarg);						      \
+    SkipVFPrintf(file, fmt, ap);					      \
+    va_end (ap);							      \
+} while (0)
+
 void
 WriteCopyType(FILE *file, const ipc_type_t *it, const char *left,
 	      const char *right, ...)
 {
-    va_list pvar;
-    va_start(pvar, right);
-
     if (it->itStruct)
     {
 	fprintf(file, "\t");
-	SkipVFPrintf(file, left, pvar);
+	do_skip_vfprintf(file, left, right);
 	fprintf(file, " = ");
-	SkipVFPrintf(file, right, pvar);
+	do_skip_vfprintf(file, right, right);
 	fprintf(file, ";\n");
     }
     else if (it->itString)
     {
 	fprintf(file, "\t(void) %smig_strncpy(", SubrPrefix);
-	SkipVFPrintf(file, left, pvar);
+	do_skip_vfprintf(file, left, right);
 	fprintf(file, ", ");
-	SkipVFPrintf(file, right, pvar);
+	do_skip_vfprintf(file, right, right);
 	fprintf(file, ", %d);\n", it->itTypeSize);
     }
     else
     {
 	fprintf(file, "\t{ typedef struct { char data[%d]; } *sp; * (sp) ",
 		it->itTypeSize);
-	SkipVFPrintf(file, left, pvar);
+	do_skip_vfprintf(file, left, right);
 	fprintf(file, " = * (sp) ");
-	SkipVFPrintf(file, right, pvar);
+	do_skip_vfprintf(file, right, right);
 	fprintf(file, "; }\n");
     }
-    va_end(pvar);
 }
 
 void
@@ -410,14 +413,9 @@ WritePackMsgType(FILE *file, const ipc_type_t *it, dealloc_t dealloc,
 		 boolean_t longform, boolean_t inname, const char *left,
 		 const char *right, ...)
 {
-    va_list pvar;
-    va_start(pvar, right);
-
     fprintf(file, "\t");
-    SkipVFPrintf(file, left, pvar);
+    do_skip_vfprintf(file, left, right);
     fprintf(file, " = ");
-    SkipVFPrintf(file, right, pvar);
+    do_skip_vfprintf(file, right, right);
     fprintf(file, ";\n");
-
-    va_end(pvar);
 }
