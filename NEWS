@@ -1,5 +1,11 @@
 -*- Text -*-
 
+4 December 1998
+Version 1.0.1
+
+* This release fixes a bug in the `mig' driver script that made it fail to
+  invoke the C preprocessor properly.
+
 19 July 1998
 Version 1.0
 
