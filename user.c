@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1992,1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
- * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS 
+ *
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie the
  * rights to redistribute these changes.
  */
@@ -41,6 +41,10 @@
 static void
 WriteIncludes(FILE *file)
 {
+    fprintf(file, "#ifndef _GNU_SOURCE\n");
+    fprintf(file, "#define _GNU_SOURCE 1");
+    fprintf(file, "#endif\n\n");
+
     if (IsKernelServer)
     {
 	/*
@@ -240,7 +244,7 @@ WriteVarDecls(FILE *file, const routine_t *rt)
 
 /*************************************************************
  *  Writes code to call the user provided error procedure
- *  when a MIG error occurs. Called by WriteMsgSend, 
+ *  when a MIG error occurs. Called by WriteMsgSend,
  *  WriteMsgCheckReceive, WriteMsgSendReceive, WriteCheckIdentity,
  *  WriteRetCodeCheck, WriteTypeCheck, WritePackArgValue.
  *************************************************************/
@@ -323,7 +327,7 @@ WriteMsgCheckReceive(FILE *file, const routine_t *rt, const char *success)
     WriteMsgError(file, rt, "msg_result");
     fprintf(file, "\t}\n");
 
-    /* 
+    /*
      * If not using a user supplied reply port, tell the port
      * allocator we're done with the port.
      */
@@ -416,7 +420,7 @@ WritePackArgType(FILE *file, const argument_t *arg)
 }
 
 /*************************************************************
- *  Writes code to copy an argument into the request message.  
+ *  Writes code to copy an argument into the request message.
  *  Called by WriteRoutine for each argument that is to placed
  *  in the request message.
  *************************************************************/
@@ -786,7 +790,7 @@ WriteRetCodeCheck(FILE *file, const routine_t *rt)
 
 /*************************************************************
  *  Writes code to check that the type of each of the arguments
- *  in the reply message is what is expected. Called by 
+ *  in the reply message is what is expected. Called by
  *  WriteRoutine for each argument in the reply message.
  *************************************************************/
 static void
@@ -1148,7 +1152,7 @@ WriteReturnValue(FILE *file, const routine_t *rt)
 
 /*************************************************************
  *  Writes the elements of the message type declaration: the
- *  msg_type structure, the argument itself and any padding 
+ *  msg_type structure, the argument itself and any padding
  *  that is required to make the argument a multiple of 4 bytes.
  *  Called by WriteRoutine for all the arguments in the request
  *  message first and then the reply message.
