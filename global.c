@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
- * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS 
+ *
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie the
  * rights to redistribute these changes.
  */
@@ -27,6 +27,7 @@
 #include "error.h"
 #include "global.h"
 
+boolean_t DefaultFiles = TRUE;
 boolean_t BeQuiet = FALSE;
 boolean_t BeVerbose = FALSE;
 boolean_t UseMsgRPC = TRUE;
@@ -72,20 +73,23 @@ more_global(void)
     if (SubsystemName == strNULL)
 	fatal("no SubSystem declaration");
 
-    if (UserHeaderFileName == strNULL)
-	UserHeaderFileName = strconcat(SubsystemName, ".h");
-    else if (streql(UserHeaderFileName, "/dev/null"))
-	UserHeaderFileName = strNULL;
+    if (DefaultFiles)
+      {
+	if (UserHeaderFileName == strNULL)
+	  UserHeaderFileName = strconcat(SubsystemName, ".h");
+	else if (streql(UserHeaderFileName, "/dev/null"))
+	  UserHeaderFileName = strNULL;
 
-    if (UserFileName == strNULL)
-	UserFileName = strconcat(SubsystemName, "User.c");
-    else if (streql(UserFileName, "/dev/null"))
-	UserFileName = strNULL;
+	if (UserFileName == strNULL)
+	  UserFileName = strconcat(SubsystemName, "User.c");
+	else if (streql(UserFileName, "/dev/null"))
+	  UserFileName = strNULL;
 
-    if (ServerFileName == strNULL)
-	ServerFileName = strconcat(SubsystemName, "Server.c");
-    else if (streql(ServerFileName, "/dev/null"))
-	ServerFileName = strNULL;
+	if (ServerFileName == strNULL)
+	  ServerFileName = strconcat(SubsystemName, "Server.c");
+	else if (streql(ServerFileName, "/dev/null"))
+	  ServerFileName = strNULL;
+      }
 
     if (ServerDemux == strNULL)
       ServerDemux = strconcat(SubsystemName, "_server");
