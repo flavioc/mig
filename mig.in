@@ -29,7 +29,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libexecdir=@libexecdir@
 migcom=${MIGDIR-@libexecdir@}/${MIGCOM-@MIGCOM@}
-cpp="${CPP-@TARGET_CC@ -E}"
+cpp="${CPP-@TARGET_CC@ -E -x c}"
 
 cppflags=
 migflags=
