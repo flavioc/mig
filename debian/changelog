@@ -1,3 +1,9 @@
+mig (1.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Fri,  8 Jun 2001 18:18:53 +0200
+
 mig (1.1-1) unstable; urgency=low
 
   * CVS snapshot from new upstream release.

@@ -14,7 +14,7 @@
 ##
 ###############################################################################
 
-# The name of the package (for example, `Emacs').
+# The name of the package (for example, `emacs').
 package   := mig
 
 # Configuration variables (these should be pretty generic)
@@ -38,6 +38,9 @@ install_file= install -o root -g root -m 644
 install_program= install -s -o root -g root -m 755
 install_script= install -o root -g root -m 755
 make_directory= install -d -o root -g root -m 755
+
+DEB_BUILD_GNU_TYPE := $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 
 define checkdir
 	test -f debian/rules
@@ -82,7 +85,8 @@ stamp-binary: build
 
 	$(make_directory)	debian/tmp/DEBIAN
 	cd build && $(MAKE) install prefix=`pwd`/../debian/tmp/usr libexecdir=`pwd`/../debian/tmp/usr/lib/mig
-	strip --strip-all	debian/tmp/usr/lib/mig/migcom
+	strip --strip-all --remove-section=.note --remove-section=.comment	debian/tmp/usr/lib/mig/migcom
+	find debian/tmp/usr -type d | xargs chmod 0755
 
 	# copy doc files but not INSTALL, it won't be needed
 	# compress all but copyright
@@ -96,7 +100,7 @@ stamp-binary: build
 	$(install_file)		debian/copyright debian/tmp/$(DOCDIR)/copyright
 
 	dpkg-shlibdeps		debian/tmp/usr/lib/mig/migcom
-	dpkg-gencontrol         -p$(package) -Pdebian/tmp
+	dpkg-gencontrol         -isp -p$(package) -Pdebian/tmp
 	chown -R root.root      debian/tmp
 	dpkg --build            debian/tmp ..
 

@@ -1,3 +1,10 @@
+2001-06-08  Marcus Brinkmann  <marcus@gnu.org>
+
+	* debian/rules: Fix directory permissions, set architecture relevant
+	variables to default values, include section and priority in package,
+	strip migcom down even further, as suggested by Lintian.
+	* debian/changelog:  Bump version to 1.2-1.
+
 2001-06-07  Roland McGrath  <roland@frob.com>
 
 	* configure.in: Bump version to 1.2.
