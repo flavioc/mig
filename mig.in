@@ -35,8 +35,8 @@ migcom=${MIGDIR-@libexecdir@}/${MIGCOM-@MIGCOM@}
 
 # The expansion of TARGET_CC might refer to ${CC}, so make sure it is defined.
 default_cc="@CC@"
-default_cpp="@TARGET_CC@ -E -x c"
 CC="${CC-${default_cc}}"
+default_cpp="@TARGET_CC@ -E -x c"
 cpp="${CPP-${default_cpp}}"
 
 cppflags=
@@ -54,6 +54,31 @@ until [ $# -eq 0 ]
 do
     case "$1" in
 	--version ) echo "GNU ${PACKAGE} version ${VERSION}"; exit 0 ;;
+	--help ) progname=`echo mig | sed @program_transform_name@`
+		 echo "\
+Usage: $progname [OPTION]... [FILE]...
+This is the GNU implementation of the Mach interface generator \`MiG',
+which Mach RPC stubs from \`.defs' files.
+
+  -r              use msg_rpc [default]
+  -R              use msg_send
+  -q		  suppress warning statements
+  -Q		  print warning statements [default]
+  -v		  verbose
+  -V		  compile silently [default]
+  -s		  generate symbol table in Server.c code
+  -S		  suppress symbol table in Server.c code [default]
+  -i		  generate separate files for each routine
+  -server FILE	  generate server stubs in FILE
+  -user FILE	  generate user stubs in FILE
+  -header FILE	  generate stub header file in FILE
+  -migcom	  use migcom instead of CPP
+
+Any switches not listed are passed on to the preprocessor, invoked by:
+	${cpp}
+
+Report bugs to <bug-hurd@gnu.org>.  Request assistance at <help-hurd@gnu.org>.\
+"; exit 0 ;;
 
 	-[qQvVtTrRsS] ) migflags="$migflags $1"; shift;;
 	-i	) sawI=1; migflags="$migflags $1 $2"; shift; shift;;
