@@ -1,0 +1,61 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(migcom.c)
+AC_PREREQ(2.12)
+
+AC_CANONICAL_SYSTEM
+AC_ARG_PROGRAM dnl needs SYSTEM, not just HOST and TARGET
+
+AM_INIT_AUTOMAKE(mig, 1.1.0)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_YACC
+AM_PROG_LEX
+AC_PROG_AWK
+AC_PROG_INSTALL
+
+dnl Checks for header files.
+AC_STDC_HEADERS
+
+dnl Checks for library functions.
+AC_FUNC_ALLOCA
+AC_HAVE_FUNCS(vprintf)
+
+AC_MSG_CHECKING(for target compiler)
+if test "x$TARGET_CC" != x; then
+  # User set it.
+  AC_MSG_RESULT([$TARGET_CC])
+elif test "$target" = "$host"; then
+  TARGET_CC='${CC}'
+  AC_MSG_RESULT([native, using host compiler])
+else
+  [mig_target=`echo "$target" | sed 's/[^a-zA-Z0-9_]/_/g'`]
+  AC_CACHE_VAL(mig_cv_${mig_target}_CC, [ dnl
+    ac_word="${target_alias}-gcc"
+    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
+    for ac_dir in $PATH; do
+      test -z "$ac_dir" && ac_dir=.
+      if test -f $ac_dir/$ac_word; then
+	eval mig_cv_${mig_target}_CC='$ac_word'
+	break
+      fi
+    done
+    IFS="$ac_save_ifs"])
+  eval TARGET_CC=\"\$mig_cv_${mig_target}_CC\"
+  if test "x$TARGET_CC" = x; then
+    AC_MSG_RESULT([${target_alias}-gcc not found])
+    TARGET_CC='${CC}'
+    AC_MSG_WARN([using host compiler ($CC) for target $target])
+  else
+    AC_MSG_RESULT([${TARGET_CC}])
+  fi
+fi
+AC_SUBST(TARGET_CC)
+dnl These two are just for the user's convenience.
+AC_SUBST(TARGET_CPPFLAGS)
+AC_SUBST(TARGET_CFLAGS)
+
+MIGCOM=`echo migcom | sed "$program_transform_name"`
+AC_SUBST(MIGCOM)
+
+AC_OUTPUT([Makefile mig])
