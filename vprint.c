@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1990,1992,1993 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
@@ -332,7 +332,7 @@ _doprnt_ansi(register const char *fmt, va_list args, FILE *stream)
 		case 'X':
 		    base = 16;
 		    goto print_unsigned;
-		
+
 		case 'p':
 		    base = 16;
 		    altfmt = TRUE;
@@ -430,4 +430,4 @@ _doprnt_ansi(register const char *fmt, va_list args, FILE *stream)
 	}
 }
 
-#endif !HAVE_VPRINTF
+#endif /* !HAVE_VPRINTF */
