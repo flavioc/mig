@@ -25,6 +25,9 @@
 # the rights to redistribute these changes.
 #
 
+PACKAGE=@PACKAGE@
+VERSION=@VERSION@
+
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libexecdir=@libexecdir@
@@ -45,6 +48,8 @@ files=
 until [ $# -eq 0 ]
 do
     case "$1" in
+	--version ) echo "GNU ${PACKAGE} version ${VERSION}"; exit 0 ;;
+
 	-[qQvVtTrRsS] ) migflags="$migflags $1"; shift;;
 	-i	) sawI=1; migflags="$migflags $1 $2"; shift; shift;;
 	-user   ) user="$2"; if [ ! "${sawI-}" ]; then migflags="$migflags $1 $2"; fi; shift; shift;;
