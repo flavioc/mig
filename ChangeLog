@@ -1,3 +1,8 @@
+1999-10-11  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* user.c (WriteIncludes): Fix missing newline in last change.
+	* server.c (WriteIncludes): Likewise.
+
 1999-10-08  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* server.c (WriteIncludes): Write:
