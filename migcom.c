@@ -80,6 +80,8 @@
 extern int yyparse();
 static FILE *myfopen(const char *name, const char *mode);
 
+static string_t RoutineListFileName;
+
 static void
 parseArgs(int argc, char **argv)
 {
@@ -88,6 +90,9 @@ parseArgs(int argc, char **argv)
 	{
 	    switch (argv[0][1])
 	    {
+	      case 'n':
+		DefaultFiles = FALSE;
+		break;
 	      case 'q':
 		BeQuiet = TRUE;
 		break;
@@ -105,6 +110,15 @@ parseArgs(int argc, char **argv)
 		break;
 	      case 'R':
 		UseMsgRPC = FALSE;
+		break;
+	      case 'l':
+		if (streql(argv[0], "-list"))
+		{
+		    --argc; ++argv;
+		    if (argc == 0)
+			fatal("missing name for -list option");
+		    RoutineListFileName = strmake(argv[0]);
+		}
 		break;
 	      case 's':
 		if (streql(argv[0], "-server"))
@@ -272,6 +286,14 @@ main(int argc, char **argv)
     }
     WriteServer(server, StatementList);
     fclose(server);
+
+    if (RoutineListFileName != strNULL)
+      {
+	FILE *listfile = myfopen (RoutineListFileName, "w");
+	WriteRoutineList (listfile, StatementList);
+	fclose (listfile);
+      }
+
     if (BeVerbose)
 	printf("done.\n");
 

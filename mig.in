@@ -72,6 +72,8 @@ which Mach RPC stubs from \`.defs' files.
   -server FILE	  generate server stubs in FILE
   -user FILE	  generate user stubs in FILE
   -header FILE	  generate stub header file in FILE
+  -list FILE	  generate list of RPC names and message IDs in FILE
+  -n		  suppress default output file names, create only given files
   -migcom	  use migcom instead of CPP
 
 Any switches not listed are passed on to the preprocessor, invoked by:
@@ -80,13 +82,14 @@ Any switches not listed are passed on to the preprocessor, invoked by:
 Report bugs to <bug-hurd@gnu.org>.  Request assistance at <help-hurd@gnu.org>.\
 "; exit 0 ;;
 
-	-[qQvVtTrRsS] ) migflags="$migflags $1"; shift;;
+	-[qQvVtTrRsSn] ) migflags="$migflags $1"; shift;;
 	-i	) sawI=1; migflags="$migflags $1 $2"; shift; shift;;
 	-user   ) user="$2"; if [ ! "${sawI-}" ]; then migflags="$migflags $1 $2"; fi; shift; shift;;
 	-server ) server="$2"; migflags="$migflags $1 $2"; shift; shift;;
 	-header ) header="$2"; migflags="$migflags $1 $2"; shift; shift;;
 	-sheader ) sheader="$2"; migflags="$migflags $1 $2"; shift; shift;;
 	-iheader ) iheader="$2"; migflags="$migflags $1 $2"; shift; shift;;
+	-list ) list="$2"; migflags="$migflags $1 $2"; shift; shift;;
 	-prefix | -subrprefix ) migflags="$migflags $1 $2"; shift; shift;;
 
 	-MD ) sawMD=1; cppflags="$cppflags $1"; shift;;
@@ -125,6 +128,8 @@ do
 	if [ "$rsheader" != /dev/null ]; then deps="$deps $rsheader"; fi
 	riheader="${iheader-/dev/null}"
 	if [ "$riheader" != /dev/null ]; then deps="$deps $riheader"; fi
+	rlist="${list-/dev/null}"
+	if [ "$rlist" != /dev/null ]; then deps="$deps $rlist"; fi
 	sed 's%^[^:]*:%'"${deps}"':%' <"${base}.d" >"${base}-mig.d"
 	rm -f ${base}.d
     fi
