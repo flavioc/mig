@@ -42,7 +42,7 @@ static void
 WriteIncludes(FILE *file)
 {
     fprintf(file, "#ifndef _GNU_SOURCE\n");
-    fprintf(file, "#define _GNU_SOURCE 1");
+    fprintf(file, "#define _GNU_SOURCE 1\n");
     fprintf(file, "#endif\n\n");
 
     if (IsKernelServer)
