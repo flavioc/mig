@@ -3,7 +3,11 @@
 8 March 2002
 Version 1.3
 
-* Just bug fixes.
+* Minor bug fixes.
+
+* The new keyword `retcode' is accepted as a parameter modifier.
+  This does not do anything, but is accepted for compatibility
+  with the MiG input syntax used with OSF Mach.
 
 * The debian/ subdirectory of packaging files is now included in the
   MiG source distribution.
