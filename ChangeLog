@@ -2,6 +2,8 @@
 
 	* configure.in: Bump version to 1.1.  First official net release. 
 
+	* configure, Makefile.in, aclocal.m4: Regenerated.
+	
 1999-05-23  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* configure.in: Bump version to 1.0.2.
