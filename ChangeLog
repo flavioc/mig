@@ -1,3 +1,7 @@
+2001-10-03  Roland McGrath  <roland@frob.com>
+
+	* mig.in (cppflags): Start with -undef.
+
 2001-06-09  Marcus Brinkmann  <marcus@gnu.org>
 
 	* Makefile.am (debian_files): New variable.
