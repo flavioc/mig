@@ -1,3 +1,12 @@
+2002-04-05  Roland McGrath  <roland@frob.com>
+
+	* Makefile.am (cpu.symc): Depend on gensym.awk.
+	* Makefile.in: Regenerated.
+
+	* gensym.awk: Generate code with no unescaped newlines inside strings.
+
+	* vprint.c: Fix obsolete #endif syntax.
+
 2002-03-06  Roland McGrath  <roland@frob.com>
 
 	* configure.in: Bump version to 1.3.
