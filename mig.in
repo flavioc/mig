@@ -36,7 +36,7 @@ migcom=${MIGDIR-@libexecdir@}/${MIGCOM-@MIGCOM@}
 # The expansion of TARGET_CC might refer to ${CC}, so make sure it is defined.
 default_cc="@CC@"
 CC="${CC-${default_cc}}"
-default_cpp="@TARGET_CC@ -E -x c -undef"
+default_cpp="@TARGET_CC@ -E -x c -undef -ansi"
 cpp="${CPP-${default_cpp}}"
 
 cppflags=
