@@ -1,3 +1,9 @@
+1999-04-14  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* mig.in (default_cpp, default_cc): New variables, @ expansions here.
+	(CC): Make sure it's defined, in case ${CPP} refers to ${CC}.
+	(cpp): Use ${default_cpp} instead of the literal multiword contents.
+
 1999-03-20  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* mig.in (PACKAGE, VERSION): New variables, substituted by configure.
