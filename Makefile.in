@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4-p2 from Makefile.am
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -119,7 +119,7 @@ configure.in install-sh lexxer.c mig.in missing mkinstalldirs parser.c
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/alloca.P .deps/error.P .deps/global.P .deps/header.P \
 .deps/lexxer.P .deps/migcom.P .deps/parser.P .deps/routine.P \
