@@ -1,3 +1,7 @@
+2004-02-01  Roland McGrath  <roland@frob.com>
+
+	* depcomp, Makefile.in, aclocal.m4, configure: Update generated files.
+
 2002-08-29  Jeff Bailey  <jbailey@gnu.org>
 
 	* configure.in: Bump version to 1.3.1
