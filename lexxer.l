@@ -146,6 +146,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>[Nn][Oo][Tt][Dd][Ee][Aa][Ll][Ll][Oo][Cc] FRETURN(flNotDealloc);
 <Normal>[Ss][Ee][Rr][Vv][Ee][Rr][Cc][Oo][Pp][Yy] FRETURN(flServerCopy);
 <Normal>[Cc][Oo][Uu][Nn][Tt][Ii][Nn][Oo][Uu][Tt] FRETURN(flCountInOut);
+<Normal>[Rr][Ee][Tt][Cc][Oo][Dd][Ee]		FRETURN(flNone);
 
 <Normal>[Pp][Oo][Ll][Yy][Mm][Oo][Rr][Pp][Hh][Ii][Cc]	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 
