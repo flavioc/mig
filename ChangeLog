@@ -1,3 +1,25 @@
+2001-06-07  Roland McGrath  <roland@frob.com>
+
+	* configure.in: Bump version to 1.2.
+	* configure, Makefile.in: Regenerated.
+	* NEWS: Updated for changes since 1.1 release.
+
+	* header.c (WriteRoutineList): New function.
+	* write.h: Declare it.
+	* migcom.c (RoutineListFileName): New variable.
+	(parseArgs): New option -list to set it.
+	(main): If set, write the named output file with WriteRoutineList.
+	* mig.in: Grok -list and put it in the usage message.
+
+	* global.c (DefaultFiles): New variable, boolean initialized to true.
+	(more_global): Leave null file name variables alone if it's false.
+	* global.h (DefaultFiles): Declare it.
+	* migcom.c (parseArgs): New option -n clears it.
+	* mig.in: Grok -n (pass it through) and put it in the usage message.
+
+	* statement.h: Fix obsolete #else/#endif syntax.
+	* lexxer.l: Likewise.
+
 2000-07-04  Marcus Brinkmann  <marcus@gnu.org>
 
 	* debian: New directory for Debian packaging stuff.
