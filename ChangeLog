@@ -1,3 +1,8 @@
+2004-02-10  Roland McGrath  <roland@frob.com>
+
+	* INSTALL, config.guess, config.sub, missing, mkinstalldirs,
+	install-sh: Update files from autoconf/automake.
+
 2004-02-01  Roland McGrath  <roland@frob.com>
 
 	* depcomp, Makefile.in, aclocal.m4, configure: Update generated files.
