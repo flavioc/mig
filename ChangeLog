@@ -1,3 +1,12 @@
+2000-07-04  Marcus Brinkmann  <marcus@gnu.org>
+
+	* debian: New directory for Debian packaging stuff.
+	* debian/README.Debian: New file.
+	* debian/changelog: Likewise.
+	* debian/control: Likewise.
+	* debian/rules: Likewise.
+	* debian/copyright: Likewise.
+
 1999-10-11  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* user.c (WriteIncludes): Fix missing newline in last change.

@@ -1,0 +1,103 @@
+#!/usr/bin/make -f
+############################ -*- Mode: Makefile -*- ###########################
+## rules ---
+## Author           : Marcus Brinkmann <brinkmd@debian.org>
+## Created On       : Mon, 19 Apr 1999 00:42:31 +0200
+## Created On Node  : localhost
+## Last Modified By : Marcus Brinkmann <brinkmd@debian.org>
+## Last Modified On : Mon, 19 Apr 1999 00:42:31 +0200
+## Last Machine Used: localhost
+## Update Count     : 0
+## Status           : Unknown, Use with caution!
+## HISTORY          :
+## Description      :
+##
+###############################################################################
+
+# The name of the package (for example, `Emacs').
+package   := mig
+
+# Configuration variables (these should be pretty generic)
+CC = cc
+CFLAGS = -O2 -g -pipe -Wall
+LDFLAGS = -s
+PREFIX = /usr
+BINDIR = $(PREFIX)/bin
+MANDIR = $(PREFIX)/man
+DOCDIR = $(PREFIX)/share/doc/$(package)
+PERLDIR = $(PREFIX)/lib/perl5
+
+#  Package specific stuff.  The idea is to try to make the rules
+#  generic (gradually).
+
+FILES_TO_CLEAN  = debian/files debian/substvars
+DIRS_TO_CLEAN   = debian/tmp* build
+STAMPS_TO_CLEAN = stamp-build stamp-binary stamp-configure
+
+install_file= install -o root -g root -m 644
+install_program= install -s -o root -g root -m 755
+install_script= install -o root -g root -m 755
+make_directory= install -d -o root -g root -m 755
+
+define checkdir
+	test -f debian/rules
+endef
+
+define checkroot
+	@test 0 = "`id -u`" || (echo need root priviledges; exit 1)
+endef
+
+all build: stamp-build
+
+configure: stamp-configure
+stamp-configure:
+	-mkdir build
+	cd build && ../configure --prefix=/usr --libexecdir=/usr/lib/mig/ --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+	touch stamp-configure
+
+stamp-build: configure
+	$(checkdir)
+	# build package
+	cd build && $(MAKE) CCOPTIONS="$(CFLAGS)"
+	touch stamp-build
+
+clean:
+	$(checkdir)
+	-cd build && test -f Makefile && $(MAKE) clean
+	-rm -f $(FILES_TO_CLEAN) $(STAMPS_TO_CLEAN)
+	-rm -rf $(DIRS_TO_CLEAN)
+	-rm -f core `find . \( -name '*.orig' -o -name '*.rej' -o -name '*~' \
+		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
+		-o -name '.*.rej' -o -name '.SUMS' -o -size 0 \) -print` TAGS
+
+binary:		binary-indep binary-arch
+
+binary-indep:
+
+binary-arch: stamp-binary
+stamp-binary: build
+	$(checkroot)
+	$(checkdir)
+	-rm -rf			debian/tmp
+
+	$(make_directory)	debian/tmp/DEBIAN
+	cd build && $(MAKE) install prefix=`pwd`/../debian/tmp/usr libexecdir=`pwd`/../debian/tmp/usr/lib/mig
+	strip --strip-all	debian/tmp/usr/lib/mig/migcom
+
+	# copy doc files but not INSTALL, it won't be needed
+	# compress all but copyright
+	$(make_directory)	debian/tmp/$(DOCDIR)
+	$(install_file)		README debian/tmp/$(DOCDIR)
+	$(install_file)		NEWS debian/tmp/$(DOCDIR)
+	$(install_file)		debian/README.Debian debian/tmp/$(DOCDIR)/README.Debian
+	$(install_file)		debian/changelog debian/tmp/$(DOCDIR)/changelog.Debian
+	$(install_file)		ChangeLog debian/tmp/$(DOCDIR)/changelog
+	gzip -9frq		debian/tmp/$(DOCDIR)/.
+	$(install_file)		debian/copyright debian/tmp/$(DOCDIR)/copyright
+
+	dpkg-shlibdeps		debian/tmp/usr/lib/mig/migcom
+	dpkg-gencontrol         -p$(package) -Pdebian/tmp
+	chown -R root.root      debian/tmp
+	dpkg --build            debian/tmp ..
+
+.PHONY: build clean binary-indep binary-arch binary configure

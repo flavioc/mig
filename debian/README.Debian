@@ -1,0 +1,8 @@
+MIG for Debian
+--------------
+
+This package contains the Mach Interface Generator. In Debian, it is
+currently only useful on the Hurd.
+
+Marcus Brinkmann <brinkmd@debian.org>
+

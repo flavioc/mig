@@ -1,0 +1,14 @@
+Source: mig
+Section: devel
+Priority: standard
+Maintainer: GNU Hurd Maintainers <bug-hurd@gnu.org>
+Standards-Version: 2.5.0.1
+
+Package: mig
+Section: devel
+Priority: standard
+Architecture: hurd-i386
+Depends: ${shlibs:Depends}
+Description: Mach 3.0 Interface Generator
+ This is the GNU distribution of the MIG, which is needed to compile glibc,
+ hurd and gnumach on a Debian GNU/Hurd system.

@@ -1,0 +1,23 @@
+mig (1.1-1) unstable; urgency=low
+
+  * CVS snapshot from new upstream release.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Tue,  4 Jul 2000 21:58:26 +0200
+
+mig (1.0.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Mon, 24 May 1999 01:29:26 +0200
+
+mig (1.0.1-1) unstable; urgency=low
+
+  * Initial Release.
+  * Added patch by Roland McGrath to have CC or CPP set.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Mon, 19 Apr 1999 00:42:10 +0200
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "bug-hurd@gnu.org"
+End:
