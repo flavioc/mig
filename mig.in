@@ -39,7 +39,7 @@ CC="${CC-${default_cc}}"
 default_cpp="@TARGET_CC@ -E -x c"
 cpp="${CPP-${default_cpp}}"
 
-cppflags=
+cppflags=-undef
 migflags=
 files=
 
