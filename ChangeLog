@@ -3,11 +3,13 @@
 	* configure.in: Bump version to 1.0.2.
 
 	* mig.in: Grok --help.
+	Suggested by Jeff Bailey <jbailey@nisa.net>.
 
 1999-05-22  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* configure.in: Add AC_PROG_CPP.
 	* mig.in (CC): Set this before default_cpp, which might use its value.
+	Reported by Jeff Bailey <jbailey@nisa.net>.
 
 1999-04-14  Roland McGrath  <roland@baalperazim.frob.com>
 
