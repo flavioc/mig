@@ -1,5 +1,18 @@
 -*- Text -*-
 
+22 June 1999
+Version 1.1
+
+* First official net release.
+
+
+23 May 1999
+Version 1.0.2
+
+* Understand normal GNU --version and --help args.
+* Find CPP in a more flexible fashion.
+
+
 4 December 1998
 Version 1.0.1
 

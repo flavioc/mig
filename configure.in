@@ -5,7 +5,7 @@ AC_PREREQ(2.12)
 AC_CANONICAL_SYSTEM
 AC_ARG_PROGRAM dnl needs SYSTEM, not just HOST and TARGET
 
-AM_INIT_AUTOMAKE(mig, 1.0.2)
+AM_INIT_AUTOMAKE(mig, 1.1)
 
 dnl Checks for programs.
 AC_PROG_CC

@@ -1,3 +1,7 @@
+1999-06-22  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* configure.in: Bump version to 1.1.  First official net release. 
+
 1999-05-23  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* configure.in: Bump version to 1.0.2.
