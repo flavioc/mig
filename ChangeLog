@@ -1,3 +1,7 @@
+1998-09-06  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* mig.in (cpp): Add `-x c' to TARGET_CC command.
+
 1998-07-19  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* README, AUTHORS, NEWS: New files.
