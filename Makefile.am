@@ -25,5 +25,6 @@ SUFFIXES = .h .symo .symc .sym
 .symo.h:
 	sed -e '/^[^*].*$$/d' -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' \
 	    $< > $@
+cpu.symc: $(srcdir)/gensym.awk
 
 $(migcom_OBJECTS): cpu.h

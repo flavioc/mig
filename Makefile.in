@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -85,7 +85,11 @@ EXTRA_DIST = gensym.awk cpu.sym $(addprefix debian/, $(debian_files))
 
 CLEANFILES = cpu.h *.sym[co]
 
-migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h			 header.c lexxer.h lexxer.l message.h mig_string.h			 migcom.c parser.h parser.y routine.c routine.h				 server.c statement.c statement.h string.c				 type.c type.h user.c utils.c utils.h vprint.c write.h
+migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h	\
+		 header.c lexxer.h lexxer.l message.h mig_string.h	\
+		 migcom.c parser.h parser.y routine.c routine.h		\
+		 server.c statement.c statement.h string.c		\
+		 type.c type.h user.c utils.c utils.h vprint.c write.h
 
 migcom_LDADD = @ALLOCA@ @LEXLIB@
 
@@ -423,6 +427,7 @@ mostlyclean distclean maintainer-clean
 .symo.h:
 	sed -e '/^[^*].*$$/d' -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' \
 	    $< > $@
+cpu.symc: $(srcdir)/gensym.awk
 
 $(migcom_OBJECTS): cpu.h
 
