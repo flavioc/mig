@@ -418,7 +418,7 @@ WriteTypeCheck(FILE *file, register const argument_t *arg)
 
     fprintf(file, "#if\tTypeCheck\n");
     if (akCheck(arg->argKind, akbRequestQC))
-	fprintf(file, "\tif (* (int *) &In%dP->%s != * (int *) &%sCheck)\n",
+	fprintf(file, "\tif (BAD_TYPECHECK(&In%dP->%s, &%sCheck))\n",
 		arg->argRequestPos, arg->argTTName, arg->argVarName);
     else
     {

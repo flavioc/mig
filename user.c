@@ -802,7 +802,7 @@ WriteTypeCheck(FILE *file, register const argument_t *arg)
     fprintf(file, "#if\tTypeCheck\n");
     if (akCheck(arg->argKind, akbReplyQC))
     {
-	fprintf(file, "\tif (* (int *) &OutP->%s != * (int *) &%sCheck)\n",
+	fprintf(file, "\tif (BAD_TYPECHECK (&OutP->%s, &%sCheck))\n",
 		arg->argTTName, arg->argVarName);
     }
     else

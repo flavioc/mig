@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -71,6 +71,12 @@ WriteBogusDefines(FILE *file)
     fprintf(file, "#define\tUseExternRCSId\t\t1\n");
     fprintf(file, "#endif\n");
     fprintf(file, "\n");
+
+    fprintf(file, "#define BAD_TYPECHECK(type, check) ({\\\n");
+    fprintf(file,
+	    "  union { mach_msg_type_t t; unsigned32_t w; } _t, _c;\\\n");
+    fprintf(file,
+	    "  _t.t = *(type); _c.t = *(check); _t.w != _c.w; })\n");
 }
 
 void
@@ -147,7 +153,7 @@ void
 WriteServerVarDecl(FILE *file, const argument_t *arg)
 {
     const char *ref = arg->argByReferenceServer ? "*" : "";
-  
+
     fprintf(file, "\t%s %s%s",
 	    arg->argType->itTransType, ref, arg->argVarName);
 }
@@ -177,7 +183,7 @@ WriteCheckDecl(FILE *file, register const argument_t *arg)
        Note we use itOutNameStr instead of itInNameStr, because
        this declaration will be used to check received types. */
 
-    fprintf(file, "\tstatic const mach_msg_type_t %sCheck = {\n",
+    fprintf(file, "\tauto const mach_msg_type_t %sCheck = {\n",
 	    arg->argVarName);
     fprintf(file, "\t\t/* msgt_name = */\t\t%s,\n", it->itOutNameStr);
     fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
@@ -257,7 +263,7 @@ static void
 WriteStaticLongDecl(FILE *file, register const ipc_type_t *it,
 		    dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
-    fprintf(file, "\tstatic const mach_msg_type_long_t %s = {\n", name);
+    fprintf(file, "\tauto const mach_msg_type_long_t %s = {\n", name);
     fprintf(file, "\t{\n");
     fprintf(file, "\t\t/* msgt_name = */\t\t0,\n");
     fprintf(file, "\t\t/* msgt_size = */\t\t0,\n");
@@ -280,7 +286,7 @@ static void
 WriteStaticShortDecl(FILE *file, register const ipc_type_t *it,
 		     dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
-    fprintf(file, "\tstatic const mach_msg_type_t %s = {\n", name);
+    fprintf(file, "\tauto const mach_msg_type_t %s = {\n", name);
     fprintf(file, "\t\t/* msgt_name = */\t\t%s,\n",
 	    inname ? it->itInNameStr : it->itOutNameStr);
     fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
