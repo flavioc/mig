@@ -1,3 +1,9 @@
+2004-03-18  Roland McGrath  <roland@frob.com>
+
+	* utils.c (do_skip_vfprintf): New macro.
+	(WriteCopyType, WritePackMsgType): Use that, so we do va_start and
+	va_end independently around each SkipVFPrintf call.
+
 2004-02-10  Roland McGrath  <roland@frob.com>
 
 	* user.c (WriteTypeCheck): Use BAD_TYPECHECK macro instead of type-pun.
