@@ -1,8 +1,10 @@
-MIG for Debian
+MiG for Debian
 --------------
 
-This package contains the Mach Interface Generator. In Debian, it is
-currently only useful on the Hurd.
+This package contains the GNU Mach Interface Generator.  In Debian, it
+is currently only useful in the GNU/Hurd system to generate stubs code
+from interface definition files in the GNU C library, the GNU Hurd,
+and GNU Mach.
 
 Marcus Brinkmann <brinkmd@debian.org>
 
