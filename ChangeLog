@@ -1,3 +1,10 @@
+2002-05-07  Roland McGrath  <roland@frob.com>
+
+	* type.c (itMakeNaturalType): New function.
+	(init_type): Use that instead of itMakeIntType for itWaitTimeType and
+	itMsgOptionType--give them each their special typedef names.
+	* routine.c (rtCheckArgTypes): Use itCheckNaturalType for rtMsgOption.
+
 2002-04-05  Roland McGrath  <roland@frob.com>
 
 	* Makefile.am (cpu.symc): Depend on gensym.awk.
