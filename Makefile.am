@@ -4,7 +4,9 @@ AUTOMAKE_OPTIONS = gnu
 libexec_PROGRAMS = migcom
 bin_SCRIPTS = mig
 
-EXTRA_DIST = gensym.awk cpu.sym
+debian_files = changelog control copyright README.Debian rules
+EXTRA_DIST = gensym.awk cpu.sym $(addprefix debian/, $(debian_files))
+
 CLEANFILES = cpu.h *.sym[co]
 
 migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h	\

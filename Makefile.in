@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p2 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -80,7 +80,9 @@ AUTOMAKE_OPTIONS = gnu
 libexec_PROGRAMS = migcom
 bin_SCRIPTS = mig
 
-EXTRA_DIST = gensym.awk cpu.sym
+debian_files = changelog control copyright README.Debian rules
+EXTRA_DIST = gensym.awk cpu.sym $(addprefix debian/, $(debian_files))
+
 CLEANFILES = cpu.h *.sym[co]
 
 migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h			 header.c lexxer.h lexxer.l message.h mig_string.h			 migcom.c parser.h parser.y routine.c routine.h				 server.c statement.c statement.h string.c				 type.c type.h user.c utils.c utils.h vprint.c write.h
@@ -117,7 +119,7 @@ configure.in install-sh lexxer.c mig.in missing mkinstalldirs parser.c
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/alloca.P .deps/error.P .deps/global.P .deps/header.P \
 .deps/lexxer.P .deps/migcom.P .deps/parser.P .deps/routine.P \
@@ -291,6 +293,7 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu Makefile
+	$(mkinstalldirs) $(distdir)/debian
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
