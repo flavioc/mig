@@ -1,6 +1,6 @@
 
-/*  A Bison parser, made from ../gnumach/mig/parser.y
- by  Bison version A2.5 (Andrew Consortium)
+/*  A Bison parser, made from parser.y
+ by  GNU Bison version 1.25
   */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -70,7 +70,7 @@
 #define	syFileName	320
 #define	syIPCFlag	321
 
-#line 117 "../gnumach/mig/parser.y"
+#line 117 "parser.y"
 
 
 #include <stdio.h>
@@ -91,7 +91,7 @@ yyerror(const char *s)
     error(s);
 }
 
-#line 138 "../gnumach/mig/parser.y"
+#line 138 "parser.y"
 typedef union
 {
     u_int number;
@@ -236,7 +236,7 @@ static const short yyrline[] = { 0,
 #endif
 
 
-#if YYDEBUG != 0
+#if YYDEBUG != 0 || defined (YYERROR_VERBOSE)
 
 static const char * const yytname[] = {   "$","error","$undefined.","sySkip",
 "syRoutine","sySimpleRoutine","sySimpleProcedure","syProcedure","syFunction",
@@ -407,7 +407,7 @@ static const short yycheck[] = {    10,
     66,    62,   126,    -1,   107,    -1,    -1,    62,    62
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -562,16 +562,16 @@ int yyparse (void);
 #endif
 
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
-#define __yy_memcpy(FROM,TO,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
+#define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
 #ifndef __cplusplus
 
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (from, to, count)
-     char *from;
+__yy_memcpy (to, from, count)
      char *to;
+     char *from;
      int count;
 {
   register char *f = from;
@@ -587,7 +587,7 @@ __yy_memcpy (from, to, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *from, char *to, int count)
+__yy_memcpy (char *to, char *from, int count)
 {
   register char *f = from;
   register char *t = to;
@@ -600,7 +600,7 @@ __yy_memcpy (char *from, char *to, int count)
 #endif
 #endif
 
-#line 192 "/usr/share/bison.simple"
+#line 196 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -609,14 +609,20 @@ __yy_memcpy (char *from, char *to, int count)
    to the proper pointer type.  */
 
 #ifdef YYPARSE_PARAM
-#define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
-#else
-#define YYPARSE_PARAM
+#ifdef __cplusplus
+#define YYPARSE_PARAM_ARG void *YYPARSE_PARAM
 #define YYPARSE_PARAM_DECL
-#endif
+#else /* not __cplusplus */
+#define YYPARSE_PARAM_ARG YYPARSE_PARAM
+#define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
+#endif /* not __cplusplus */
+#else /* not YYPARSE_PARAM */
+#define YYPARSE_PARAM_ARG
+#define YYPARSE_PARAM_DECL
+#endif /* not YYPARSE_PARAM */
 
 int
-yyparse(YYPARSE_PARAM)
+yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
   register int yystate;
@@ -733,12 +739,12 @@ yynewstate:
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
       yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss1, (char *)yyss, size * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
       yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs1, (char *)yyvs, size * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
       yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls1, (char *)yyls, size * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -899,7 +905,7 @@ yyreduce:
   switch (yyn) {
 
 case 11:
-#line 174 "../gnumach/mig/parser.y"
+#line 174 "parser.y"
 {
     register statement_t *st = stAlloc();
 
@@ -911,19 +917,19 @@ case 11:
 ;
     break;}
 case 12:
-#line 184 "../gnumach/mig/parser.y"
+#line 184 "parser.y"
 { rtSkip(1); ;
     break;}
 case 13:
-#line 186 "../gnumach/mig/parser.y"
+#line 186 "parser.y"
 { rtSkip(yyvsp[-1].number); ;
     break;}
 case 17:
-#line 191 "../gnumach/mig/parser.y"
+#line 191 "parser.y"
 { yyerrok; ;
     break;}
 case 18:
-#line 196 "../gnumach/mig/parser.y"
+#line 196 "parser.y"
 {
     if (BeVerbose)
     {
@@ -935,7 +941,7 @@ case 18:
 ;
     break;}
 case 19:
-#line 208 "../gnumach/mig/parser.y"
+#line 208 "parser.y"
 {
     if (SubsystemName != strNULL)
     {
@@ -947,7 +953,7 @@ case 19:
 ;
     break;}
 case 22:
-#line 224 "../gnumach/mig/parser.y"
+#line 224 "parser.y"
 {
     if (IsKernelUser)
 	warn("duplicate KernelUser keyword");
@@ -955,7 +961,7 @@ case 22:
 ;
     break;}
 case 23:
-#line 230 "../gnumach/mig/parser.y"
+#line 230 "parser.y"
 {
     if (IsKernelServer)
 	warn("duplicate KernelServer keyword");
@@ -963,15 +969,15 @@ case 23:
 ;
     break;}
 case 24:
-#line 237 "../gnumach/mig/parser.y"
+#line 237 "parser.y"
 { SubsystemName = yyvsp[0].identifier; ;
     break;}
 case 25:
-#line 240 "../gnumach/mig/parser.y"
+#line 240 "parser.y"
 { SubsystemBase = yyvsp[0].number; ;
     break;}
 case 26:
-#line 244 "../gnumach/mig/parser.y"
+#line 244 "parser.y"
 {
     if (streql(yyvsp[0].string, "MACH_MSG_OPTION_NONE"))
     {
@@ -988,7 +994,7 @@ case 26:
 ;
     break;}
 case 27:
-#line 261 "../gnumach/mig/parser.y"
+#line 261 "parser.y"
 {
     WaitTime = yyvsp[0].string;
     if (BeVerbose)
@@ -996,7 +1002,7 @@ case 27:
 ;
     break;}
 case 28:
-#line 267 "../gnumach/mig/parser.y"
+#line 267 "parser.y"
 {
     WaitTime = strNULL;
     if (BeVerbose)
@@ -1004,7 +1010,7 @@ case 28:
 ;
     break;}
 case 29:
-#line 275 "../gnumach/mig/parser.y"
+#line 275 "parser.y"
 {
     ErrorProc = yyvsp[0].identifier;
     if (BeVerbose)
@@ -1012,7 +1018,7 @@ case 29:
 ;
     break;}
 case 30:
-#line 283 "../gnumach/mig/parser.y"
+#line 283 "parser.y"
 {
     ServerPrefix = yyvsp[0].identifier;
     if (BeVerbose)
@@ -1020,7 +1026,7 @@ case 30:
 ;
     break;}
 case 31:
-#line 291 "../gnumach/mig/parser.y"
+#line 291 "parser.y"
 {
     UserPrefix = yyvsp[0].identifier;
     if (BeVerbose)
@@ -1028,7 +1034,7 @@ case 31:
 ;
     break;}
 case 32:
-#line 299 "../gnumach/mig/parser.y"
+#line 299 "parser.y"
 {
     ServerDemux = yyvsp[0].identifier;
     if (BeVerbose)
@@ -1036,7 +1042,7 @@ case 32:
 ;
     break;}
 case 33:
-#line 307 "../gnumach/mig/parser.y"
+#line 307 "parser.y"
 {
     register statement_t *st = stAlloc();
     st->stKind = yyvsp[-1].statement_kind;
@@ -1047,19 +1053,19 @@ case 33:
 ;
     break;}
 case 34:
-#line 317 "../gnumach/mig/parser.y"
+#line 317 "parser.y"
 { yyval.statement_kind = skImport; ;
     break;}
 case 35:
-#line 318 "../gnumach/mig/parser.y"
+#line 318 "parser.y"
 { yyval.statement_kind = skUImport; ;
     break;}
 case 36:
-#line 319 "../gnumach/mig/parser.y"
+#line 319 "parser.y"
 { yyval.statement_kind = skSImport; ;
     break;}
 case 37:
-#line 323 "../gnumach/mig/parser.y"
+#line 323 "parser.y"
 {
     if (RCSId != strNULL)
 	warn("previous RCS decl will be ignored");
@@ -1069,7 +1075,7 @@ case 37:
 ;
     break;}
 case 38:
-#line 333 "../gnumach/mig/parser.y"
+#line 333 "parser.y"
 {
     register identifier_t name = yyvsp[0].type->itName;
 
@@ -1079,15 +1085,15 @@ case 38:
 ;
     break;}
 case 39:
-#line 343 "../gnumach/mig/parser.y"
+#line 343 "parser.y"
 { itTypeDecl(yyvsp[-2].identifier, yyval.type = yyvsp[0].type); ;
     break;}
 case 40:
-#line 347 "../gnumach/mig/parser.y"
+#line 347 "parser.y"
 { yyval.type = itResetType(yyvsp[0].type); ;
     break;}
 case 41:
-#line 350 "../gnumach/mig/parser.y"
+#line 350 "parser.y"
 {
     yyval.type = yyvsp[-7].type;
 
@@ -1108,7 +1114,7 @@ case 41:
 ;
     break;}
 case 42:
-#line 370 "../gnumach/mig/parser.y"
+#line 370 "parser.y"
 {
     yyval.type = yyvsp[-7].type;
 
@@ -1129,7 +1135,7 @@ case 42:
 ;
     break;}
 case 43:
-#line 390 "../gnumach/mig/parser.y"
+#line 390 "parser.y"
 {
     yyval.type = yyvsp[-6].type;
 
@@ -1145,7 +1151,7 @@ case 43:
 ;
     break;}
 case 44:
-#line 404 "../gnumach/mig/parser.y"
+#line 404 "parser.y"
 {
     yyval.type = yyvsp[-3].type;
 
@@ -1161,7 +1167,7 @@ case 44:
 ;
     break;}
 case 45:
-#line 418 "../gnumach/mig/parser.y"
+#line 418 "parser.y"
 {
     yyval.type = yyvsp[-3].type;
 
@@ -1172,7 +1178,7 @@ case 45:
 ;
     break;}
 case 46:
-#line 428 "../gnumach/mig/parser.y"
+#line 428 "parser.y"
 {
     yyval.type = yyvsp[-3].type;
 
@@ -1183,35 +1189,35 @@ case 46:
 ;
     break;}
 case 47:
-#line 439 "../gnumach/mig/parser.y"
+#line 439 "parser.y"
 { yyval.type = yyvsp[0].type; ;
     break;}
 case 48:
-#line 441 "../gnumach/mig/parser.y"
+#line 441 "parser.y"
 { yyval.type = yyvsp[0].type; ;
     break;}
 case 49:
-#line 443 "../gnumach/mig/parser.y"
+#line 443 "parser.y"
 { yyval.type = itVarArrayDecl(yyvsp[-1].number, yyvsp[0].type); ;
     break;}
 case 50:
-#line 445 "../gnumach/mig/parser.y"
+#line 445 "parser.y"
 { yyval.type = itArrayDecl(yyvsp[-1].number, yyvsp[0].type); ;
     break;}
 case 51:
-#line 447 "../gnumach/mig/parser.y"
+#line 447 "parser.y"
 { yyval.type = itPtrDecl(yyvsp[0].type); ;
     break;}
 case 52:
-#line 449 "../gnumach/mig/parser.y"
+#line 449 "parser.y"
 { yyval.type = itStructDecl(yyvsp[-1].number, yyvsp[0].type); ;
     break;}
 case 53:
-#line 451 "../gnumach/mig/parser.y"
+#line 451 "parser.y"
 { yyval.type = yyvsp[0].type; ;
     break;}
 case 54:
-#line 455 "../gnumach/mig/parser.y"
+#line 455 "parser.y"
 {
     yyval.type = itShortDecl(yyvsp[0].symtype.innumber, yyvsp[0].symtype.instr,
 		     yyvsp[0].symtype.outnumber, yyvsp[0].symtype.outstr,
@@ -1219,7 +1225,7 @@ case 54:
 ;
     break;}
 case 55:
-#line 462 "../gnumach/mig/parser.y"
+#line 462 "parser.y"
 {
     yyval.type = itLongDecl(yyvsp[-4].symtype.innumber, yyvsp[-4].symtype.instr,
 		    yyvsp[-4].symtype.outnumber, yyvsp[-4].symtype.outstr,
@@ -1227,11 +1233,11 @@ case 55:
 ;
     break;}
 case 56:
-#line 470 "../gnumach/mig/parser.y"
+#line 470 "parser.y"
 { yyval.flag = flNone; ;
     break;}
 case 57:
-#line 472 "../gnumach/mig/parser.y"
+#line 472 "parser.y"
 {
     if (yyvsp[-2].flag & yyvsp[0].flag)
 	warn("redundant IPC flag ignored");
@@ -1240,7 +1246,7 @@ case 57:
 ;
     break;}
 case 58:
-#line 479 "../gnumach/mig/parser.y"
+#line 479 "parser.y"
 {
     if (yyvsp[-2].flag != flDealloc)
 	warn("only Dealloc is variable");
@@ -1249,7 +1255,7 @@ case 58:
 ;
     break;}
 case 59:
-#line 488 "../gnumach/mig/parser.y"
+#line 488 "parser.y"
 {
     yyval.symtype.innumber = yyval.symtype.outnumber = yyvsp[0].number;
     yyval.symtype.instr = yyval.symtype.outstr = strNULL;
@@ -1257,15 +1263,15 @@ case 59:
 ;
     break;}
 case 60:
-#line 494 "../gnumach/mig/parser.y"
+#line 494 "parser.y"
 { yyval.symtype = yyvsp[0].symtype; ;
     break;}
 case 61:
-#line 498 "../gnumach/mig/parser.y"
+#line 498 "parser.y"
 { yyval.symtype = yyvsp[0].symtype; ;
     break;}
 case 62:
-#line 500 "../gnumach/mig/parser.y"
+#line 500 "parser.y"
 {
     if (yyvsp[-2].symtype.size != yyvsp[0].symtype.size)
     {
@@ -1289,122 +1295,122 @@ case 62:
 ;
     break;}
 case 63:
-#line 524 "../gnumach/mig/parser.y"
+#line 524 "parser.y"
 { yyval.type = itPrevDecl(yyvsp[0].identifier); ;
     break;}
 case 64:
-#line 528 "../gnumach/mig/parser.y"
+#line 528 "parser.y"
 { yyval.number = 0; ;
     break;}
 case 65:
-#line 530 "../gnumach/mig/parser.y"
+#line 530 "parser.y"
 { yyval.number = 0; ;
     break;}
 case 66:
-#line 533 "../gnumach/mig/parser.y"
+#line 533 "parser.y"
 { yyval.number = yyvsp[-2].number; ;
     break;}
 case 67:
-#line 537 "../gnumach/mig/parser.y"
+#line 537 "parser.y"
 { yyval.number = yyvsp[-2].number; ;
     break;}
 case 68:
-#line 541 "../gnumach/mig/parser.y"
+#line 541 "parser.y"
 { yyval.number = yyvsp[-2].number; ;
     break;}
 case 69:
-#line 545 "../gnumach/mig/parser.y"
+#line 545 "parser.y"
 { yyval.type = itCStringDecl(yyvsp[-1].number, FALSE); ;
     break;}
 case 70:
-#line 548 "../gnumach/mig/parser.y"
+#line 548 "parser.y"
 { yyval.type = itCStringDecl(yyvsp[-1].number, TRUE); ;
     break;}
 case 71:
-#line 552 "../gnumach/mig/parser.y"
+#line 552 "parser.y"
 { yyval.number = yyvsp[-2].number + yyvsp[0].number;	;
     break;}
 case 72:
-#line 554 "../gnumach/mig/parser.y"
+#line 554 "parser.y"
 { yyval.number = yyvsp[-2].number - yyvsp[0].number;	;
     break;}
 case 73:
-#line 556 "../gnumach/mig/parser.y"
+#line 556 "parser.y"
 { yyval.number = yyvsp[-2].number * yyvsp[0].number;	;
     break;}
 case 74:
-#line 558 "../gnumach/mig/parser.y"
+#line 558 "parser.y"
 { yyval.number = yyvsp[-2].number / yyvsp[0].number;	;
     break;}
 case 75:
-#line 560 "../gnumach/mig/parser.y"
+#line 560 "parser.y"
 { yyval.number = yyvsp[0].number;	;
     break;}
 case 76:
-#line 562 "../gnumach/mig/parser.y"
+#line 562 "parser.y"
 { yyval.number = yyvsp[-1].number;	;
     break;}
 case 77:
-#line 566 "../gnumach/mig/parser.y"
+#line 566 "parser.y"
 { yyval.routine = yyvsp[0].routine; ;
     break;}
 case 78:
-#line 567 "../gnumach/mig/parser.y"
+#line 567 "parser.y"
 { yyval.routine = yyvsp[0].routine; ;
     break;}
 case 79:
-#line 568 "../gnumach/mig/parser.y"
+#line 568 "parser.y"
 { yyval.routine = yyvsp[0].routine; ;
     break;}
 case 80:
-#line 569 "../gnumach/mig/parser.y"
+#line 569 "parser.y"
 { yyval.routine = yyvsp[0].routine; ;
     break;}
 case 81:
-#line 570 "../gnumach/mig/parser.y"
+#line 570 "parser.y"
 { yyval.routine = yyvsp[0].routine; ;
     break;}
 case 82:
-#line 574 "../gnumach/mig/parser.y"
+#line 574 "parser.y"
 { yyval.routine = rtMakeRoutine(yyvsp[-1].identifier, yyvsp[0].argument); ;
     break;}
 case 83:
-#line 578 "../gnumach/mig/parser.y"
+#line 578 "parser.y"
 { yyval.routine = rtMakeSimpleRoutine(yyvsp[-1].identifier, yyvsp[0].argument); ;
     break;}
 case 84:
-#line 582 "../gnumach/mig/parser.y"
+#line 582 "parser.y"
 { yyval.routine = rtMakeProcedure(yyvsp[-1].identifier, yyvsp[0].argument); ;
     break;}
 case 85:
-#line 586 "../gnumach/mig/parser.y"
+#line 586 "parser.y"
 { yyval.routine = rtMakeSimpleProcedure(yyvsp[-1].identifier, yyvsp[0].argument); ;
     break;}
 case 86:
-#line 590 "../gnumach/mig/parser.y"
+#line 590 "parser.y"
 { yyval.routine = rtMakeFunction(yyvsp[-2].identifier, yyvsp[-1].argument, yyvsp[0].type); ;
     break;}
 case 87:
-#line 594 "../gnumach/mig/parser.y"
+#line 594 "parser.y"
 { yyval.argument = argNULL; ;
     break;}
 case 88:
-#line 596 "../gnumach/mig/parser.y"
+#line 596 "parser.y"
 { yyval.argument = yyvsp[-1].argument; ;
     break;}
 case 89:
-#line 601 "../gnumach/mig/parser.y"
+#line 601 "parser.y"
 { yyval.argument = yyvsp[0].argument; ;
     break;}
 case 90:
-#line 603 "../gnumach/mig/parser.y"
+#line 603 "parser.y"
 {
     yyval.argument = yyvsp[-2].argument;
     yyval.argument->argNext = yyvsp[0].argument;
 ;
     break;}
 case 91:
-#line 610 "../gnumach/mig/parser.y"
+#line 610 "parser.y"
 {
     yyval.argument = argAlloc();
     yyval.argument->argKind = yyvsp[-3].direction;
@@ -1414,51 +1420,51 @@ case 91:
 ;
     break;}
 case 92:
-#line 619 "../gnumach/mig/parser.y"
+#line 619 "parser.y"
 { yyval.direction = akNone; ;
     break;}
 case 93:
-#line 620 "../gnumach/mig/parser.y"
+#line 620 "parser.y"
 { yyval.direction = akIn; ;
     break;}
 case 94:
-#line 621 "../gnumach/mig/parser.y"
+#line 621 "parser.y"
 { yyval.direction = akOut; ;
     break;}
 case 95:
-#line 622 "../gnumach/mig/parser.y"
+#line 622 "parser.y"
 { yyval.direction = akInOut; ;
     break;}
 case 96:
-#line 623 "../gnumach/mig/parser.y"
+#line 623 "parser.y"
 { yyval.direction = akRequestPort; ;
     break;}
 case 97:
-#line 624 "../gnumach/mig/parser.y"
+#line 624 "parser.y"
 { yyval.direction = akReplyPort; ;
     break;}
 case 98:
-#line 625 "../gnumach/mig/parser.y"
+#line 625 "parser.y"
 { yyval.direction = akSReplyPort; ;
     break;}
 case 99:
-#line 626 "../gnumach/mig/parser.y"
+#line 626 "parser.y"
 { yyval.direction = akUReplyPort; ;
     break;}
 case 100:
-#line 627 "../gnumach/mig/parser.y"
+#line 627 "parser.y"
 { yyval.direction = akWaitTime; ;
     break;}
 case 101:
-#line 628 "../gnumach/mig/parser.y"
+#line 628 "parser.y"
 { yyval.direction = akMsgOption; ;
     break;}
 case 102:
-#line 629 "../gnumach/mig/parser.y"
+#line 629 "parser.y"
 { yyval.direction = akMsgSeqno; ;
     break;}
 case 103:
-#line 633 "../gnumach/mig/parser.y"
+#line 633 "parser.y"
 {
     yyval.type = itLookUp(yyvsp[0].identifier);
     if (yyval.type == itNULL)
@@ -1466,24 +1472,24 @@ case 103:
 ;
     break;}
 case 104:
-#line 639 "../gnumach/mig/parser.y"
+#line 639 "parser.y"
 { yyval.type = yyvsp[0].type; ;
     break;}
 case 105:
-#line 643 "../gnumach/mig/parser.y"
+#line 643 "parser.y"
 { LookString(); ;
     break;}
 case 106:
-#line 647 "../gnumach/mig/parser.y"
+#line 647 "parser.y"
 { LookFileName(); ;
     break;}
 case 107:
-#line 651 "../gnumach/mig/parser.y"
+#line 651 "parser.y"
 { LookQString(); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 487 "/usr/share/bison.simple"
+#line 498 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1679,7 +1685,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 654 "../gnumach/mig/parser.y"
+#line 654 "parser.y"
 
 
 static const char *
