@@ -377,8 +377,7 @@ rtFindSize(const argument_t *args, u_int mask)
 		size = (size + word_size-1) & ~(word_size-1);
 		size += sizeof_mach_msg_type_long_t;
 	    } else {
-		register bs = (it->itSize / 8); /* in bytes */
-		size += (bs > sizeof_mach_msg_type_t) ? bs : sizeof_mach_msg_type_t;
+		size += sizeof_mach_msg_type_t;
 	    }
 
 	    size += it->itMinTypeSize;

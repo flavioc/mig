@@ -1,3 +1,8 @@
+2002-07-31  Marcus Brinkmann  <marcus@gnu.org>
+
+	* routine.c (rtFindSize): Always add sizeof_mach_msg_type_t to
+	SIZE for args not in long form, irregardless of the itSize.
+
 2002-05-07  Roland McGrath  <roland@frob.com>
 
 	* type.c (itMakeNaturalType): New function.
