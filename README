@@ -20,5 +20,5 @@ target compiler to use by setting `TARGET_CC' in configure's environment
 then the native compiler must be able to find a Mach include tree.
 
 Bug reports relating to this distribution should be sent to
-<bug-hurd@prep.ai.mit.edu>.  Requests for assistance should be made on
-<help-hurd@prep.ai.mit.edu>.
+<bug-hurd@gnu.org>.  Requests for assistance should be made on
+<help-hurd@gnu.org>.
