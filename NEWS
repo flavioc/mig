@@ -1,5 +1,15 @@
 -*- Text -*-
 
+29 August 2002
+Version 1.3.1
+
+* Fix warnings when compiling generated files with GCC 3.x
+
+* Fix alignment issues for greater than 32 bit types on 32 bit
+  machines.
+
+* Alpha fixes.
+
 8 March 2002
 Version 1.3
 

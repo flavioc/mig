@@ -1,3 +1,10 @@
+2002-08-29  Jeff Bailey  <jbailey@gnu.org>
+
+	* configure.in: Bump version to 1.3.1
+	* configure: Regenerated.
+
+	* NEWS: Updated for 1.3.1 release.
+
 2002-07-31  Marcus Brinkmann  <marcus@gnu.org>
 
 	* routine.c (rtFindSize): Always add sizeof_mach_msg_type_t to
