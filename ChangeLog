@@ -1,5 +1,11 @@
 2004-02-10  Roland McGrath  <roland@frob.com>
 
+	* user.c (WriteTypeCheck): Use BAD_TYPECHECK macro instead of type-pun.
+	* server.c (WriteTypeCheck): Likewise.
+	* utils.c (WriteBogusDefines): Write a #define for that macro.
+	* utils.c (WriteCheckDecl): Write auto const, not static const.
+	(WriteStaticShortDecl, WriteStaticLongDecl): Likewise.
+
 	* INSTALL, config.guess, config.sub, missing, mkinstalldirs,
 	install-sh: Update files from autoconf/automake.
 
