@@ -19,6 +19,7 @@
 
 	* statement.h: Fix obsolete #else/#endif syntax.
 	* lexxer.l: Likewise.
+	* lexxer.c: Regenerated.
 
 2000-07-04  Marcus Brinkmann  <marcus@gnu.org>
 
