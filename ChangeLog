@@ -1,3 +1,22 @@
+1998-07-19  Roland McGrath  <roland@baalperazim.frob.com>
+
+	Moved mig out of gnumach into standalone distribution with
+	vanilla autoconf/automake build arrangement.
+	* configure.in, Makefile.am: New files.
+	* mig.in (prefix, exec_prefix, libexecdir): New vars set by configure.
+	(migcom): Find migcom in ${libexecdir}, and use @MIGCOM@ for its name.
+	(cpp): Use @TARGET_CC@ -E instead of @CPP@.
+
+	* gensym.awk: New file, copied from gnumach top-level dir.
+
+1998-07-18  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* lexxer.c, parser.c: Regenerated in srcdir so #line refs are good.
+
+	* migcom.c (main): Fix return type to int (not void), and use return.
+
+	* mig.sh: Renamed to mig.in.
+
 Thu Mar 20 14:56:34 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* error.c (unix_error_string): Assume HAVE_STRERROR.
@@ -43,9 +62,9 @@ Thu Feb 29 12:46:40 1996  steve clawson  <sclawson@marker.cs.utah.edu>
 	deallocate it.  From Michael I Bushnell (mib@gnu.ai.mit.edu).
 
 	* user.c (WriteMsgCheckIdentity): Dealloc reply port if a
- 	mismatched reply comes in to avoid cascaded errors.  From 
+ 	mismatched reply comes in to avoid cascaded errors.  From
 	Michael I Bushnell (mib@gnu.ai.mit.edu).
-	
+
 Wed May  3 13:59:54 MDT 1995  Bryan Ford <baford@cs.utah.edu>
 
 	Merged in diffs from UK02p12 to UK02p15:
