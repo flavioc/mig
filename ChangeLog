@@ -1,13 +1,6 @@
 1998-07-19  Roland McGrath  <roland@baalperazim.frob.com>
 
-	Moved mig out of gnumach into standalone distribution with
-	vanilla autoconf/automake build arrangement.
-	* configure.in, Makefile.am: New files.
-	* mig.in (prefix, exec_prefix, libexecdir): New vars set by configure.
-	(migcom): Find migcom in ${libexecdir}, and use @MIGCOM@ for its name.
-	(cpp): Use @TARGET_CC@ -E instead of @CPP@.
-
-	* gensym.awk: New file, copied from gnumach top-level dir.
+	* README, AUTHORS, NEWS: New files.
 
 1998-07-18  Roland McGrath  <roland@baalperazim.frob.com>
 
@@ -15,7 +8,15 @@
 
 	* migcom.c (main): Fix return type to int (not void), and use return.
 
+	Moved mig out of gnumach into standalone distribution with
+	vanilla autoconf/automake build arrangement.
+	* configure.in, Makefile.am: New files.
 	* mig.sh: Renamed to mig.in.
+	* mig.in (prefix, exec_prefix, libexecdir): New vars set by configure.
+	(migcom): Find migcom in ${libexecdir}, and use @MIGCOM@ for its name.
+	(cpp): Use @TARGET_CC@ -E instead of @CPP@.
+
+	* gensym.awk: New file, copied from gnumach top-level dir.
 
 Thu Mar 20 14:56:34 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 

@@ -1,0 +1,9 @@
+-*- Text -*-
+
+19 July 1998
+Version 1.0
+
+* MiG has been split into a separate distribution to make it easier to set
+  up a compilation environment for GNU Mach and Hurd systems.  The mig
+  program itself in this distribution has not been substantively changed
+  from the version in the GNUmach 1.1.3 distribution.

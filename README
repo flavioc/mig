@@ -1,0 +1,24 @@
+-*- Text -*-
+
+This is the GNU distribution of the Mach 3.0 interface generator `MiG'.
+
+You need this tool to compile the gnumach and hurd distributions,
+and to compile GNU libc for the Hurd.
+
+Generic installation instructions may be found in the file INSTALL.
+
+NOTE: To compile MiG you will need a compilation environment for the target
+Mach platform (e.g. the GNU Hurd).  Actually, just a compiler for the right
+machine that can find the Mach include files will do (i.e. the `include/mach'
+tree installed by the gnumach distribution).  If you tell configure to
+produce a cross-mig by giving --target and --host options that differ, it
+will attempt to find a compiler for the target; for example, with the command
+`configure --host=SOMETHING --target=i486-gnu', it will automatically try to
+use `i486-gnu-gcc' for the target compilations.  You can explicitly set the
+target compiler to use by setting `TARGET_CC' in configure's environment
+(e.g. `TARGET_CC=i486-gnu-gcc configure').  If you don't specify --target,
+then the native compiler must be able to find a Mach include tree.
+
+Bug reports relating to this distribution should be sent to
+<bug-hurd@prep.ai.mit.edu>.  Requests for assistance should be made on
+<help-hurd@prep.ai.mit.edu>.

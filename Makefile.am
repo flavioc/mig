@@ -3,6 +3,8 @@
 AUTOMAKE_OPTIONS = gnu
 libexec_PROGRAMS = migcom
 bin_SCRIPTS = mig
+
+EXTRA_DIST = gensym.awk cpu.sym
 CLEANFILES = cpu.h *.sym[co]
 
 migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h	\
@@ -11,7 +13,6 @@ migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h	\
 		 server.c statement.c statement.h string.c		\
 		 type.c type.h user.c utils.c utils.h vprint.c write.h
 migcom_LDADD = @ALLOCA@ @LEXLIB@
-EXTRADIST = gensym.awk
 
 SUFFIXES = .h .symo .symc .sym
 
