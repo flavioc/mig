@@ -1,3 +1,8 @@
+2001-12-28  Roland McGrath  <roland@frob.com>
+
+	* mig.in (default_cpp): Put -undef here.
+	(cppflags): Not here.
+
 2001-10-03  Roland McGrath  <roland@frob.com>
 
 	* mig.in (cppflags): Start with -undef.
