@@ -1,4 +1,12 @@
+2001-12-31  Roland McGrath  <roland@frob.com>
+
+	* lexxer.l: Grok "retcode" IPC flag as a no-op, for compatibility
+	with OSF Mach mig syntax.
+	* lexxer.c: Regenerated.
+
 2001-12-28  Roland McGrath  <roland@frob.com>
+
+	* mig.in (default_cpp): Add -ansi to avoid -Di386=1 and the like.
 
 	* mig.in (default_cpp): Put -undef here.
 	(cppflags): Not here.
