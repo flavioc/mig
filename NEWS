@@ -1,5 +1,30 @@
 -*- Text -*-
 
+7 June 2001
+Version 1.2
+
+* New option -n to suppress default output file creation.
+  With -n, no output files are created except those named
+  by other command-line options.
+
+* New option -list to generate a file listing RPC names and message ID numbers.
+  The output is in six columns:
+    subsystem-name subsystem-base rpc-name rpc-num msg-id reply-id
+  For example this output line:
+    io 21000 io_read 1 21001 21101
+  says that the file used `subsystem io 21000' and defined an RPC called
+  `io_read' with message ID 21000+1 = 21001; the reply message ID is
+  computed 21001+100 = 21101.  In this example:
+    io 21000 io_reauthenticate 14 21014 0
+  the declaration is a `simpleroutine' that expects no reply, so 0 is
+  printed in place of the computed reply message ID.  The output list
+  these examples is generated on a GNU/Hurd system with this command:
+    mig -n -list /dev/stdout /include/hurd/io.defs
+
+* Output files of C source now start by defining _GNU_SOURCE,
+  for compatibility with the GNU C library on GNU/Hurd.
+
+
 22 June 1999
 Version 1.1
 
