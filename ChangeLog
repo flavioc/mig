@@ -1,3 +1,14 @@
+1999-05-23  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* configure.in: Bump version to 1.0.2.
+
+	* mig.in: Grok --help.
+
+1999-05-22  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* configure.in: Add AC_PROG_CPP.
+	* mig.in (CC): Set this before default_cpp, which might use its value.
+
 1999-04-14  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* mig.in (default_cpp, default_cc): New variables, @ expansions here.
