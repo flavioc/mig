@@ -32,7 +32,12 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libexecdir=@libexecdir@
 migcom=${MIGDIR-@libexecdir@}/${MIGCOM-@MIGCOM@}
-cpp="${CPP-@TARGET_CC@ -E -x c}"
+
+# The expansion of TARGET_CC might refer to ${CC}, so make sure it is defined.
+default_cc="@CC@"
+default_cpp="@TARGET_CC@ -E -x c"
+CC="${CC-${default_cc}}"
+cpp="${CPP-${default_cpp}}"
 
 cppflags=
 migflags=
