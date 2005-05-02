@@ -1,3 +1,7 @@
+2005-04-09  Thomas Schwinge  <schwinge@nic-nac-project.de>
+
+	* mig.in: Handle the preprocessor option '-isystem ...' correctly.
+
 2004-03-18  Roland McGrath  <roland@frob.com>
 
 	* utils.c (do_skip_vfprintf): New macro.

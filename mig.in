@@ -93,7 +93,7 @@ Report bugs to <bug-hurd@gnu.org>.  Request assistance at <help-hurd@gnu.org>.\
 	-prefix | -subrprefix ) migflags="$migflags $1 $2"; shift; shift;;
 
 	-MD ) sawMD=1; cppflags="$cppflags $1"; shift;;
-	-imacros ) cppflags="$cppflags $1 $2"; shift; shift;;
+	-imacros | -isystem ) cppflags="$cppflags $1 $2"; shift; shift;;
 	-cc) cpp="$2"; shift; shift;;
 	-migcom) migcom="$2"; shift; shift;;
 	-* ) cppflags="$cppflags $1"; shift;;
