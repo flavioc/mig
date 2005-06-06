@@ -43,8 +43,34 @@ cppflags=
 migflags=
 files=
 
-# If an argument to this shell script contains whitespace,
-# then we will screw up.  migcom will see it as multiple arguments.
+
+# prj_quote_sh() is from Paul Jarc's prjlibs available at
+# <URL:http://code.dogmap.org/prjlibs/>.
+
+prj_quote_sh() {
+  case $1 in
+    '') echo "''";;
+    *[!%+,./0123456789:@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-]*) sed "
+s/'/'\\\\''/g
+1s/^/'/
+\$s/\$/'/
+" <<EOT
+$1
+EOT
+      ;;
+    -*) cat <<EOT
+$1
+EOT
+      ;;
+    *) echo "$1";;
+  esac
+}
+
+
+# If an argument to this shell script that will be passed to migcom contains
+# whitespace, then we will screw up: migcom will see it as multiple arguments.
+# Arguments that are only passed to $cpp are fine, though.
+# `mig -DFOO=B\ A\ R ...' works.
 #
 # As a special hack, if -i is specified first we don't pass -user to migcom.
 # We do use the -user argument for the dependencies.
@@ -93,17 +119,17 @@ Report bugs to <bug-hurd@gnu.org>.  Request assistance at <help-hurd@gnu.org>.\
 	-prefix | -subrprefix ) migflags="$migflags $1 $2"; shift; shift;;
 
 	-MD ) sawMD=1; cppflags="$cppflags $1"; shift;;
-	-imacros | -isystem ) cppflags="$cppflags $1 $2"; shift; shift;;
+	-imacros | -isystem ) cppflags="$cppflags $1 `prj_quote_sh "$2"`"; shift; shift;;
 	-cc) cpp="$2"; shift; shift;;
 	-migcom) migcom="$2"; shift; shift;;
-	-* ) cppflags="$cppflags $1"; shift;;
+	-* ) cppflags="$cppflags `prj_quote_sh "$1"`"; shift;;
 	* ) files="$files $1"; shift;;
     esac
 done
 
 for file in $files
 do
-    $cpp $cppflags "$file" | $migcom $migflags || exit
+    eval "$cpp $cppflags $file | $migcom $migflags || exit"
 
     if [ $sawMD ]
     then

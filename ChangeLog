@@ -1,3 +1,9 @@
+2005-05-27  Thomas Schwinge  <schwinge@nic-nac-project.de>
+
+	* mig.in (prj_quote_sh): New shell funcion; copied from Paul Jarc's
+	prjlibs.  Use that function to properly quote strings in $cppflags
+	that contain whitespace.
+
 2005-04-09  Thomas Schwinge  <schwinge@nic-nac-project.de>
 
 	* mig.in: Handle the preprocessor option '-isystem ...' correctly.
