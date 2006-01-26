@@ -1,3 +1,8 @@
+2006-01-26  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* config.guess: Updated from the canonical source.
+	* config.sub: Likewise.
+
 2005-05-27  Thomas Schwinge  <schwinge@nic-nac-project.de>
 
 	* mig.in (prj_quote_sh): New shell funcion; copied from Paul Jarc's
