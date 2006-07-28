@@ -1320,7 +1320,9 @@ WriteUserIndividual(const statement_t *stats)
 
 		WriteRoutine(file, stat->stRoutine);
 		WriteEpilog(file);
-		fclose(file);
+		if (ferror(file) || fclose(file))
+		    fatal("fclose(): ", filename,
+			  unix_error_string(errno));
 		strfree(filename);
 	    }
 	    break;

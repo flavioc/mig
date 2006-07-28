@@ -79,6 +79,7 @@
 
 extern int yyparse();
 static FILE *myfopen(const char *name, const char *mode);
+static void myfclose(FILE *file, const char *name);
 
 static string_t RoutineListFileName;
 
@@ -239,7 +240,7 @@ main(int argc, char **argv)
 	fflush(stdout);
     }
     WriteUserHeader(uheader, StatementList);
-    fclose(uheader);
+    myfclose(uheader, UserHeaderFileName);
     if (ServerHeaderFileName)
     {
 	if (BeVerbose)
@@ -248,7 +249,7 @@ main(int argc, char **argv)
 	    fflush (stdout);
 	}
 	WriteServerHeader(sheader, StatementList);
-	fclose(sheader);
+	myfclose(sheader, ServerHeaderFileName);
     }
     if (IsKernelServer)
     {
@@ -258,7 +259,7 @@ main(int argc, char **argv)
 	    fflush(stdout);
 	}
 	WriteInternalHeader(iheader, StatementList);
-	fclose(iheader);
+	myfclose(iheader, InternalHeaderFileName);
     }
     if (UserFilePrefix)
     {
@@ -277,7 +278,7 @@ main(int argc, char **argv)
 	    fflush(stdout);
 	}
 	WriteUser(user, StatementList);
-	fclose(user);
+	myfclose(user, UserFileName);
     }
     if (BeVerbose)
     {
@@ -285,13 +286,13 @@ main(int argc, char **argv)
 	fflush(stdout);
     }
     WriteServer(server, StatementList);
-    fclose(server);
+    myfclose(server, ServerFileName);
 
     if (RoutineListFileName != strNULL)
       {
 	FILE *listfile = myfopen (RoutineListFileName, "w");
 	WriteRoutineList (listfile, StatementList);
-	fclose (listfile);
+	myfclose (listfile, RoutineListFileName);
       }
 
     if (BeVerbose)
@@ -317,4 +318,11 @@ myfopen(const char *name, const char *mode)
 	fatal("fopen(%s): %s", realname, unix_error_string(errno));
 
     return file;
+}
+
+static void
+myfclose(FILE *file, const char *name)
+{
+    if (ferror(file) || fclose(file))
+        fatal("fclose(): ", name, unix_error_string(errno));
 }
