@@ -1,5 +1,6 @@
 2006-07-29  Ognyan Kulev  <ogi@fmi.uni-sofia.bg>
 
+	[patch #324]
 	* migcom.c (myfclose): New function.
 	(main): Use myfclose instead of fclose.
 	* user.c (WriteUserIndividual): Check for errors when closing file.
@@ -11,6 +12,7 @@
 
 2005-05-27  Thomas Schwinge  <schwinge@nic-nac-project.de>
 
+	[patch #2507]
 	* mig.in (prj_quote_sh): New shell funcion; copied from Paul Jarc's
 	prjlibs.  Use that function to properly quote strings in $cppflags
 	that contain whitespace.
