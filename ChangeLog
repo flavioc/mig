@@ -16,8 +16,6 @@
 	* configure.in: Move to...
 	* configure.ac: ... here and overhaul a bit.
 
-	* Makefile.am (TARGET_CPPFLAGS, TARGET_CFLAGS): New variables.
-
 	* config.guess: Remove file.
 	* config.sub: Likewise.
 	* depcomp: Likewise.
