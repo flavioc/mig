@@ -4,6 +4,9 @@ AUTOMAKE_OPTIONS = gnu
 libexec_PROGRAMS = migcom
 bin_SCRIPTS = mig
 
+TARGET_CPPFLAGS = @TARGET_CPPFLAGS@
+TARGET_CFLAGS = @TARGET_CFLAGS@
+
 EXTRA_DIST = gensym.awk cpu.sym
 
 CLEANFILES = cpu.h *.sym[co]
