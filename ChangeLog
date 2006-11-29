@@ -1,5 +1,7 @@
 2006-11-29  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure.ac (AM_INIT_AUTOMAKE): Add the `no-define' option.
+	
 	* build-aux/config.guess: New file, thanks to `autoreconf'.
 	* build-aux/config.sub: Likewise.
 	* build-aux/depcomp: Likewise.

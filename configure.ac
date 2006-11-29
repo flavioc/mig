@@ -11,7 +11,10 @@ AC_CANONICAL_TARGET
 
 AC_ARG_PROGRAM
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(
+dnl Don't define `PACKAGE' and `VERSION'.
+  [no-define]
+)
 
 dnl Checks for programs.
 AC_PROG_CC
