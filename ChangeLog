@@ -25,6 +25,7 @@
 	* missing: Likewise.
 	* mkinstalldirs: : Likewise.
 
+	[bug #17122 --- ``GNU MIG debian dir'']
 	* Makefile.am (debian_files): Remove variable.
 	(EXTRA_DIST): Remove files from `debian/'.
 	* debian/README.Debian: Remove file.
