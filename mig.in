@@ -25,12 +25,8 @@
 # the rights to redistribute these changes.
 #
 
-PACKAGE=@PACKAGE@
-VERSION=@VERSION@
-
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-libexecdir=@libexecdir@
 migcom=${MIGDIR-@libexecdir@}/${MIGCOM-@MIGCOM@}
 
 # The expansion of TARGET_CC might refer to ${CC}, so make sure it is defined.
@@ -78,13 +74,13 @@ EOT
 
 until [ $# -eq 0 ]
 do
-    case "$1" in
-	--version ) echo "GNU ${PACKAGE} version ${VERSION}"; exit 0 ;;
-	--help ) progname=`echo mig | sed @program_transform_name@`
-		 echo "\
-Usage: $progname [OPTION]... [FILE]...
-This is the GNU implementation of the Mach interface generator \`MiG',
-which Mach RPC stubs from \`.defs' files.
+    case $1 in
+	--version ) echo '@MIG@ (@PACKAGE_NAME@) @PACKAGE_VERSION@'; exit 0;;
+	--help ) cat <<EOT; exit 0;;
+Usage: @MIG@ [OPTION]... [FILE]...
+
+This is the GNU implementation of the Mach interface generator \`MIG', which
+generates Mach RPC stubs from definition files.
 
   -r              use msg_rpc [default]
   -R              use msg_send
@@ -105,8 +101,8 @@ which Mach RPC stubs from \`.defs' files.
 Any switches not listed are passed on to the preprocessor, invoked by:
 	${cpp}
 
-Report bugs to <bug-hurd@gnu.org>.  Request assistance at <help-hurd@gnu.org>.\
-"; exit 0 ;;
+Report bugs and request assistance writing email to <@PACKAGE_BUGREPORT@>.
+EOT
 
 	-[qQvVtTrRsSn] ) migflags="$migflags $1"; shift;;
 	-i	) sawI=1; migflags="$migflags $1 $2"; shift; shift;;
