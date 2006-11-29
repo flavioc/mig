@@ -8,6 +8,8 @@
 	* build-aux/ylwrap: Likewise.
 	* INSTALL: File updated by `autoreconf'.
 	* aclocal.m4: Likewise.
+	* Makefile.in: Likewise.
+	* configure: Likewise.
 
 	* mig.in: Adopt to the Autoconf update.
 
