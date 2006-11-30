@@ -71,6 +71,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "error.h"
 #include "lexxer.h"
@@ -226,13 +227,17 @@ main(int argc, char **argv)
     uheader = myfopen(UserHeaderFileName, "w");
     if (!UserFilePrefix)
 	user = myfopen(UserFileName, "w");
+    else
+	user = NULL;
     server = myfopen(ServerFileName, "w");
     if (ServerHeaderFileName)
 	sheader = myfopen(ServerHeaderFileName, "w");
+    else
+ 	sheader = NULL;
     if (IsKernelServer)
-    {
 	iheader = myfopen(InternalHeaderFileName, "w");
-    }
+    else
+	iheader = NULL;
 
     if (BeVerbose)
     {
@@ -324,5 +329,5 @@ static void
 myfclose(FILE *file, const char *name)
 {
     if (ferror(file) || fclose(file))
-        fatal("fclose(): ", name, unix_error_string(errno));
+        fatal("fclose(%s): %s", name, unix_error_string(errno));
 }

@@ -100,7 +100,7 @@ WriteSymTabEntries(FILE *file, const statement_t *stats)
 
     for (stat = stats; stat != stNULL; stat = stat->stNext)
 	if (stat->stKind == skRoutine) {
-	    register	num = stat->stRoutine->rtNumber;
+	    register u_int num = stat->stRoutine->rtNumber;
 	    const char	*name = stat->stRoutine->rtName;
 
 	    while (++current <= num)

@@ -1,5 +1,20 @@
 2006-11-29  Thomas Schwinge  <tschwinge@gnu.org>
 
+	Fix compiler, flex and bison warnings.
+	* error.c: Include <stdlib.h>.
+	* lexxer.h (yylex): Add declaration.
+	* migcom.c: Include <stdlib.h>.
+	(main): Set USER, SHEADER and IHEADER to `NULL' by default.
+	(myfclose): Add lost conversion specifications.
+	* parser.h (yyerror): Add declaration.
+	* routine.c (rtPrintArg, rtCheckRoutine): Add braces to avoid
+	ambiguousness.
+	* server.c (WriteSymTabEntries): Make NUM an `u_int'.
+	* user.c (WriteUserIndividual): Add a `default' case in a switch
+	statement and add lost conversion specifications.
+	* lexxer.l: Set option `nounput'.
+	* parser.y (%left): Change commas to spaces.
+
 	* configure.ac (AM_INIT_AUTOMAKE): Add the `no-define' option.
 	
 	* build-aux/config.guess: New file, thanks to `autoreconf'.

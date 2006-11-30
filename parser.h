@@ -85,3 +85,5 @@ typedef union
 
 
 extern YYSTYPE yylval;
+
+extern void yyerror(const char *);

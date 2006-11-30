@@ -1315,13 +1315,15 @@ WriteUserIndividual(const statement_t *stats)
 		      case skUImport:
 			WriteImport(file, s->stFileName);
 			break;
+		      default:
+			break;
 		      }
 		}
 
 		WriteRoutine(file, stat->stRoutine);
 		WriteEpilog(file);
 		if (ferror(file) || fclose(file))
-		    fatal("fclose(): ", filename,
+		    fatal("fclose(%s): %s", filename,
 			  unix_error_string(errno));
 		strfree(filename);
 	    }

@@ -236,33 +236,41 @@ rtPrintArg(register const argument_t *arg)
 	break;
       default:
 	if (akCheck(arg->argKind, akbRequest))
+	  {
 	    if (akCheck(arg->argKind, akbSend))
 		printf("In");
 	    else
 		printf("(In)");
+	  }
 	if (akCheck(arg->argKind, akbReply))
+	  {
 	    if (akCheck(arg->argKind, akbReturn))
 		printf("Out");
 	    else
 		printf("(Out)");
+	  }
 	printf("\t");
     }
 
     printf("\t%s: %s", arg->argName, it->itName);
 
     if (arg->argDeallocate != it->itDeallocate)
+      {
 	if (arg->argDeallocate == d_YES)
 	    printf(", Dealloc");
 	else if (arg->argDeallocate == d_MAYBE)
 	    printf(", Dealloc[]");
 	else
 	    printf(", NotDealloc");
+      }
 
     if (arg->argLongForm != it->itLongForm)
+      {
 	if (arg->argLongForm)
 	    printf(", IsLong");
 	else
 	    printf(", IsNotLong");
+      }
 
     if (arg->argServerCopy)
 	printf(", ServerCopy");
@@ -1265,21 +1273,27 @@ rtCheckRoutine(register routine_t *rt)
        doesn't have its own args and the user specified global values. */
 
     if (rt->rtUReplyPort == argNULL)
+      {
 	if (rt->rtOneWay)
 	    rtAddDummyReplyPort(rt, itZeroReplyPortType, 1);
 	else
 	    rtAddDummyReplyPort(rt, itRealReplyPortType, 1);
+      }
     if (rt->rtSReplyPort == argNULL)
+      {
 	if (rt->rtOneWay)
 	    rtAddDummyReplyPort(rt, itZeroReplyPortType, 0);
 	else
 	    rtAddDummyReplyPort(rt, itRealReplyPortType, 0);
+      }
 
     if (rt->rtMsgOption == argNULL)
+      {
 	if (MsgOption == strNULL)
 	    rtAddMsgOption(rt, "MACH_MSG_OPTION_NONE");
 	else
 	    rtAddMsgOption(rt, MsgOption);
+      }
 
     if ((rt->rtWaitTime == argNULL) &&
 	(WaitTime != strNULL))
