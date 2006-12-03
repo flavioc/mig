@@ -1,3 +1,15 @@
+2006-12-03  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
+
+	[patch #5018 --- ``Remove support to msg_send interface.'']
+	* global.c (UseMsgRPC): Removed definition.
+	* global.h (UseMsgRPC): Removed declaration.
+	* mig.in (--help): Removed information about `-r' and `-R' options.
+	* migcom.c (parseArgs): Changed the switches `-r' and `-R' to deal with
+	the absence of obsolete the send/receive pairs.
+	* user.c (WriteRoutine): Adapted the use of `UseMsgRPC' as if it was
+	defined to `TRUE'.
+	(WriteMsgSendReceive): Removed, since it is not used anymore.
+
 2006-11-29  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure: Regenerate.

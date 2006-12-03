@@ -35,7 +35,6 @@
 extern boolean_t DefaultFiles;	/* default output file names if no arguments */
 extern boolean_t BeQuiet;	/* no warning messages */
 extern boolean_t BeVerbose;	/* summarize types, routines */
-extern boolean_t UseMsgRPC;
 extern boolean_t GenSymTab;
 
 extern boolean_t IsKernelUser;

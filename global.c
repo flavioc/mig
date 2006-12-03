@@ -30,7 +30,6 @@
 boolean_t DefaultFiles = TRUE;
 boolean_t BeQuiet = FALSE;
 boolean_t BeVerbose = FALSE;
-boolean_t UseMsgRPC = TRUE;
 boolean_t GenSymTab = FALSE;
 
 boolean_t IsKernelUser = FALSE;

@@ -245,7 +245,7 @@ WriteVarDecls(FILE *file, const routine_t *rt)
 /*************************************************************
  *  Writes code to call the user provided error procedure
  *  when a MIG error occurs. Called by WriteMsgSend,
- *  WriteMsgCheckReceive, WriteMsgSendReceive, WriteCheckIdentity,
+ *  WriteMsgCheckReceive, WriteCheckIdentity,
  *  WriteRetCodeCheck, WriteTypeCheck, WritePackArgValue.
  *************************************************************/
 static void
@@ -336,41 +336,6 @@ WriteMsgCheckReceive(FILE *file, const routine_t *rt, const char *success)
 	fprintf(file, "\t%smig_put_reply_port(InP->Head.msgh_reply_port);\n",
 		SubrPrefix);
     }
-}
-
-/*************************************************************
- *  Writes the send and receive calls and code to check
- *  for errors. Normally the rpc code is generated instead
- *  although, the subsytem can be compiled with the -R option
- *  which will cause this code to be generated. Called by
- *  WriteRoutine if UseMsgRPC option is false.
- *************************************************************/
-static void
-WriteMsgSendReceive(FILE *file, const routine_t *rt)
-{
-    char SendSize[24];
-
-    if (rt->rtNumRequestVar == 0)
-        sprintf(SendSize, "%d", rt->rtRequestSize);
-    else
-	strcpy(SendSize, "msgh_size");
-
-    fprintf(file, "\tmsg_result = %smach_msg(&InP->Head, MACH_SEND_MSG|%s, %s, 0, MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);\n",
-	    SubrPrefix,
-	    rt->rtMsgOption->argVarName,
-	    SendSize);
-
-    fprintf(file, "\tif (msg_result != MACH_MSG_SUCCESS)\n");
-    WriteMsgError(file, rt, "msg_result");
-    fprintf(file, "\n");
-
-    fprintf(file, "\tmsg_result = %smach_msg(&OutP->Head, MACH_RCV_MSG|%s%s, 0, sizeof(Reply), InP->Head.msgh_local_port, %s, MACH_PORT_NULL);\n",
-	    SubrPrefix,
-	    rt->rtMsgOption->argVarName,
-	    rt->rtWaitTime != argNULL ? "|MACH_RCV_TIMEOUT" : "",
-	    rt->rtWaitTime != argNULL ? rt->rtWaitTime->argVarName : "MACH_MSG_TIMEOUT_NONE");
-    WriteMsgCheckReceive(file, rt, "MACH_MSG_SUCCESS");
-    fprintf(file, "\n");
 }
 
 /*************************************************************
@@ -1219,10 +1184,7 @@ WriteRoutine(FILE *file, register const routine_t *rt)
 	WriteMsgSend(file, rt);
     else
     {
-	if (UseMsgRPC)
-	    WriteMsgRPC(file, rt);
-	else
-	    WriteMsgSendReceive(file, rt);
+	WriteMsgRPC(file, rt);
 
 	/* Check the values that are returned in the reply message */
 

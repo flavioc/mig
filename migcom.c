@@ -31,8 +31,6 @@
  *		-[V,q]  not verbose or quiet : don't print
  *			information during compilation
  *			(this is the default)
- *		-[r,R]  do or don't use rpc calls instead of
- *			send/receive pairs. Default is -r.
  *		-[s,S]	generate symbol table or not:  generate a
  *			table of rpc-name, number, routine triplets
  *			as an external data structure -- main use is
@@ -108,10 +106,11 @@ parseArgs(int argc, char **argv)
 		BeVerbose = FALSE;
 		break;
 	      case 'r':
-		UseMsgRPC = TRUE;
+		/* This is the default and `-R' doesn't work anymore.  */
 		break;
 	      case 'R':
-		UseMsgRPC = FALSE;
+		fatal("the option `-R' cannot be used anymore, use the rpc "
+		      "calls (`-r', default) instead.");
 		break;
 	      case 'l':
 		if (streql(argv[0], "-list"))

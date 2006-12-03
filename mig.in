@@ -82,8 +82,6 @@ Usage: @MIG@ [OPTION]... [FILE]...
 This is the GNU implementation of the Mach interface generator \`MIG', which
 generates Mach RPC stubs from definition files.
 
-  -r              use msg_rpc [default]
-  -R              use msg_send
   -q		  suppress warning statements
   -Q		  print warning statements [default]
   -v		  verbose
