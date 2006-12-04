@@ -1,6 +1,5 @@
 ## Process this file with automake to produce Makefile.in.
 
-AUTOMAKE_OPTIONS = gnu
 libexec_PROGRAMS = migcom
 bin_SCRIPTS = mig
 

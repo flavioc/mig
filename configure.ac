@@ -2,7 +2,7 @@ dnl configure script for GNU MIG.
 
 AC_PREREQ([2.53])
 
-AC_INIT([GNU MIG], [1.3.1], [bug-hurd@gnu.org])
+AC_INIT([GNU MIG], [1.3.1.99], [bug-hurd@gnu.org])
 AC_CONFIG_SRCDIR([migcom.c])
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -12,6 +12,7 @@ AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
 
 AM_INIT_AUTOMAKE(
+  [gnu]
 dnl Don't define `PACKAGE' and `VERSION'.
   [no-define]
 )

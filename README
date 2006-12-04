@@ -1,24 +1,31 @@
 -*- Text -*-
 
-This is the GNU distribution of the Mach 3.0 interface generator `MiG'.
+This is the GNU distribution of the Mach 3.0 interface generator `MIG'.
 
-You need this tool to compile the gnumach and hurd distributions,
-and to compile GNU libc for the Hurd.
+You need this tool to compile the GNU Mach and GNU Hurd distributions, and to
+compile the GNU libc for the Hurd.
 
-Generic installation instructions may be found in the file INSTALL.
 
-NOTE: To compile MiG you will need a compilation environment for the target
-Mach platform (e.g. the GNU Hurd).  Actually, just a compiler for the right
-machine that can find the Mach include files will do (i.e. the `include/mach'
-tree installed by the gnumach distribution).  If you tell configure to
-produce a cross-mig by giving --target and --host options that differ, it
-will attempt to find a compiler for the target; for example, with the command
-`configure --host=SOMETHING --target=i486-gnu', it will automatically try to
-use `i486-gnu-gcc' for the target compilations.  You can explicitly set the
-target compiler to use by setting `TARGET_CC' in configure's environment
-(e.g. `TARGET_CC=i486-gnu-gcc configure').  If you don't specify --target,
-then the native compiler must be able to find a Mach include tree.
+Generic installation instructions may be found in the file `INSTALL'.
 
-Bug reports relating to this distribution should be sent to
-<bug-hurd@gnu.org>.  Requests for assistance should be made on
-<help-hurd@gnu.org>.
+NOTE: To compile this distribution, you will need a compilation environment for
+the target Mach platform (e.g. the GNU Hurd).  Actually, just a compiler for
+the right machine that can find the Mach include files will do (i.e. the
+`include/mach' tree installed by the GNU Mach distribution).  If you tell
+`configure' to produce a cross-MIG by giving `--target' and `--host' options
+that differ, it will attempt to find a compiler for the target; for example,
+with the command `configure --host=SOMETHING --target=i586-gnu', it will
+automatically try to use `i586-gnu-gcc' for the target compilations.  If you
+don't specify `--target', then the native compiler will be used and it must be
+able to find a Mach include tree.  You can explicitly set the target compiler
+and its `CPPFLAGS' and `CFLAGS' to use by passing `TARGET_CC',
+`TARGET_CPPFLAGS' or `TARGET'CFLAGS' to `configure', e.g.:
+
+	`configure TARGET_CC=i586-gnu-gcc' or
+	`configure TARGET_CPPFLAGS=-I"$HOME"/some/where/include'
+
+
+Bug reports relating to this distribution or requests for assistance should be
+sent to <bug-hurd@gnu.org> or filed on
+<http://savannah.gnu.org/bugs/?group=hurd> or
+<http://savannah.gnu.org/support/?group=hurd>.
