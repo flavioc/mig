@@ -1,5 +1,7 @@
 2006-12-04  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure.ac (AM_INIT_AUTOMAKE): Add `dist-bzip2'.
+
 	* Makefile.am (AUTOMAKE_OPTIONS): Remove variable after having moved
 	the `gnu' option to...
 	* configure.ac (AM_INIT_AUTOMAKE): ... here.
