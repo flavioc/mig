@@ -1,5 +1,7 @@
 2007-03-05  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* COPYING: Update the FSF's postal address.
+
 	Remove automatically regeneratable files.
 	* INSTALL: Remove file.
 	* Makefile.in: Likewise.
