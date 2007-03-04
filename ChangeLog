@@ -1,3 +1,19 @@
+2007-03-05  Thomas Schwinge  <tschwinge@gnu.org>
+
+	Remove automatically regeneratable files.
+	* INSTALL: Remove file.
+	* Makefile.in: Likewise.
+	* aclocal.m4: Likewise.
+	* configure: Likewise.
+	* lexxer.c: Likewise.
+	* parser.c: Likewise.
+	* build-aux/config.guess: Likewise.
+	* build-aux/config.sub: Likewise.
+	* build-aux/depcomp: Likewise.
+	* build-aux/install-sh: Likewise.
+	* build-aux/missing: Likewise.
+	* build-aux/ylwrap: Likewise.
+
 2006-12-04  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.in: Regenerate.
