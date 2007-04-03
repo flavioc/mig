@@ -88,12 +88,12 @@ generates Mach RPC stubs from definition files.
   -V		  compile silently [default]
   -s		  generate symbol table in Server.c code
   -S		  suppress symbol table in Server.c code [default]
-  -i		  generate separate files for each routine
+  -i BASE	  generate separate files (base BASE) for each routine
   -server FILE	  generate server stubs in FILE
   -user FILE	  generate user stubs in FILE
   -header FILE	  generate stub header file in FILE
   -list FILE	  generate list of RPC names and message IDs in FILE
-  -n		  suppress default output file names, create only given files
+  -n		  suppress default output files, create only given files
   -migcom	  use migcom instead of CPP
 
 Any switches not listed are passed on to the preprocessor, invoked by:

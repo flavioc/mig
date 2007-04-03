@@ -1,3 +1,7 @@
+2007-04-03  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* mig.in (--help): Document the ``-i'' option better.
+
 2007-03-05  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* COPYING: Update the FSF's postal address.
