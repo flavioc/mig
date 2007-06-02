@@ -51,8 +51,6 @@ const_string_t RoutinePrefix = "";
 
 string_t yyinname;
 
-const char LintLib[] = "defined(LINTLIBRARY)";
-
 void
 init_global(void)
 {

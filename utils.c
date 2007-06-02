@@ -39,13 +39,11 @@ WriteImport(FILE *file, const_string_t filename)
 void
 WriteRCSDecl(FILE *file, identifier_t name, const_string_t rcs)
 {
-    fprintf(file, "#ifndef\tlint\n");
     fprintf(file, "#if\tUseExternRCSId\n");
     fprintf(file, "char %s_rcsid[] = %s;\n", name, rcs);
     fprintf(file, "#else\t/* UseExternRCSId */\n");
     fprintf(file, "static char rcsid[] = %s;\n", rcs);
     fprintf(file, "#endif\t/* UseExternRCSId */\n");
-    fprintf(file, "#endif\t/* lint */\n");
     fprintf(file, "\n");
 }
 

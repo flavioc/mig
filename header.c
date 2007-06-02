@@ -85,22 +85,9 @@ WriteUserRoutine(FILE *file, const routine_t *rt)
     fprintf(file, "/* %s %s */\n", rtRoutineKindToStr(rt->rtKind), rt->rtName);
     WriteMigExternal(file);
     fprintf(file, "%s %s\n", ReturnTypeStr(rt), rt->rtUserName);
-    fprintf(file, "#if\t%s\n", LintLib);
-    fprintf(file, "    (");
-    WriteList(file, rt->rtArgs, WriteNameDecl, akbUserArg, ", " , "");
-    fprintf(file, ")\n");
-    WriteList(file, rt->rtArgs, WriteUserVarDecl, akbUserArg, ";\n", ";\n");
-    fprintf(file, "{ ");
-    if (!rt->rtProcedure)
-	fprintf(file, "return ");
-    fprintf(file, "%s(", rt->rtUserName);
-    WriteList(file, rt->rtArgs, WriteNameDecl, akbUserArg, ", ", "");
-    fprintf(file, "); }\n");
-    fprintf(file, "#else\n");
     fprintf(file, "(\n");
     WriteList(file, rt->rtArgs, WriteUserVarDecl, akbUserArg, ",\n", "\n");
     fprintf(file, ");\n");
-    fprintf(file, "#endif\n");
 }
 
 void
@@ -153,24 +140,10 @@ WriteServerRoutine(FILE *file, const routine_t *rt)
     fprintf(file, "/* %s %s */\n", rtRoutineKindToStr(rt->rtKind), rt->rtName);
     WriteMigExternal(file);
     fprintf(file, "%s %s\n", ReturnTypeStr(rt), rt->rtServerName);
-    fprintf(file, "#if\t%s\n", LintLib);
-    fprintf(file, "    (");
-    WriteList(file, rt->rtArgs, WriteNameDecl, akbServerArg, ", " , "");
-    fprintf(file, ")\n");
-    WriteList(file, rt->rtArgs, WriteServerVarDecl,
-	      akbServerArg, ";\n", ";\n");
-    fprintf(file, "{ ");
-    if (!rt->rtProcedure)
-	fprintf(file, "return ");
-    fprintf(file, "%s(", rt->rtServerName);
-    WriteList(file, rt->rtArgs, WriteNameDecl, akbServerArg, ", ", "");
-    fprintf(file, "); }\n");
-    fprintf(file, "#else\n");
     fprintf(file, "(\n");
     WriteList(file, rt->rtArgs, WriteServerVarDecl,
 	      akbServerArg, ",\n", "\n");
     fprintf(file, ");\n");
-    fprintf(file, "#endif\n");
 }
 
 void

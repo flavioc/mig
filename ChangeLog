@@ -1,3 +1,12 @@
+2007-06-02  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* global.c (LintLib): Remove definition.
+	* global.h (LintLib): Remove declaration.
+	* header.c (WriteUserRoutine, WriteServerRoutine): Don't emit `Lint'
+	code.
+	* user.c (WriteIncludes): Likewise.
+	* utils.c (WriteRCSDecl): Likewise.
+
 2007-04-03  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* mig.in (--help): Document the ``-i'' option better.

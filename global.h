@@ -68,8 +68,6 @@ extern string_t ServerFileName;
 
 extern void more_global(void);
 
-extern const char LintLib[];
-
 #ifndef NULL
 #define NULL 0
 #endif
