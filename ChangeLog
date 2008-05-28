@@ -1,3 +1,8 @@
+2008-05-28  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[bug #23417: Building with -g3]
+	* lexxer.l (^\#define[ \t]): Ignore until EOL.
+
 2007-06-02  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* global.c (LintLib): Remove definition.

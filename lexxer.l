@@ -213,6 +213,9 @@ static void doSharp(const char *body); /* process body of # directives */
 ^\#\ *{Number}				{ doSharp(yytext+1);
 					  SAVE_BEGIN;
 					  BEGIN SkipToEOL; }
+^\#define[ \t] 				{ /* GCC's pre-processor might emit those.  */
+					  SAVE_BEGIN;
+					  BEGIN SkipToEOL; }
 ^\#					{ yyerror("illegal # directive");
 					  SAVE_BEGIN;
 					  BEGIN SkipToEOL; }
