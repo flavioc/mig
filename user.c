@@ -683,7 +683,7 @@ WriteCheckIdentity(FILE *file, const routine_t *rt)
 {
     fprintf(file, "\tif (OutP->Head.msgh_id != %d) {\n",
 	    rt->rtNumber + SubsystemBase + 100);
-    fprintf(file, "\t\tif (OutP->Head.msgh_id == MACH_NOTIFY_SEND_ONCE)\n");
+    fprintf(file, "\t\tif (OutP->Head.msgh_id == MACH_NOTIFY_SEND_ONCE)\n\t");
     WriteMsgError(file, rt, "MIG_SERVER_DIED");
     fprintf(file, "\t\telse {\n");
     fprintf(file, "\t\t\t%smig_dealloc_reply_port(%s);\n\t",
