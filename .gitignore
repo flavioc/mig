@@ -1,0 +1,17 @@
+.deps/
+*.o
+INSTALL
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+build-aux/
+config.log
+config.status
+configure
+lexxer.c
+parser.c
+cpu.h
+cpu.symc
+mig
+migcom
