@@ -18,6 +18,9 @@ dnl Don't define `PACKAGE' and `VERSION'.
   [no-define]
 )
 
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])],
+                            [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP

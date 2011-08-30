@@ -7,6 +7,10 @@ EXTRA_DIST = gensym.awk cpu.sym
 
 CLEANFILES = cpu.h *.sym[co]
 
+AWK_V = $(AWK_V_$(V))
+AWK_V_ = $(AWK_V_$(AM_DEFAULT_VERBOSITY))
+AWK_V_0 = @echo "  AWK    $@";
+
 migcom_SOURCES = alloc.h boolean.h error.c error.h global.c global.h	\
 		 header.c lexxer.h lexxer.l message.h mig_string.h	\
 		 migcom.c parser.h parser.y routine.c routine.h		\
@@ -17,11 +21,11 @@ migcom_LDADD = @ALLOCA@ @LEXLIB@
 SUFFIXES = .h .symo .symc .sym
 
 .sym.symc:
-	$(AWK) -f $(srcdir)/gensym.awk $< > $@
+	$(AWK_V) $(AWK) -f $(srcdir)/gensym.awk $< > $@
 .symc.symo:
-	$(TARGET_CC) -S $(TARGET_CPPFLAGS) $(TARGET_CFLAGS) -x c -o $@ $<
+	$(AM_V_CC) $(TARGET_CC) -S $(TARGET_CPPFLAGS) $(TARGET_CFLAGS) -x c -o $@ $<
 .symo.h:
-	sed -e '/^[^*].*$$/d' -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' \
+	$(AM_V_GEN) sed -e '/^[^*].*$$/d' -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' \
 	    $< > $@
 cpu.symc: $(srcdir)/gensym.awk
 
