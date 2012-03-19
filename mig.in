@@ -27,7 +27,13 @@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-migcom=${MIGDIR-@libexecdir@}/${MIGCOM-@MIGCOM@}
+bindir=@bindir@
+libexecdir=@libexecdir@
+libexecdir_rel=$(perl -MFile::Spec -e 'print File::Spec->abs2rel("'"$libexecdir"'","'"$bindir"'")')
+bindir_real=$(dirname "$0")
+bindir_real=$(cd "$bindir_real"/ && pwd)
+libexecdir=$bindir_real/$libexecdir_rel
+migcom=${MIGDIR-$libexecdir}/${MIGCOM-@MIGCOM@}
 
 # The expansion of TARGET_CC might refer to ${CC}, so make sure it is defined.
 default_cc="@CC@"

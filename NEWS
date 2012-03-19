@@ -10,7 +10,9 @@ Version 1.3.2
 
 * Handle the preprocessor option `-isystem' correctly.
 
-* Cope with command line arguments the contain whitespace.
+* Cope with command line arguments that contain whitespace.
+
+* Make the installation tree relocatable.
 
 * Be more careful to catch write errors when closing files.
 
