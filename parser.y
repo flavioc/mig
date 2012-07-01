@@ -131,7 +131,7 @@ static const char *import_name(statement_kind_t sk);
 void
 yyerror(const char *s)
 {
-    error(s);
+    error("%s", s);
 }
 %}
 
