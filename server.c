@@ -761,16 +761,21 @@ WriteDestroyArg(FILE *file, register const argument_t *arg)
     if (akCheck(arg->argKind, akbIndefinite)) {
 	/*
 	 * Deallocate only if out-of-line.
+	 *
+	 * Also skip deallocation if error occured in processing the RPC.
+	 * (Generic RPC handling code will clean up in this case)
 	 */
 	argument_t *count = arg->argCount;
 	ipc_type_t *btype = it->itElement;
 	int	multiplier = btype->itTypeSize / btype->itNumber;
 
-	fprintf(file, "\tif (!In%dP->%s%s.msgt_inline)\n",
+	fprintf(file, "\tif (OutP->%s == KERN_SUCCESS)\n",
+		arg->argRoutine->rtRetCode->argMsgField);
+	fprintf(file, "\t\tif (!In%dP->%s%s.msgt_inline)\n",
 		arg->argRequestPos,
 		arg->argTTName,
 		arg->argLongForm ? ".msgtl_header" : "");
-	fprintf(file, "\t\t%smig_deallocate(* (vm_offset_t *) %s, ",
+	fprintf(file, "\t\t\t%smig_deallocate(* (vm_offset_t *) %s, ",
 		SubrPrefix, InArgMsgField(arg));
 	if (multiplier > 1)
 	    fprintf(file, "%d * ", multiplier);
