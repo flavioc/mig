@@ -16,7 +16,7 @@ migcom_SOURCES = boolean.h error.c error.h global.c global.h		\
 		 migcom.c parser.h parser.y routine.c routine.h		\
 		 server.c statement.c statement.h string.c		\
 		 type.c type.h user.c utils.c utils.h vprint.c write.h
-migcom_LDADD = @ALLOCA@ @LEXLIB@
+migcom_LDADD = @LEXLIB@
 
 SUFFIXES = .h .symo .symc .sym
 

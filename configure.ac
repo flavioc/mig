@@ -33,7 +33,6 @@ dnl Checks for header files.
 AC_HEADER_STDC
 
 dnl Checks for library functions.
-AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF
 
 
