@@ -262,7 +262,7 @@ LookFileName(void)
 static void
 doSharp(const char *body)
 {
-    register const char *startName;
+    const char *startName;
 
     lineno = atoi(body);
     startName = strchr(body, '"');

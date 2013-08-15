@@ -61,7 +61,7 @@ static ipc_type_t *list = itNULL;
 ipc_type_t *
 itLookUp(identifier_t name)
 {
-    register ipc_type_t *it, **last;
+    ipc_type_t *it, **last;
 
     for (it = *(last = &list); it != itNULL; it = *(last = &it->itNext))
 	if (streql(name, it->itName))
@@ -121,7 +121,7 @@ itAlloc(void)
 	strNULL,		/* identifier_t itOutTrans */
 	strNULL,		/* identifier_t itDestructor */
     };
-    register ipc_type_t *new;
+    ipc_type_t *new;
 
     new = malloc(sizeof *new);
     if (new == itNULL)
@@ -148,7 +148,7 @@ itNameToString(u_int name)
  * when itInLine, itNumber, or itSize changes.
  */
 static void
-itCalculateSizeInfo(register ipc_type_t *it)
+itCalculateSizeInfo(ipc_type_t *it)
 {
     if (it->itInLine)
     {
@@ -188,7 +188,7 @@ itCalculateSizeInfo(register ipc_type_t *it)
  * Every argument's type should have these values filled in.
  */
 static void
-itCalculateNameInfo(register ipc_type_t *it)
+itCalculateNameInfo(ipc_type_t *it)
 {
     if (it->itInNameStr == strNULL)
 	it->itInNameStr = strmake(itNameToString(it->itInName));
@@ -295,7 +295,7 @@ itCheckDeallocate(const ipc_type_t *it, ipc_flags_t flags, dealloc_t dfault,
 }
 
 static enum uselong { NotLong, CanBeLong, ShouldBeLong, MustBeLong, TooLong }
-itUseLong(register const ipc_type_t *it)
+itUseLong(const ipc_type_t *it)
 {
     enum uselong uselong = NotLong;
 
@@ -364,7 +364,7 @@ itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags, boolean_t dfault,
  *  is parsed.
  ******************************************************/
 static void
-itCheckDecl(identifier_t name, register ipc_type_t *it)
+itCheckDecl(identifier_t name, ipc_type_t *it)
 {
     enum uselong uselong;
 
@@ -501,7 +501,7 @@ ipc_type_t *
 itLongDecl(u_int inname, const_string_t instr, u_int outname,
 	   const_string_t outstr, u_int defsize, u_int size, ipc_flags_t flags)
 {
-    register ipc_type_t *it;
+    ipc_type_t *it;
 
     if ((defsize != 0) && (defsize != size))
 	warn("IPC type decl has strange size (%u instead of %u)",
@@ -527,7 +527,7 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
 static ipc_type_t *
 itCopyType(const ipc_type_t *old)
 {
-    register ipc_type_t *new = itAlloc();
+    ipc_type_t *new = itAlloc();
 
     *new = *old;
     new->itName = strNULL;
@@ -571,7 +571,7 @@ itResetType(ipc_type_t *old)
 ipc_type_t *
 itPrevDecl(identifier_t name)
 {
-    register ipc_type_t *old;
+    ipc_type_t *old;
 
     old = itLookUp(name);
     if (old == itNULL)
@@ -590,9 +590,9 @@ itPrevDecl(identifier_t name)
  *	type new = array[*:number] of old;
  */
 ipc_type_t *
-itVarArrayDecl(u_int number, register const ipc_type_t *old)
+itVarArrayDecl(u_int number, const ipc_type_t *old)
 {
-    register ipc_type_t *it = itResetType(itCopyType(old));
+    ipc_type_t *it = itResetType(itCopyType(old));
 
     if (!it->itInLine || it->itVarArray)
 	error("IPC type decl is too complicated");
@@ -623,7 +623,7 @@ itVarArrayDecl(u_int number, register const ipc_type_t *old)
 ipc_type_t *
 itArrayDecl(u_int number, const ipc_type_t *old)
 {
-    register ipc_type_t *it = itResetType(itCopyType(old));
+    ipc_type_t *it = itResetType(itCopyType(old));
 
     if (!it->itInLine || it->itVarArray)
 	error("IPC type decl is too complicated");
@@ -662,7 +662,7 @@ itPtrDecl(ipc_type_t *it)
 ipc_type_t *
 itStructDecl(u_int number, const ipc_type_t *old)
 {
-    register ipc_type_t *it = itResetType(itCopyType(old));
+    ipc_type_t *it = itResetType(itCopyType(old));
 
     if (!it->itInLine || it->itVarArray)
 	error("IPC type decl is too complicated");
@@ -681,8 +681,8 @@ itStructDecl(u_int number, const ipc_type_t *old)
 ipc_type_t *
 itCStringDecl(u_int count, boolean_t varying)
 {
-    register ipc_type_t *it;
-    register ipc_type_t *itElement;
+    ipc_type_t *it;
+    ipc_type_t *itElement;
 
     itElement = itShortDecl(MACH_MSG_TYPE_STRING_C,
 			    "MACH_MSG_TYPE_STRING_C",

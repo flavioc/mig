@@ -81,8 +81,8 @@ void
 WriteList(FILE *file, const argument_t *args, write_list_fn_t *func, u_int mask,
 	  const char *between, const char *after)
 {
-    register const argument_t *arg;
-    register boolean_t sawone = FALSE;
+    const argument_t *arg;
+    boolean_t sawone = FALSE;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheckAll(arg->argKind, mask))
@@ -99,7 +99,7 @@ WriteList(FILE *file, const argument_t *args, write_list_fn_t *func, u_int mask,
 }
 
 static boolean_t
-WriteReverseListPrim(FILE *file, register const argument_t *arg,
+WriteReverseListPrim(FILE *file, const argument_t *arg,
 		     write_list_fn_t *func, u_int mask, const char *between)
 {
     boolean_t sawone = FALSE;
@@ -157,7 +157,7 @@ WriteServerVarDecl(FILE *file, const argument_t *arg)
 }
 
 void
-WriteTypeDeclIn(FILE *file, register const argument_t *arg)
+WriteTypeDeclIn(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
@@ -165,7 +165,7 @@ WriteTypeDeclIn(FILE *file, register const argument_t *arg)
 }
 
 void
-WriteTypeDeclOut(FILE *file, register const argument_t *arg)
+WriteTypeDeclOut(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
@@ -173,9 +173,9 @@ WriteTypeDeclOut(FILE *file, register const argument_t *arg)
 }
 
 void
-WriteCheckDecl(FILE *file, register const argument_t *arg)
+WriteCheckDecl(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     /* We'll only be called for short-form types.
        Note we use itOutNameStr instead of itInNameStr, because
@@ -220,14 +220,14 @@ void
 WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 		   const char *(*tfunc)(const ipc_type_t *))
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     fprintf(file, "\t\tmach_msg_type_%st %s;\n",
 	    arg->argLongForm ? "long_" : "", arg->argTTName);
 
     if (it->itInLine && it->itVarArray)
     {
-	register ipc_type_t *btype = it->itElement;
+	ipc_type_t *btype = it->itElement;
 
 	/*
 	 *	Build our own declaration for a varying array:
@@ -258,7 +258,7 @@ WriteStructDecl(FILE *file, const argument_t *args, write_list_fn_t *func,
 }
 
 static void
-WriteStaticLongDecl(FILE *file, register const ipc_type_t *it,
+WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 		    dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
     fprintf(file, "\tauto const mach_msg_type_long_t %s = {\n", name);
@@ -281,7 +281,7 @@ WriteStaticLongDecl(FILE *file, register const ipc_type_t *it,
 }
 
 static void
-WriteStaticShortDecl(FILE *file, register const ipc_type_t *it,
+WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
 		     dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
     fprintf(file, "\tauto const mach_msg_type_t %s = {\n", name);
@@ -314,7 +314,7 @@ WriteStaticDecl(FILE *file, const ipc_type_t *it, dealloc_t dealloc,
  * and %f are recognized.
  */
 static void
-SkipVFPrintf(FILE *file, register const char *fmt, va_list pvar)
+SkipVFPrintf(FILE *file, const char *fmt, va_list pvar)
 {
     if (*fmt == 0)
 	return;	/* degenerate case */
@@ -325,7 +325,7 @@ SkipVFPrintf(FILE *file, register const char *fmt, va_list pvar)
 	   items in pvar that the enclosed format items would
 	   print. */
 
-	register int c;
+	int c;
 
 	fmt += 2;
 	for (;;) {

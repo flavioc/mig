@@ -168,7 +168,7 @@ typedef	int	boolean_t;
 #define	LONG	sizeof(long)
 
 static void
-_doprnt_ansi(register const char *fmt, va_list args, FILE *stream)
+_doprnt_ansi(const char *fmt, va_list args, FILE *stream)
 {
 	int		length;
 	int		prec;
@@ -263,8 +263,8 @@ _doprnt_ansi(register const char *fmt, va_list args, FILE *stream)
 	    switch(*fmt) {
 		case 'c':
 		{
-		    register const char *p;
-		    register const char *p2;
+		    const char *p;
+		    const char *p2;
 
 		    char_buf[0] = va_arg(args, int);
 		    p = char_buf;
@@ -368,7 +368,7 @@ _doprnt_ansi(register const char *fmt, va_list args, FILE *stream)
 		print_num:
 		{
 		    char	buf[MAXBUF];	/* build number here */
-		    register char *	p = &buf[MAXBUF-1];
+		    char *	p = &buf[MAXBUF-1];
 		    static const char digits[] = "0123456789abcdef";
 		    const char *prefix = 0;
 

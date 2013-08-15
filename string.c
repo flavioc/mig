@@ -34,7 +34,7 @@
 string_t
 strmake(const char *string)
 {
-    register string_t saved;
+    string_t saved;
 
     saved = malloc(strlen(string) + 1);
     if (saved == strNULL)
@@ -45,7 +45,7 @@ strmake(const char *string)
 string_t
 strconcat(const_string_t left, const_string_t right)
 {
-    register string_t saved;
+    string_t saved;
 
     saved = malloc(strlen(left) + strlen(right) + 1);
     if (saved == strNULL)

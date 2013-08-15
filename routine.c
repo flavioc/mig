@@ -52,7 +52,7 @@ u_int rtNumber = 0;
 routine_t *
 rtAlloc(void)
 {
-    register routine_t *new;
+    routine_t *new;
 
     new = (routine_t *) calloc(1, sizeof *new);
     if (new == rtNULL)
@@ -103,7 +103,7 @@ argAlloc(void)
 	FALSE,			/* boolean_t argByReferenceUser */
 	FALSE			/* boolean_t argByReferenceServer */
     };
-    register argument_t *new;
+    argument_t *new;
 
     new = malloc(sizeof *new);
     if (new == argNULL)
@@ -115,7 +115,7 @@ argAlloc(void)
 routine_t *
 rtMakeRoutine(identifier_t name, argument_t *args)
 {
-    register routine_t *rt = rtAlloc();
+    routine_t *rt = rtAlloc();
 
     rt->rtName = name;
     rt->rtKind = rkRoutine;
@@ -127,7 +127,7 @@ rtMakeRoutine(identifier_t name, argument_t *args)
 routine_t *
 rtMakeSimpleRoutine(identifier_t name, argument_t *args)
 {
-    register routine_t *rt = rtAlloc();
+    routine_t *rt = rtAlloc();
 
     rt->rtName = name;
     rt->rtKind = rkSimpleRoutine;
@@ -139,7 +139,7 @@ rtMakeSimpleRoutine(identifier_t name, argument_t *args)
 routine_t *
 rtMakeProcedure(identifier_t name, argument_t *args)
 {
-    register routine_t *rt = rtAlloc();
+    routine_t *rt = rtAlloc();
 
     rt->rtName = name;
     rt->rtKind = rkProcedure;
@@ -153,7 +153,7 @@ rtMakeProcedure(identifier_t name, argument_t *args)
 routine_t *
 rtMakeSimpleProcedure(identifier_t name, argument_t *args)
 {
-    register routine_t *rt = rtAlloc();
+    routine_t *rt = rtAlloc();
 
     rt->rtName = name;
     rt->rtKind = rkSimpleProcedure;
@@ -167,8 +167,8 @@ rtMakeSimpleProcedure(identifier_t name, argument_t *args)
 routine_t *
 rtMakeFunction(identifier_t name, argument_t *args, ipc_type_t *type)
 {
-    register routine_t *rt = rtAlloc();
-    register argument_t *ret = argAlloc();
+    routine_t *rt = rtAlloc();
+    argument_t *ret = argAlloc();
 
     ret->argName = name;
     ret->argKind = akReturn;
@@ -206,9 +206,9 @@ rtRoutineKindToStr(routine_kind_t rk)
 }
 
 static void
-rtPrintArg(register const argument_t *arg)
+rtPrintArg(const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     if (!akCheck(arg->argKind, akbUserArg|akbServerArg) ||
 	(akIdent(arg->argKind) == akeCount) ||
@@ -280,9 +280,9 @@ rtPrintArg(register const argument_t *arg)
 }
 
 void
-rtPrintRoutine(register const routine_t *rt)
+rtPrintRoutine(const routine_t *rt)
 {
-    register const argument_t *arg;
+    const argument_t *arg;
 
     printf("%s (%d) %s(", rtRoutineKindToStr(rt->rtKind),
 	   rt->rtNumber, rt->rtName);
@@ -309,14 +309,14 @@ static void
 rtCheckSimpleIn(const argument_t *args, u_int mask, boolean_t *fixed,
 		boolean_t *simple)
 {
-    register const argument_t *arg;
+    const argument_t *arg;
     boolean_t MayBeComplex = FALSE;
     boolean_t MustBeComplex = FALSE;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheck(arg->argKind, mask))
 	{
-	    register const ipc_type_t *it = arg->argType;
+	    const ipc_type_t *it = arg->argType;
 
 	    if (it->itInName == MACH_MSG_TYPE_POLYMORPHIC)
 		MayBeComplex = TRUE;
@@ -345,14 +345,14 @@ static void
 rtCheckSimpleOut(const argument_t *args, u_int mask, boolean_t *fixed,
 		 boolean_t *simple)
 {
-    register const argument_t *arg;
+    const argument_t *arg;
     boolean_t MayBeComplex = FALSE;
     boolean_t MustBeComplex = FALSE;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheck(arg->argKind, mask))
 	{
-	    register const ipc_type_t *it = arg->argType;
+	    const ipc_type_t *it = arg->argType;
 
 	    if (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)
 		MayBeComplex = TRUE;
@@ -372,13 +372,13 @@ rtCheckSimpleOut(const argument_t *args, u_int mask, boolean_t *fixed,
 static u_int
 rtFindSize(const argument_t *args, u_int mask)
 {
-    register const argument_t *arg;
+    const argument_t *arg;
     u_int size = sizeof_mach_msg_header_t;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheck(arg->argKind, mask))
 	{
-	    register ipc_type_t *it = arg->argType;
+	    ipc_type_t *it = arg->argType;
 
 	    if (arg->argLongForm) {
 		/* might need proper alignment on 64bit archies */
@@ -397,7 +397,7 @@ rtFindSize(const argument_t *args, u_int mask)
 boolean_t
 rtCheckMask(const argument_t *args, u_int mask)
 {
-    register const argument_t *arg;
+    const argument_t *arg;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheckAll(arg->argKind, mask))
@@ -409,7 +409,7 @@ boolean_t
 rtCheckMaskFunction(const argument_t *args, u_int mask,
 		    boolean_t (*func)(const argument_t *))
 {
-    register const argument_t *arg;
+    const argument_t *arg;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheckAll(arg->argKind, mask))
@@ -437,9 +437,9 @@ rtDefaultArgKind(const routine_t *rt, argument_t *arg)
  */
 
 static void
-rtProcessArgFlags(register argument_t *arg)
+rtProcessArgFlags(argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     arg->argFlags = itCheckFlags(arg->argFlags, arg->argName);
 
@@ -482,7 +482,7 @@ rtProcessArgFlags(register argument_t *arg)
 static void
 rtAugmentArgKind(argument_t *arg)
 {
-    register ipc_type_t *it = arg->argType;
+    ipc_type_t *it = arg->argType;
 
     /* akbVariable means variable-sized inline. */
 
@@ -640,7 +640,7 @@ rtCheckRoutineArg(routine_t *rt, argument_t *arg)
 /* arg->argType may be NULL in this function */
 
 static void
-rtSetArgDefaults(routine_t *rt, register argument_t *arg)
+rtSetArgDefaults(routine_t *rt, argument_t *arg)
 {
     arg->argRoutine = rt;
     if (arg->argVarName == strNULL)
@@ -693,9 +693,9 @@ rtSetArgDefaults(routine_t *rt, register argument_t *arg)
 }
 
 static void
-rtAddCountArg(register argument_t *arg)
+rtAddCountArg(argument_t *arg)
 {
-    register argument_t *count;
+    argument_t *count;
 
     count = argAlloc();
     count->argName = strconcat(arg->argName, "Cnt");
@@ -724,9 +724,9 @@ rtAddCountArg(register argument_t *arg)
 }
 
 static void
-rtAddCountInOutArg(register argument_t *arg)
+rtAddCountInOutArg(argument_t *arg)
 {
-    register argument_t *count;
+    argument_t *count;
 
     /*
      *	The user sees a single count variable.  However, to get the
@@ -752,10 +752,10 @@ rtAddCountInOutArg(register argument_t *arg)
 }
 
 static void
-rtAddPolyArg(register argument_t *arg)
+rtAddPolyArg(argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
-    register argument_t *poly;
+    const ipc_type_t *it = arg->argType;
+    argument_t *poly;
     arg_kind_t akbsend, akbreturn;
 
     poly = argAlloc();
@@ -808,9 +808,9 @@ rtAddPolyArg(register argument_t *arg)
 }
 
 static void
-rtAddDeallocArg(register argument_t *arg)
+rtAddDeallocArg(argument_t *arg)
 {
-    register argument_t *dealloc;
+    argument_t *dealloc;
 
     dealloc = argAlloc();
     dealloc->argName = strconcat(arg->argName, "Dealloc");
@@ -860,9 +860,9 @@ rtAddDeallocArg(register argument_t *arg)
 }
 
 static void
-rtAddSCopyArg(register argument_t *arg)
+rtAddSCopyArg(argument_t *arg)
 {
-    register argument_t *scopy;
+    argument_t *scopy;
 
     scopy = argAlloc();
     scopy->argName = strconcat(arg->argName, "SCopy");
@@ -884,11 +884,11 @@ rtAddSCopyArg(register argument_t *arg)
 static void
 rtCheckRoutineArgs(routine_t *rt)
 {
-    register argument_t *arg;
+    argument_t *arg;
 
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext)
     {
-	register const ipc_type_t *it = arg->argType;
+	const ipc_type_t *it = arg->argType;
 
 	rtDefaultArgKind(rt, arg);
 	rtCheckRoutineArg(rt, arg);
@@ -993,13 +993,13 @@ rtCheckArgTypes(routine_t *rt)
 static void
 rtCheckArgTrans(const routine_t *rt)
 {
-    register const argument_t *arg;
+    const argument_t *arg;
 
     /* the arg may not have a type (if there was some error in parsing it) */
 
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext)
     {
-	register const ipc_type_t *it = arg->argType;
+	const ipc_type_t *it = arg->argType;
 
 	if ((it != itNULL) &&
 	    !streql(it->itServerType, it->itTransType))
@@ -1028,7 +1028,7 @@ rtCheckArgTrans(const routine_t *rt)
 static void
 rtAddRetCode(routine_t *rt)
 {
-    register argument_t *arg = argAlloc();
+    argument_t *arg = argAlloc();
 
     arg->argName = "RetCode";
     arg->argType = itRetCodeType;
@@ -1049,7 +1049,7 @@ rtAddRetCode(routine_t *rt)
 static void
 rtAddWaitTime(routine_t *rt, identifier_t name)
 {
-    register argument_t *arg = argAlloc();
+    argument_t *arg = argAlloc();
     argument_t **loc;
 
     arg->argName = "dummy WaitTime arg";
@@ -1080,7 +1080,7 @@ rtAddWaitTime(routine_t *rt, identifier_t name)
 static void
 rtAddMsgOption(routine_t *rt, identifier_t name)
 {
-    register argument_t *arg = argAlloc();
+    argument_t *arg = argAlloc();
     argument_t **loc;
 
     arg->argName = "dummy MsgOption arg";
@@ -1110,7 +1110,7 @@ rtAddMsgOption(routine_t *rt, identifier_t name)
 static void
 rtAddDummyReplyPort(routine_t *rt, ipc_type_t *type, int user)
 {
-    register argument_t *arg = argAlloc();
+    argument_t *arg = argAlloc();
     argument_t **loc;
 
     arg->argName = "dummy ReplyPort arg";
@@ -1143,16 +1143,16 @@ rtAddDummyReplyPort(routine_t *rt, ipc_type_t *type, int user)
  * argRequestPos and argReplyPos get -1 if the value shouldn't be used.
  */
 static void
-rtCheckVariable(register routine_t *rt)
+rtCheckVariable(routine_t *rt)
 {
-    register argument_t *arg;
+    argument_t *arg;
     int NumRequestVar = 0;
     int NumReplyVar = 0;
     int MaxRequestPos = 0;
     int MaxReplyPos = 0;
 
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
-	register argument_t *parent = arg->argParent;
+	argument_t *parent = arg->argParent;
 
 	if (parent == argNULL) {
 	    if (akCheck(arg->argKind, akbRequest|akbSend)) {
@@ -1196,12 +1196,12 @@ rtCheckVariable(register routine_t *rt)
  */
 
 static void
-rtCheckDestroy(register routine_t *rt)
+rtCheckDestroy(routine_t *rt)
 {
-    register argument_t *arg;
+    argument_t *arg;
 
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
-	register const ipc_type_t *it = arg->argType;
+	const ipc_type_t *it = arg->argType;
 
 	if(akCheck(arg->argKind, akbSendRcv) &&
 	   !akCheck(arg->argKind, akbReturnSnd)) {
@@ -1217,12 +1217,12 @@ rtCheckDestroy(register routine_t *rt)
  */
 
 static void
-rtAddByReference(register routine_t *rt)
+rtAddByReference(routine_t *rt)
 {
-    register argument_t *arg;
+    argument_t *arg;
 
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
-	register const ipc_type_t *it = arg->argType;
+	const ipc_type_t *it = arg->argType;
 
 	if (akCheck(arg->argKind, akbReturnRcv) &&
 	    (it->itStruct || it->itIndefinite)) {
@@ -1244,7 +1244,7 @@ rtAddByReference(register routine_t *rt)
 }
 
 void
-rtCheckRoutine(register routine_t *rt)
+rtCheckRoutine(routine_t *rt)
 {
     /* Initialize random fields. */
 

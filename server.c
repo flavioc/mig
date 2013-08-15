@@ -95,12 +95,12 @@ WriteProlog(FILE *file)
 static void
 WriteSymTabEntries(FILE *file, const statement_t *stats)
 {
-    register const statement_t *stat;
-    register u_int current = 0;
+    const statement_t *stat;
+    u_int current = 0;
 
     for (stat = stats; stat != stNULL; stat = stat->stNext)
 	if (stat->stKind == skRoutine) {
-	    register u_int num = stat->stRoutine->rtNumber;
+	    u_int num = stat->stRoutine->rtNumber;
 	    const char	*name = stat->stRoutine->rtName;
 
 	    while (++current <= num)
@@ -117,13 +117,13 @@ WriteSymTabEntries(FILE *file, const statement_t *stats)
 static void
 WriteArrayEntries(FILE *file, const statement_t *stats)
 {
-    register u_int current = 0;
-    register const statement_t *stat;
+    u_int current = 0;
+    const statement_t *stat;
 
     for (stat = stats; stat != stNULL; stat = stat->stNext)
 	if (stat->stKind == skRoutine)
 	{
-	    register const routine_t *rt = stat->stRoutine;
+	    const routine_t *rt = stat->stRoutine;
 
 	    while (current++ < rt->rtNumber)
 		fprintf(file, "\t\t0,\n");
@@ -155,9 +155,9 @@ WriteEpilog(FILE *file, const statement_t *stats)
     fprintf(file, "\t(mach_msg_header_t *InHeadP, mach_msg_header_t *OutHeadP)\n");
 
     fprintf(file, "{\n");
-    fprintf(file, "\tregister mach_msg_header_t *InP =  InHeadP;\n");
+    fprintf(file, "\tmach_msg_header_t *InP =  InHeadP;\n");
 
-    fprintf(file, "\tregister mig_reply_header_t *OutP = (mig_reply_header_t *) OutHeadP;\n");
+    fprintf(file, "\tmig_reply_header_t *OutP = (mig_reply_header_t *) OutHeadP;\n");
 
     fprintf(file, "\n");
 
@@ -166,7 +166,7 @@ WriteEpilog(FILE *file, const statement_t *stats)
 		    !IsKernelServer, "RetCodeType");
     fprintf(file, "\n");
 
-    fprintf(file, "\tregister mig_routine_t routine;\n");
+    fprintf(file, "\tmig_routine_t routine;\n");
     fprintf(file, "\n");
 
     fprintf(file, "\tOutP->Head.msgh_bits = ");
@@ -203,7 +203,7 @@ WriteEpilog(FILE *file, const statement_t *stats)
     fprintf(file, "\t(const mach_msg_header_t *InHeadP)\n");
 
     fprintf(file, "{\n");
-    fprintf(file, "\tregister int msgh_id;\n");
+    fprintf(file, "\tint msgh_id;\n");
     fprintf(file, "\n");
     fprintf(file, "\tmsgh_id = InHeadP->msgh_id - %d;\n", SubsystemBase);
     fprintf(file, "\n");
@@ -240,13 +240,13 @@ ServerSideType(const routine_t *rt)
 }
 
 static void
-WriteLocalVarDecl(FILE *file, register const argument_t *arg)
+WriteLocalVarDecl(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     if (it->itInLine && it->itVarArray)
     {
-	register const ipc_type_t *btype = it->itElement;
+	const ipc_type_t *btype = it->itElement;
 
 	fprintf(file, "\t%s %s[%d]", btype->itTransType,
 		arg->argVarName, it->itNumber/btype->itNumber);
@@ -256,7 +256,7 @@ WriteLocalVarDecl(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteLocalPtrDecl(FILE *file, register const argument_t *arg)
+WriteLocalPtrDecl(FILE *file, const argument_t *arg)
 {
     fprintf(file, "\t%s *%sP",
 		FetchServerType(arg->argType->itElement),
@@ -283,10 +283,10 @@ WriteVarDecls(FILE *file, const routine_t *rt)
     boolean_t NeedMsghSize = FALSE;
     boolean_t NeedMsghSizeDelta = FALSE;
 
-    fprintf(file, "\tregister Request *In0P = (Request *) InHeadP;\n");
+    fprintf(file, "\tRequest *In0P = (Request *) InHeadP;\n");
     for (i = 1; i <= rt->rtMaxRequestPos; i++)
-	fprintf(file, "\tregister Request *In%dP;\n", i);
-    fprintf(file, "\tregister Reply *OutP = (Reply *) OutHeadP;\n");
+	fprintf(file, "\tRequest *In%dP;\n", i);
+    fprintf(file, "\tReply *OutP = (Reply *) OutHeadP;\n");
 
     fprintf(file, "\tmig_external %s %s\n",
 	    ServerSideType(rt), rt->rtServerName);
@@ -411,10 +411,10 @@ WriteCheckHead(FILE *file, const routine_t *rt)
 }
 
 static void
-WriteTypeCheck(FILE *file, register const argument_t *arg)
+WriteTypeCheck(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
-    register const routine_t *rt = arg->argRoutine;
+    const ipc_type_t *it = arg->argType;
+    const routine_t *rt = arg->argRoutine;
 
     fprintf(file, "#if\tTypeCheck\n");
     if (akCheck(arg->argKind, akbRequestQC))
@@ -461,10 +461,10 @@ WriteTypeCheck(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteCheckArgSize(FILE *file, register const argument_t *arg)
+WriteCheckArgSize(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
-    register const ipc_type_t *btype = ptype->itElement;
+    const ipc_type_t *ptype = arg->argType;
+    const ipc_type_t *btype = ptype->itElement;
     const argument_t *count = arg->argCount;
     int multiplier = btype->itTypeSize / btype->itNumber;
 
@@ -497,9 +497,9 @@ WriteCheckArgSize(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteCheckMsgSize(FILE *file, register const argument_t *arg)
+WriteCheckMsgSize(FILE *file, const argument_t *arg)
 {
-    register const routine_t *rt = arg->argRoutine;
+    const routine_t *rt = arg->argRoutine;
 
     /* If there aren't any more In args after this, then
        we can use the msgh_size_delta value directly in
@@ -554,7 +554,7 @@ WriteCheckMsgSize(FILE *file, register const argument_t *arg)
 }
 
 static const char *
-InArgMsgField(register const argument_t *arg)
+InArgMsgField(const argument_t *arg)
 {
     static char buffer[100];
 
@@ -577,9 +577,9 @@ InArgMsgField(register const argument_t *arg)
 }
 
 static void
-WriteExtractArgValue(FILE *file, register const argument_t *arg)
+WriteExtractArgValue(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     if (arg->argMultiplier > 1)
 	WriteCopyType(file, it, "%s", "/* %s */ %s / %d",
@@ -594,10 +594,10 @@ WriteExtractArgValue(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteInitializeCount(FILE *file, register const argument_t *arg)
+WriteInitializeCount(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argParent->argType;
-    register const ipc_type_t *btype = ptype->itElement;
+    const ipc_type_t *ptype = arg->argParent->argType;
+    const ipc_type_t *btype = ptype->itElement;
 
     /*
      *	Initialize 'count' argument for variable-length inline OUT parameter
@@ -624,7 +624,7 @@ WriteInitializeCount(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteInitializePtr(FILE *file, register const argument_t *arg)
+WriteInitializePtr(FILE *file, const argument_t *arg)
 {
     if (akCheck(arg->argKind, akbVarNeeded))
 	fprintf(file, "\t%sP = %s;\n",
@@ -635,7 +635,7 @@ WriteInitializePtr(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteTypeCheckArg(FILE *file, register const argument_t *arg)
+WriteTypeCheckArg(FILE *file, const argument_t *arg)
 {
     if (akCheck(arg->argKind, akbRequest)) {
 	WriteTypeCheck(file, arg);
@@ -646,9 +646,9 @@ WriteTypeCheckArg(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteAdjustRequestMsgPtr(FILE *file, register const argument_t *arg)
+WriteAdjustRequestMsgPtr(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
+    const ipc_type_t *ptype = arg->argType;
 
     fprintf(file,
 	"\tIn%dP = (Request *) ((char *) In%dP + msgh_size_delta - %d);\n\n",
@@ -657,10 +657,10 @@ WriteAdjustRequestMsgPtr(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteTypeCheckRequestArgs(FILE *file, register const routine_t *rt)
+WriteTypeCheckRequestArgs(FILE *file, const routine_t *rt)
 {
-    register const argument_t *arg;
-    register const argument_t *lastVarArg;
+    const argument_t *arg;
+    const argument_t *lastVarArg;
 
     lastVarArg = argNULL;
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
@@ -690,7 +690,7 @@ WriteTypeCheckRequestArgs(FILE *file, register const routine_t *rt)
 }
 
 static void
-WriteExtractArg(FILE *file, register const argument_t *arg)
+WriteExtractArg(FILE *file, const argument_t *arg)
 {
     if (akCheckAll(arg->argKind, akbSendRcv|akbVarNeeded))
 	WriteExtractArgValue(file, arg);
@@ -698,7 +698,7 @@ WriteExtractArg(FILE *file, register const argument_t *arg)
     if ((akIdent(arg->argKind) == akeCount) &&
 	akCheck(arg->argKind, akbReturnSnd))
     {
-	register ipc_type_t *ptype = arg->argParent->argType;
+	ipc_type_t *ptype = arg->argParent->argType;
 
 	if (ptype->itInLine && ptype->itVarArray)
 	    WriteInitializeCount(file, arg);
@@ -709,7 +709,7 @@ WriteExtractArg(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteServerCallArg(FILE *file, register const argument_t *arg)
+WriteServerCallArg(FILE *file, const argument_t *arg)
 {
     const ipc_type_t *it = arg->argType;
     boolean_t NeedClose = FALSE;
@@ -754,9 +754,9 @@ WriteServerCallArg(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteDestroyArg(FILE *file, register const argument_t *arg)
+WriteDestroyArg(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     if (akCheck(arg->argKind, akbIndefinite)) {
 	/*
@@ -790,9 +790,9 @@ WriteDestroyArg(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteDestroyPortArg(FILE *file, register const argument_t *arg)
+WriteDestroyPortArg(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     /*
      *	If a translated port argument occurs in the body of a request
@@ -816,9 +816,9 @@ WriteDestroyPortArg(FILE *file, register const argument_t *arg)
  * Check whether WriteDestroyPortArg would generate any code for arg.
  */
 static boolean_t
-CheckDestroyPortArg(register const argument_t *arg)
+CheckDestroyPortArg(const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     if ((it->itInTrans != strNULL) &&
 	(it->itOutName == MACH_MSG_TYPE_PORT_SEND))
@@ -854,7 +854,7 @@ WriteServerCall(FILE *file, const routine_t *rt)
 }
 
 static void
-WriteGetReturnValue(FILE *file, register const routine_t *rt)
+WriteGetReturnValue(FILE *file, const routine_t *rt)
 {
     if (rt->rtServerReturn != rt->rtRetCode)
 	fprintf(file, "\tOutP->%s = KERN_SUCCESS;\n",
@@ -862,7 +862,7 @@ WriteGetReturnValue(FILE *file, register const routine_t *rt)
 }
 
 static void
-WriteCheckReturnValue(FILE *file, register const routine_t *rt)
+WriteCheckReturnValue(FILE *file, const routine_t *rt)
 {
     if (rt->rtServerReturn == rt->rtRetCode)
     {
@@ -873,7 +873,7 @@ WriteCheckReturnValue(FILE *file, register const routine_t *rt)
 }
 
 static void
-WritePackArgType(FILE *file, register const argument_t *arg)
+WritePackArgType(FILE *file, const argument_t *arg)
 {
     fprintf(file, "\n");
 
@@ -884,9 +884,9 @@ WritePackArgType(FILE *file, register const argument_t *arg)
 }
 
 static void
-WritePackArgValue(FILE *file, register const argument_t *arg)
+WritePackArgValue(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
+    const ipc_type_t *it = arg->argType;
 
     fprintf(file, "\n");
 
@@ -907,8 +907,8 @@ WritePackArgValue(FILE *file, register const argument_t *arg)
 		it->itNumber);
 	}
 	else {
-	    register argument_t *count = arg->argCount;
-	    register ipc_type_t *btype = it->itElement;
+	    argument_t *count = arg->argCount;
+	    ipc_type_t *btype = it->itElement;
 
 	    /* Note btype->itNumber == count->argMultiplier */
 
@@ -965,7 +965,7 @@ WritePackArgValue(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteCopyArgValue(FILE *file, register const argument_t *arg)
+WriteCopyArgValue(FILE *file, const argument_t *arg)
 {
     fprintf(file, "\n");
     WriteCopyType(file, arg->argType, "/* %d */ OutP->%s", "In%dP->%s",
@@ -973,7 +973,7 @@ WriteCopyArgValue(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteAdjustMsgSimple(FILE *file, register const argument_t *arg)
+WriteAdjustMsgSimple(FILE *file, const argument_t *arg)
 {
     /* akbVarNeeded must be on */
 
@@ -986,7 +986,7 @@ WriteAdjustMsgSimple(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteAdjustMsgCircular(FILE *file, register const argument_t *arg)
+WriteAdjustMsgCircular(FILE *file, const argument_t *arg)
 {
     fprintf(file, "\n");
 
@@ -1016,11 +1016,11 @@ WriteAdjustMsgCircular(FILE *file, register const argument_t *arg)
  * Calculate the size of a variable-length message field.
  */
 static void
-WriteArgSize(FILE *file, register const argument_t *arg)
+WriteArgSize(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
-    register int bsize = ptype->itElement->itTypeSize;
-    register const argument_t *count = arg->argCount;
+    const ipc_type_t *ptype = arg->argType;
+    int bsize = ptype->itElement->itTypeSize;
+    const argument_t *count = arg->argCount;
 
     if (ptype->itIndefinite) {
 	/*
@@ -1062,10 +1062,10 @@ WriteArgSize(FILE *file, register const argument_t *arg)
  * has more arguments following.
  */
 static void
-WriteAdjustMsgSize(FILE *file, register const argument_t *arg)
+WriteAdjustMsgSize(FILE *file, const argument_t *arg)
 {
-    register routine_t *rt = arg->argRoutine;
-    register ipc_type_t *ptype = arg->argType;
+    routine_t *rt = arg->argRoutine;
+    ipc_type_t *ptype = arg->argType;
 
     /* There are more Out arguments.  We need to adjust msgh_size
        and advance OutP, so we save the size of the current field
@@ -1101,7 +1101,7 @@ WriteAdjustMsgSize(FILE *file, register const argument_t *arg)
  * last argument has been packed.
  */
 static void
-WriteFinishMsgSize(FILE *file, register const argument_t *arg)
+WriteFinishMsgSize(FILE *file, const argument_t *arg)
 {
     /* No more Out arguments.  If this is the only variable Out
        argument, we can assign to msgh_size directly. */
@@ -1120,7 +1120,7 @@ WriteFinishMsgSize(FILE *file, register const argument_t *arg)
 }
 
 static void
-WritePackArg(FILE *file, register const argument_t *arg)
+WritePackArg(FILE *file, const argument_t *arg)
 {
     if (akCheck(arg->argKind, akbReplyInit))
 	WritePackArgType(file, arg);
@@ -1132,7 +1132,7 @@ WritePackArg(FILE *file, register const argument_t *arg)
     if (akCheckAll(arg->argKind, akbReturnSnd|akbVarNeeded))
 	WritePackArgValue(file, arg);
     else if (akCheckAll(arg->argKind, akbReturnSnd|akbVariable)) {
-	register const ipc_type_t *it = arg->argType;
+	const ipc_type_t *it = arg->argType;
 
 	if (it->itString) {
 	    /* Need to call strlen to calculate the size of the argument. */
@@ -1190,10 +1190,10 @@ WritePackArg(FILE *file, register const argument_t *arg)
  * that need to be copied.
  */
 static void
-WritePackReplyArgs(FILE *file, register const routine_t *rt)
+WritePackReplyArgs(FILE *file, const routine_t *rt)
 {
-    register const argument_t *arg;
-    register const argument_t *lastVarArg;
+    const argument_t *arg;
+    const argument_t *lastVarArg;
 
     lastVarArg = argNULL;
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
@@ -1236,7 +1236,7 @@ WriteFieldDecl(FILE *file, const argument_t *arg)
 }
 
 static void
-WriteRoutine(FILE *file, register const routine_t *rt)
+WriteRoutine(FILE *file, const routine_t *rt)
 {
     fprintf(file, "\n");
 
@@ -1308,7 +1308,7 @@ WriteRoutine(FILE *file, register const routine_t *rt)
 void
 WriteServer(FILE *file, const statement_t *stats)
 {
-    register const statement_t *stat;
+    const statement_t *stat;
 
     WriteProlog(file);
     for (stat = stats; stat != stNULL; stat = stat->stNext)

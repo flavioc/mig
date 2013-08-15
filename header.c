@@ -93,7 +93,7 @@ WriteUserRoutine(FILE *file, const routine_t *rt)
 void
 WriteUserHeader(FILE *file, const statement_t *stats)
 {
-    register const statement_t *stat;
+    const statement_t *stat;
     const char *protect = strconcat(SubsystemName, "_user_");
 
     WriteProlog(file, protect);
@@ -149,7 +149,7 @@ WriteServerRoutine(FILE *file, const routine_t *rt)
 void
 WriteServerHeader(FILE *file, const statement_t *stats)
 {
-    register const statement_t *stat;
+    const statement_t *stat;
     const char *protect = strconcat(SubsystemName, "_server_");
 
     WriteProlog(file, protect);
@@ -173,7 +173,7 @@ WriteServerHeader(FILE *file, const statement_t *stats)
 }
 
 static void
-WriteInternalRedefine(FILE *file, register const routine_t *rt)
+WriteInternalRedefine(FILE *file, const routine_t *rt)
 {
     fprintf(file, "#define %s %s_external\n", rt->rtUserName, rt->rtUserName);
 }
@@ -181,7 +181,7 @@ WriteInternalRedefine(FILE *file, register const routine_t *rt)
 void
 WriteInternalHeader(FILE *file, const statement_t *stats)
 {
-    register const statement_t *stat;
+    const statement_t *stat;
 
     for (stat = stats; stat != stNULL; stat = stat->stNext)
 	switch (stat->stKind)

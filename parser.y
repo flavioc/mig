@@ -172,7 +172,7 @@ Statement		:	Subsystem sySemi
 			|	TypeDecl sySemi
 			|	RoutineDecl sySemi
 {
-    register statement_t *st = stAlloc();
+    statement_t *st = stAlloc();
 
     st->stKind = skRoutine;
     st->stRoutine = $1;
@@ -305,7 +305,7 @@ ServerDemux		:	syServerDemux syIdentifier
 
 Import			:	LookFileName ImportIndicant syFileName
 {
-    register statement_t *st = stAlloc();
+    statement_t *st = stAlloc();
     st->stKind = $2;
     st->stFileName = $3;
 
@@ -331,7 +331,7 @@ RCSDecl			:	LookQString syRCSId syQString
 
 TypeDecl		:	syType NamedTypeSpec
 {
-    register identifier_t name = $2->itName;
+    identifier_t name = $2->itName;
 
     if (itLookUp(name) != itNULL)
 	warn("overriding previous definition of %s", name);

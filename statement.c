@@ -36,7 +36,7 @@ static statement_t **last = &StatementList;
 statement_t *
 stAlloc(void)
 {
-    register statement_t *new;
+    statement_t *new;
 
     new = malloc(sizeof *new);
     if (new == stNULL)

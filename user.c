@@ -56,7 +56,7 @@ WriteIncludes(FILE *file)
 
 	if (InternalHeaderFileName != strNULL)
 	{
-	    register char *cp;
+	    char *cp;
 
 	    /* Strip any leading path from InternalHeaderFileName. */
 	    cp = strrchr(InternalHeaderFileName, '/');
@@ -70,7 +70,7 @@ WriteIncludes(FILE *file)
 
     if (UserHeaderFileName != strNULL)
     {
-	register char *cp;
+	char *cp;
 
 	/* Strip any leading path from UserHeaderFileName. */
 	cp = strrchr(UserHeaderFileName, '/');
@@ -208,9 +208,9 @@ WriteVarDecls(FILE *file, const routine_t *rt)
     fprintf(file, "\t} Mess;\n");
     fprintf(file, "\n");
 
-    fprintf(file, "\tregister Request *InP = &Mess.In;\n");
+    fprintf(file, "\tRequest *InP = &Mess.In;\n");
     if (!rt->rtOneWay)
-	fprintf(file, "\tregister Reply *OutP = &Mess.Out;\n");
+	fprintf(file, "\tReply *OutP = &Mess.Out;\n");
     fprintf(file, "\n");
 
     if (!rt->rtOneWay || rt->rtProcedure)
@@ -391,10 +391,10 @@ WritePackArgType(FILE *file, const argument_t *arg)
  *  in the request message.
  *************************************************************/
 static void
-WritePackArgValue(FILE *file, register const argument_t *arg)
+WritePackArgValue(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
-    register const char *ref = arg->argByReferenceUser ? "*" : "";
+    const ipc_type_t *it = arg->argType;
+    const char *ref = arg->argByReferenceUser ? "*" : "";
 
     if (it->itInLine && it->itVarArray) {
 
@@ -419,9 +419,9 @@ WritePackArgValue(FILE *file, register const argument_t *arg)
 	     *	after checking that number of elements doesn`t
 	     *	exceed declared maximum.
 	     */
-	    register const argument_t *count = arg->argCount;
-	    register const char *countRef = count->argByReferenceUser ? "*" :"";
-	    register const ipc_type_t *btype = it->itElement;
+	    const argument_t *count = arg->argCount;
+	    const char *countRef = count->argByReferenceUser ? "*" :"";
+	    const ipc_type_t *btype = it->itElement;
 
 	    /* Note btype->itNumber == count->argMultiplier */
 
@@ -474,11 +474,11 @@ WritePackArgValue(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteAdjustMsgSimple(FILE *file, register const argument_t *arg)
+WriteAdjustMsgSimple(FILE *file, const argument_t *arg)
 {
     if (!arg->argRoutine->rtSimpleFixedRequest)
     {
-	register const char *ref = arg->argByReferenceUser ? "*" : "";
+	const char *ref = arg->argByReferenceUser ? "*" : "";
 
 	fprintf(file, "\tif (MACH_MSG_TYPE_PORT_ANY(%s%s))\n",
 		ref, arg->argVarName);
@@ -491,11 +491,11 @@ WriteAdjustMsgSimple(FILE *file, register const argument_t *arg)
  * Calculate the size of a variable-length message field.
  */
 static void
-WriteArgSize(FILE *file, register const argument_t *arg)
+WriteArgSize(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
-    register int bsize = ptype->itElement->itTypeSize;
-    register const argument_t *count = arg->argCount;
+    const ipc_type_t *ptype = arg->argType;
+    int bsize = ptype->itElement->itTypeSize;
+    const argument_t *count = arg->argCount;
 
     if (ptype->itIndefinite) {
 	/*
@@ -538,9 +538,9 @@ WriteArgSize(FILE *file, register const argument_t *arg)
  * has more arguments following.
  */
 static void
-WriteAdjustMsgSize(FILE *file, register const argument_t *arg)
+WriteAdjustMsgSize(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
+    const ipc_type_t *ptype = arg->argType;
 
     /* There are more In arguments.  We need to adjust msgh_size
        and advance InP, so we save the size of the current field
@@ -569,7 +569,7 @@ WriteAdjustMsgSize(FILE *file, register const argument_t *arg)
  * last argument has been packed.
  */
 static void
-WriteFinishMsgSize(FILE *file, register const argument_t *arg)
+WriteFinishMsgSize(FILE *file, const argument_t *arg)
 {
     /* No more In arguments.  If this is the only variable In
        argument, the previous msgh_size value is the minimum
@@ -589,10 +589,10 @@ WriteFinishMsgSize(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteInitializeCount(FILE *file, register const argument_t *arg)
+WriteInitializeCount(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argCInOut->argParent->argType;
-    register const ipc_type_t *btype = ptype->itElement;
+    const ipc_type_t *ptype = arg->argCInOut->argParent->argType;
+    const ipc_type_t *btype = ptype->itElement;
 
     fprintf(file, "\tif (%s%s < %d)\n",
 	    arg->argByReferenceUser ? "*" : "",
@@ -613,7 +613,7 @@ WriteInitializeCount(FILE *file, register const argument_t *arg)
  * argument into the request message.
  */
 static void
-WritePackArg(FILE *file, register const argument_t *arg)
+WritePackArg(FILE *file, const argument_t *arg)
 {
     if (akCheck(arg->argKind, akbRequest))
 	WritePackArgType(file, arg);
@@ -634,10 +634,10 @@ WritePackArg(FILE *file, register const argument_t *arg)
  * message types.
  */
 static void
-WriteRequestArgs(FILE *file, register const routine_t *rt)
+WriteRequestArgs(FILE *file, const routine_t *rt)
 {
-    register const argument_t *arg;
-    register const argument_t *lastVarArg;
+    const argument_t *arg;
+    const argument_t *lastVarArg;
 
     lastVarArg = argNULL;
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext)
@@ -760,10 +760,10 @@ WriteRetCodeCheck(FILE *file, const routine_t *rt)
  *  WriteRoutine for each argument in the reply message.
  *************************************************************/
 static void
-WriteTypeCheck(FILE *file, register const argument_t *arg)
+WriteTypeCheck(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *it = arg->argType;
-    register const routine_t *rt = arg->argRoutine;
+    const ipc_type_t *it = arg->argType;
+    const routine_t *rt = arg->argRoutine;
 
     fprintf(file, "#if\tTypeCheck\n");
     if (akCheck(arg->argKind, akbReplyQC))
@@ -812,10 +812,10 @@ WriteTypeCheck(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteCheckArgSize(FILE *file, register const argument_t *arg)
+WriteCheckArgSize(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
-    register const ipc_type_t *btype = ptype->itElement;
+    const ipc_type_t *ptype = arg->argType;
+    const ipc_type_t *btype = ptype->itElement;
     const argument_t *count = arg->argCount;
     int multiplier = btype->itTypeSize / btype->itNumber;
 
@@ -845,9 +845,9 @@ WriteCheckArgSize(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteCheckMsgSize(FILE *file, register const argument_t *arg)
+WriteCheckMsgSize(FILE *file, const argument_t *arg)
 {
-    register const routine_t *rt = arg->argRoutine;
+    const routine_t *rt = arg->argRoutine;
 
     /* If there aren't any more Out args after this, then
        we can use the msgh_size_delta value directly in
@@ -908,10 +908,10 @@ WriteCheckMsgSize(FILE *file, register const argument_t *arg)
  *  in the reply message.
  *************************************************************/
 static void
-WriteExtractArgValue(FILE *file, register const argument_t *arg)
+WriteExtractArgValue(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t	*argType = arg->argType;
-    register const char *ref = arg->argByReferenceUser ? "*" : "";
+    const ipc_type_t	*argType = arg->argType;
+    const char *ref = arg->argByReferenceUser ? "*" : "";
 
     if (argType->itInLine && argType->itVarArray) {
 
@@ -977,9 +977,9 @@ WriteExtractArgValue(FILE *file, register const argument_t *arg)
 	     *	after checking that number of elements doesn`t
 	     *	exceed user`s maximum.
 	     */
-	    register const argument_t *count = arg->argCount;
-	    register const char *countRef = count->argByReferenceUser ? "*" :"";
-	    register const ipc_type_t *btype = argType->itElement;
+	    const argument_t *count = arg->argCount;
+	    const char *countRef = count->argByReferenceUser ? "*" :"";
+	    const ipc_type_t *btype = argType->itElement;
 
 	    /* Note count->argMultiplier == btype->itNumber */
 
@@ -1031,9 +1031,9 @@ WriteExtractArgValue(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteExtractArg(FILE *file, register const argument_t *arg)
+WriteExtractArg(FILE *file, const argument_t *arg)
 {
-    register const routine_t *rt = arg->argRoutine;
+    const routine_t *rt = arg->argRoutine;
 
     if (akCheck(arg->argKind, akbReply))
 	WriteTypeCheck(file, arg);
@@ -1053,9 +1053,9 @@ WriteExtractArg(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteAdjustReplyMsgPtr(FILE *file, register const argument_t *arg)
+WriteAdjustReplyMsgPtr(FILE *file, const argument_t *arg)
 {
-    register const ipc_type_t *ptype = arg->argType;
+    const ipc_type_t *ptype = arg->argType;
 
     fprintf(file,
 	"\tOutP = (Reply *) ((char *) OutP + msgh_size_delta - %d);\n\n",
@@ -1063,10 +1063,10 @@ WriteAdjustReplyMsgPtr(FILE *file, register const argument_t *arg)
 }
 
 static void
-WriteReplyArgs(FILE *file, register const routine_t *rt)
+WriteReplyArgs(FILE *file, const routine_t *rt)
 {
-    register const argument_t *arg;
-    register const argument_t *lastVarArg;
+    const argument_t *arg;
+    const argument_t *lastVarArg;
 
     lastVarArg = argNULL;
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
@@ -1130,7 +1130,7 @@ WriteFieldDecl(FILE *file, const argument_t *arg)
 }
 
 static void
-WriteStubDecl(FILE *file, register const routine_t *rt)
+WriteStubDecl(FILE *file, const routine_t *rt)
 {
     fprintf(file, "\n");
     fprintf(file, "/* %s %s */\n", rtRoutineKindToStr(rt->rtKind), rt->rtName);
@@ -1146,7 +1146,7 @@ WriteStubDecl(FILE *file, register const routine_t *rt)
  *  WriteUser for each routine.
  *************************************************************/
 static void
-WriteRoutine(FILE *file, register const routine_t *rt)
+WriteRoutine(FILE *file, const routine_t *rt)
 {
     /* write the stub's declaration */
 
@@ -1222,7 +1222,7 @@ WriteRoutine(FILE *file, register const routine_t *rt)
 void
 WriteUser(FILE *file, const statement_t *stats)
 {
-    register const statement_t *stat;
+    const statement_t *stat;
 
     WriteProlog(file);
     for (stat = stats; stat != stNULL; stat = stat->stNext)
@@ -1250,7 +1250,7 @@ WriteUser(FILE *file, const statement_t *stats)
 void
 WriteUserIndividual(const statement_t *stats)
 {
-    register const statement_t *stat;
+    const statement_t *stat;
 
     for (stat = stats; stat != stNULL; stat = stat->stNext)
 	switch (stat->stKind)
@@ -1258,7 +1258,7 @@ WriteUserIndividual(const statement_t *stats)
 	  case skRoutine:
 	    {
 		FILE *file;
-		register char *filename;
+		char *filename;
 
 		filename = strconcat(UserFilePrefix,
 				     strconcat(stat->stRoutine->rtName, ".c"));
