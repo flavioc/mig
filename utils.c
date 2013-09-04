@@ -181,7 +181,7 @@ WriteCheckDecl(FILE *file, const argument_t *arg)
        Note we use itOutNameStr instead of itInNameStr, because
        this declaration will be used to check received types. */
 
-    fprintf(file, "\tauto const mach_msg_type_t %sCheck = {\n",
+    fprintf(file, "\tconst mach_msg_type_t %sCheck = {\n",
 	    arg->argVarName);
     fprintf(file, "\t\t/* msgt_name = */\t\t%s,\n", it->itOutNameStr);
     fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
@@ -261,7 +261,7 @@ static void
 WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 		    dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
-    fprintf(file, "\tauto const mach_msg_type_long_t %s = {\n", name);
+    fprintf(file, "\tconst mach_msg_type_long_t %s = {\n", name);
     fprintf(file, "\t{\n");
     fprintf(file, "\t\t/* msgt_name = */\t\t0,\n");
     fprintf(file, "\t\t/* msgt_size = */\t\t0,\n");
@@ -284,7 +284,7 @@ static void
 WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
 		     dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
-    fprintf(file, "\tauto const mach_msg_type_t %s = {\n", name);
+    fprintf(file, "\tconst mach_msg_type_t %s = {\n", name);
     fprintf(file, "\t\t/* msgt_name = */\t\t%s,\n",
 	    inname ? it->itInNameStr : it->itOutNameStr);
     fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
