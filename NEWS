@@ -1,12 +1,10 @@
--*- Text -*-
-
-unreleased
-Version 1.3.2
+2013-09-27
+Version 1.4
 
 * Don't accept the `-R' (msg_send) command line option anymore and make the
   `-r' one (msg_rpc) a no-op.
 
-* Fix warnings when compiling generated files with GCC 4.x.
+* Fix warnings when compiling generated files with recent versions of GCC.
 
 * Handle the preprocessor option `-isystem' correctly.
 
@@ -16,9 +14,10 @@ Version 1.3.2
 
 * Be more careful to catch write errors when closing files.
 
-* The `debian/' subdirectory of packaging files is not included anymore.
+* Spurious deallocation of out-of-line memory has been fixed in case of an
+  error while processing the RPC.
 
-29 August 2002
+2002-08-29
 Version 1.3.1
 
 * Fix warnings when compiling generated files with GCC 3.x.
@@ -28,19 +27,19 @@ Version 1.3.1
 
 * Alpha fixes.
 
-8 March 2002
+2002-03-08
 Version 1.3
 
 * Minor bug fixes.
 
 * The new keyword `retcode' is accepted as a parameter modifier.
   This does not do anything, but is accepted for compatibility
-  with the MiG input syntax used with OSF Mach.
+  with the MIG input syntax used with OSF Mach.
 
 * The debian/ subdirectory of packaging files is now included in the
-  MiG source distribution.
+  MIG source distribution.
 
-7 June 2001
+2001-07-07
 Version 1.2
 
 * New option -n to suppress default output file creation.
@@ -64,27 +63,27 @@ Version 1.2
 * Output files of C source now start by defining _GNU_SOURCE,
   for compatibility with the GNU C library on GNU/Hurd.
 
-22 June 1999
+1999-06-22
 Version 1.1
 
 * First official net release.
 
-23 May 1999
+1999-05-23
 Version 1.0.2
 
 * Understand normal GNU --version and --help args.
 * Find CPP in a more flexible fashion.
 
-4 December 1998
+1998-12-04
 Version 1.0.1
 
 * This release fixes a bug in the `mig' driver script that made it fail to
   invoke the C preprocessor properly.
 
-19 July 1998
+1998-08-19
 Version 1.0
 
-* MiG has been split into a separate distribution to make it easier to set
+* MIG has been split into a separate distribution to make it easier to set
   up a compilation environment for GNU Mach and Hurd systems.  The mig
   program itself in this distribution has not been substantively changed
   from the version in the GNUmach 1.1.3 distribution.

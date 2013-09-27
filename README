@@ -1,10 +1,11 @@
--*- Text -*-
+This is GNU MIG, the GNU distribution of the Mach 3.0 Interface Generator
+(MIG), <http://www.gnu.org/software/hurd/microkernel/mach/mig/gnu_mig.html>.
+Welcome.
 
-This is the GNU distribution of the Mach 3.0 interface generator `MIG'.
-
-You need this tool to compile the GNU Mach and GNU Hurd distributions, and to
-compile the GNU libc for the Hurd.
-
+This tool translates Remore Procedure Call (RPC) definition files to C
+code, and is required to compile any packages that are receiving or
+invoking RPCs, such as GNU Mach, GNU Hurd, and the GNU C Library (glibc)
+when compiled for the Hurd.
 
 Generic installation instructions may be found in the file `INSTALL'.
 
@@ -25,7 +26,9 @@ and its `CPPFLAGS' and `CFLAGS' to use by passing `TARGET_CC',
 	`configure TARGET_CPPFLAGS=-I"$HOME"/some/where/include'
 
 
-Bug reports relating to this distribution or requests for assistance should be
-sent to <bug-hurd@gnu.org> or filed on
-<http://savannah.gnu.org/bugs/?group=hurd> or
-<http://savannah.gnu.org/support/?group=hurd>.
+Please read the FAQ at <http://www.gnu.org/software/hurd/faq.html>.
+Bug reports should be sent to <bug-hurd@gnu.org> or filed on
+<http://savannah.gnu.org/bugs/?group=hurd>.  Requests for assistance
+should be sent to <help-hurd@gnu.org> or filed on
+<http://savannah.gnu.org/support/?group=hurd>.  You can also find us on
+the Freenode IRC network in the #hurd channel.
