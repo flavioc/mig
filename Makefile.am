@@ -30,3 +30,27 @@ SUFFIXES = .h .symo .symc .sym
 cpu.symc: $(srcdir)/gensym.awk
 
 $(migcom_OBJECTS): cpu.h
+
+#
+# Building a distribution.
+#
+
+dist-hook: gen-ChangeLog
+
+gen_start_commit = 12a56fa3ce0d65a25e7bcf68aba03d8ba189273f
+ChangeLog_files = ChangeLog
+.PHONY: gen-ChangeLog
+gen-ChangeLog:
+	$(AM_V_GEN)if test -d $(top_srcdir)/.git; then			\
+	  (cd $(top_srcdir)/ &&						\
+	  ./gitlog-to-changelog	--strip-tab				\
+	    $(gen_start_commit).. &&					\
+	  echo) >> $(distdir)/cl-t &&					\
+	  for f in $(ChangeLog_files); do				\
+	    (cd $(top_srcdir)/ &&					\
+	    git show $(gen_start_commit):$$f) >> $(distdir)/cl-t &&	\
+	    rm -f $(distdir)/$$f &&					\
+	    mv $(distdir)/cl-t $(distdir)/$$f				\
+	    || exit $$?;						\
+	  done;								\
+	fi
