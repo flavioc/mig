@@ -540,6 +540,7 @@ rtAugmentArgKind(argument_t *arg)
      *  6) This is a dealloc arg, being returned.  The name can't be
      *	   stored directly into the msg_type, because the msg-type
      *	   field is a bit-field.
+     *  7) There is a payload-aware translate-in function defined.
      */
 
     if (((it->itOutTrans != strNULL) &&
@@ -555,7 +556,8 @@ rtAugmentArgKind(argument_t *arg)
 	((akIdent(arg->argKind) == akePoly) &&
 	 akCheck(arg->argKind, akbReturnSnd)) ||
 	((akIdent(arg->argKind) == akeDealloc) &&
-	 akCheck(arg->argKind, akbReturnSnd)))
+	 akCheck(arg->argKind, akbReturnSnd)) ||
+	(it->itInTransPayload != strNULL))
     {
 	arg->argKind = akRemFeature(arg->argKind, akbReplyCopy);
 	arg->argKind = akAddFeature(arg->argKind, akbVarNeeded);

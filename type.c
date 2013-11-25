@@ -118,6 +118,7 @@ itAlloc(void)
 	strNULL,		/* identifier_t itServerType */
 	strNULL,		/* identifier_t itTransType */
 	strNULL,		/* identifier_t itInTrans */
+	strNULL,		/* identifier_t itInTransPayload */
 	strNULL,		/* identifier_t itOutTrans */
 	strNULL,		/* identifier_t itDestructor */
     };
@@ -376,7 +377,9 @@ itCheckDecl(identifier_t name, ipc_type_t *it)
        limitations in Mig */
 
     if (it->itVarArray) {
-	if ((it->itInTrans != strNULL) || (it->itOutTrans != strNULL))
+	if ((it->itInTrans != strNULL) ||
+	    (it->itInTransPayload != strNULL) ||
+	    (it->itOutTrans != strNULL))
 	    error("%s: can't translate variable-sized arrays", name);
 
 	if (it->itDestructor != strNULL)
@@ -418,6 +421,10 @@ itPrintTrans(const ipc_type_t *it)
     if (it->itInTrans != strNULL)
        printf("\tInTran:\t\t%s %s(%s)\n",
 	      it->itTransType, it->itInTrans, it->itServerType);
+
+    if (it->itInTransPayload != strNULL)
+       printf("\tInTranPayload:\t\t%s %s\n",
+	      it->itTransType, it->itInTransPayload);
 
     if (it->itOutTrans != strNULL)
        printf("\tOutTran:\t%s %s(%s)\n",
@@ -556,6 +563,7 @@ itResetType(ipc_type_t *old)
     /* reset all special translation/destruction/type info */
 
     old->itInTrans = strNULL;
+    old->itInTransPayload = strNULL;
     old->itOutTrans = strNULL;
     old->itDestructor = strNULL;
     old->itUserType = strNULL;

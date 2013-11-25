@@ -138,6 +138,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>[Ss][Kk][Ii][Pp]			RETURN(sySkip);
 <Normal>[Ss][Tt][Rr][Uu][Cc][Tt]		RETURN(syStruct);
 <Normal>[Ii][Nn][Tt][Rr][Aa][Nn]		RETURN(syInTran);
+<Normal>[Ii][Nn][Tt][Rr][Aa][Nn][Pp][Aa][Yy][Ll][Oo][Aa][Dd] RETURN(syInTranPayload);
 <Normal>[Oo][Uu][Tt][Tt][Rr][Aa][Nn]		RETURN(syOutTran);
 <Normal>[Dd][Ee][Ss][Tt][Rr][Uu][Cc][Tt][Oo][Rr]	RETURN(syDestructor);
 <Normal>[Cc][Tt][Yy][Pp][Ee]				RETURN(syCType);

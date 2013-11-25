@@ -82,6 +82,7 @@ typedef union
 #define	syQString	319
 #define	syFileName	320
 #define	syIPCFlag	321
+#define	syInTranPayload	322
 
 
 extern YYSTYPE yylval;

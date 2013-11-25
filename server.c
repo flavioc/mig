@@ -587,14 +587,45 @@ static void
 WriteExtractArgValue(FILE *file, const argument_t *arg)
 {
     const ipc_type_t *it = arg->argType;
+    boolean_t have_payload;
 
     if (arg->argMultiplier > 1)
 	WriteCopyType(file, it, "%s", "/* %s */ %s / %d",
 		      arg->argVarName, InArgMsgField(arg), arg->argMultiplier);
-    else if (it->itInTrans != strNULL)
-	WriteCopyType(file, it, "%s", "/* %s */ %s(%s)",
-		      arg->argVarName, it->itInTrans, InArgMsgField(arg));
-    else
+    else if ((have_payload = (it->itInTransPayload != strNULL &&
+	       strcmp(arg->argMsgField, "Head.msgh_request_port") == 0)) ||
+	     it->itInTrans != strNULL) {
+
+	if (have_payload) {
+	    argument_t argPayload = *arg;
+	    argPayload.argMsgField = "Head.msgh_bits";
+	    fprintf(file,
+		    "\tif (MACH_MSGH_BITS_LOCAL (%s) == "
+		    "MACH_MSG_TYPE_PROTECTED_PAYLOAD)\n"
+		    "\t", InArgMsgField(&argPayload));
+
+	    argPayload.argMsgField = "Head.msgh_protected_payload";
+	    WriteCopyType(file, it, "%s", "/* %s */ %s(%s)",
+			  arg->argVarName, it->itInTransPayload,
+			  InArgMsgField(&argPayload));
+
+	    fprintf(file,
+		    "\telse\n"
+		    "\t");
+
+	    if (it->itInTrans == strNULL)
+		fprintf(file, "\t%s = %s;",
+			arg->argVarName, InArgMsgField(arg));
+	    else
+		WriteCopyType(file, it, "%s", "/* %s */ %s(%s)",
+			      arg->argVarName, it->itInTrans,
+			      InArgMsgField(arg));
+	} else {
+	    WriteCopyType(file, it, "%s", "/* %s */ %s(%s)",
+			  arg->argVarName, it->itInTrans,
+			  InArgMsgField(arg));
+	}
+    } else
 	WriteCopyType(file, it, "%s", "/* %s */ %s",
 		      arg->argVarName, InArgMsgField(arg));
     fprintf(file, "\n");

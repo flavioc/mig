@@ -107,6 +107,7 @@ typedef enum dealloc {
  *		cusertype: itUserType
  *		cservertype: itServerType
  *		intran: itTransType itInTrans(itServerType)
+ *		intranpayload: itTransType itInTransPayload
  *		outtran: itServerType itOutTrans(itTransType)
  *		destructor: itDestructor(itTransType);
  *
@@ -165,6 +166,7 @@ typedef struct ipc_type
     identifier_t itTransType;
 
     identifier_t itInTrans;	/* may be NULL */
+    identifier_t itInTransPayload;	/* may be NULL */
     identifier_t itOutTrans;	/* may be NULL */
     identifier_t itDestructor;	/* may be NULL */
 } ipc_type_t;

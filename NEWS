@@ -1,6 +1,13 @@
 2013-XX-XX
 Version 1.5
 
+* Add support for protected payloads.  The new `intranpayload' option
+  can be used to specify a translation function translating payloads
+  to values of the translated type.  This function will be used
+  instead of the `intran' function to to look up the receiving object
+  of a message in a server.  This makes it easy to use the protected
+  payloads introduced in GNU Mach 1.5.
+
 * Emit `X_server_routine' functions that can be inlined reducing the
   message dispatch overhead.
 

@@ -98,6 +98,8 @@
 %token	<string>	syFileName
 %token	<flag>		syIPCFlag
 
+%token	syInTranPayload
+
 %left	syPlus syMinus
 %left	syStar syDiv
 
@@ -364,6 +366,21 @@ TransTypeSpec		:	TypeSpec
 	warn("conflicting server types (%s, %s)",
 	     $$->itServerType, $7);
     $$->itServerType = $7;
+}
+			|	TransTypeSpec syInTranPayload syColon
+				syIdentifier syIdentifier
+{
+    $$ = $1;
+
+    if (($$->itTransType != strNULL) && !streql($$->itTransType, $4))
+	warn("conflicting translation types (%s, %s)",
+	     $$->itTransType, $4);
+    $$->itTransType = $4;
+
+    if (($$->itInTransPayload != strNULL) && !streql($$->itInTransPayload, $5))
+	warn("conflicting in-translation functions (%s, %s)",
+	     $$->itInTransPayload, $5);
+    $$->itInTransPayload = $5;
 }
 			|	TransTypeSpec syOutTran syColon syIdentifier
 				syIdentifier syLParen syIdentifier syRParen
