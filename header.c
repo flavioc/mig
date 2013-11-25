@@ -41,6 +41,7 @@ WriteIncludes(FILE *file)
 static void
 WriteDefines(FILE *file)
 {
+    (void) file;	/* Avoid the warning.  */
 }
 
 static void
