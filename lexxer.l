@@ -50,6 +50,9 @@ FileName	({QString}|{AString})
 #include "lexxer.h"
 #include "cpu.h"
 
+/* We do not need the input function.  */
+#define YY_NO_INPUT
+
 #define	stringize(x)	#x
 
 #ifdef	LDEBUG
