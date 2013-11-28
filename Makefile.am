@@ -5,7 +5,7 @@ bin_SCRIPTS = mig
 
 EXTRA_DIST = gensym.awk cpu.sym
 
-CLEANFILES = cpu.h *.sym[co]
+CLEANFILES = cpu.h *.sym[co] lexxer.c parser.c
 
 AWK_V = $(AWK_V_$(V))
 AWK_V_ = $(AWK_V_$(AM_DEFAULT_VERBOSITY))
