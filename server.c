@@ -133,6 +133,26 @@ WriteArrayEntries(FILE *file, const statement_t *stats)
 	fprintf(file, "\t\t\t0,\n");
 }
 
+void
+WriteSubsystemServerRoutine(FILE *file, const char *typeModifier)
+{
+    fprintf(file, "%s mig_routine_t %s_routine\n", typeModifier,
+	    ServerDemux);
+    fprintf(file, "\t(const mach_msg_header_t *InHeadP)\n");
+
+    fprintf(file, "{\n");
+    fprintf(file, "\tint msgh_id;\n");
+    fprintf(file, "\n");
+    fprintf(file, "\tmsgh_id = InHeadP->msgh_id - %d;\n", SubsystemBase);
+    fprintf(file, "\n");
+    fprintf(file, "\tif ((msgh_id > %d) || (msgh_id < 0))\n",
+	    rtNumber - 1);
+    fprintf(file, "\t\treturn 0;\n");
+    fprintf(file, "\n");
+    fprintf(file, "\treturn %s_routines[msgh_id];\n", ServerDemux);
+    fprintf(file, "}\n");
+}
+
 static void
 WriteEpilog(FILE *file, const statement_t *stats)
 {
@@ -199,20 +219,7 @@ WriteEpilog(FILE *file, const statement_t *stats)
     /*
      * Then, the <subsystem>_server_routine routine
      */
-    fprintf(file, "mig_external mig_routine_t %s_routine\n", ServerDemux);
-    fprintf(file, "\t(const mach_msg_header_t *InHeadP)\n");
-
-    fprintf(file, "{\n");
-    fprintf(file, "\tint msgh_id;\n");
-    fprintf(file, "\n");
-    fprintf(file, "\tmsgh_id = InHeadP->msgh_id - %d;\n", SubsystemBase);
-    fprintf(file, "\n");
-    fprintf(file, "\tif ((msgh_id > %d) || (msgh_id < 0))\n",
-	    rtNumber - 1);
-    fprintf(file, "\t\treturn 0;\n");
-    fprintf(file, "\n");
-    fprintf(file, "\treturn %s_routines[msgh_id];\n", ServerDemux);
-    fprintf(file, "}\n");
+    WriteSubsystemServerRoutine(file, "mig_external");
     fprintf(file, "\n");
 
     /* symtab */
