@@ -161,7 +161,7 @@ WriteEpilog(FILE *file, const statement_t *stats)
     /*
      * First, the symbol table
      */
-     fprintf(file, "static mig_routine_t %s_routines[] = {\n", ServerDemux);
+     fprintf(file, "mig_routine_t %s_routines[] = {\n", ServerDemux);
 
      WriteArrayEntries(file, stats);
 

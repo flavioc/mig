@@ -154,6 +154,8 @@ WriteServerHeader(FILE *file, const statement_t *stats)
     const char *protect = strconcat(SubsystemName, "_server_");
 
     WriteProlog(file, protect);
+    fprintf(file, "#include <mach/mig_errors.h>\n"); /* For mig_routine_t. */
+
     for (stat = stats; stat != stNULL; stat = stat->stNext)
 	switch (stat->stKind)
 	{
@@ -170,6 +172,14 @@ WriteServerHeader(FILE *file, const statement_t *stats)
 	    fatal("WriteServerHeader(): bad statement_kind_t (%d)",
 		  (int) stat->stKind);
 	}
+    fprintf(file, "\n");
+
+    /*
+     * Include the x_server_routine function so it can be inlined.
+     */
+    fprintf(file, "extern mig_routine_t %s_routines[];\n", ServerDemux);
+    WriteSubsystemServerRoutine(file, "extern inline");
+
     WriteEpilog(file, protect);
 }
 
