@@ -296,11 +296,11 @@ WriteVarDecls(FILE *file, const routine_t *rt)
     fprintf(file, "\n");
 
     if (!rt->rtSimpleFixedReply)
-	fprintf(file, "\tboolean_t msgh_simple;\n");
+	fprintf(file, "\tboolean_t msgh_simple = msgh_simple;\n");
     else if (!rt->rtSimpleCheckRequest)
     {
 	fprintf(file, "#if\tTypeCheck\n");
-	fprintf(file, "\tboolean_t msgh_simple;\n");
+	fprintf(file, "\tboolean_t msgh_simple = msgh_simple;\n");
 	fprintf(file, "#endif\t/* TypeCheck */\n");
 	fprintf(file, "\n");
     }
