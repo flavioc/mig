@@ -912,6 +912,11 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 		arg->argMsgField,
 		arg->argVarName,
 		it->itNumber);
+	    fprintf(file,
+		"\tif (OutP->%s < %d) OutP->%s += 1;\n",
+		arg->argCount->argMsgField,
+		it->itNumber,
+	        arg->argCount->argMsgField);
 	}
 	else {
 	    argument_t *count = arg->argCount;
