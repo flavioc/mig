@@ -1,3 +1,13 @@
+2013-XX-XX
+Version 1.5
+
+* Emit `X_server_routine' functions that can be inlined reducing the
+  message dispatch overhead.
+
+* Improve support for variable-sized c strings.
+
+* Fix a warning when compiling generated files.
+
 2013-09-27
 Version 1.4
 
