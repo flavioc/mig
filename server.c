@@ -1279,6 +1279,28 @@ WriteFieldDecl(FILE *file, const argument_t *arg)
 }
 
 static void
+WriteDefaultRoutine(FILE *file, const routine_t *rt)
+{
+    fprintf(file, "\n/* Default implementation of %s */\n",
+	    rt->rtServerName);
+
+    fprintf(file, "#ifdef\tMIG_EOPNOTSUPP\n");
+
+    fprintf(file, "%s __attribute__ ((weak))\n%s\n",
+	    ReturnTypeStr(rt), rt->rtServerName);
+    fprintf(file, "(\n");
+    WriteList(file, rt->rtArgs, WriteServerVarDecl,
+	      akbServerArg, ",\n", "\n");
+
+    if (rt->rtReturn == argNULL)
+	fprintf(file, ") {}\n");
+    else
+	fprintf(file, ") { return MIG_EOPNOTSUPP; }\n");
+
+    fprintf(file, "#endif\t/* MIG_EOPNOTSUPP */\n");
+}
+
+static void
 WriteRoutine(FILE *file, const routine_t *rt)
 {
     fprintf(file, "\n");
@@ -1346,6 +1368,8 @@ WriteRoutine(FILE *file, const routine_t *rt)
     }
 
     fprintf(file, "}\n");
+
+    WriteDefaultRoutine(file, rt);
 }
 
 void
