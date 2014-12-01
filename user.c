@@ -686,7 +686,7 @@ WriteRequestArgs(FILE *file, const routine_t *rt)
 static void
 WriteCheckIdentity(FILE *file, const routine_t *rt)
 {
-    fprintf(file, "\tif (OutP->Head.msgh_id != %d) {\n",
+    fprintf(file, "\tif (mig_unlikely (OutP->Head.msgh_id != %d)) {\n",
 	    rt->rtNumber + SubsystemBase + 100);
     fprintf(file, "\t\tif (OutP->Head.msgh_id == MACH_NOTIFY_SEND_ONCE)\n\t");
     WriteMsgError(file, rt, "MIG_SERVER_DIED");
@@ -708,16 +708,17 @@ WriteCheckIdentity(FILE *file, const routine_t *rt)
 	    fprintf(file, "\tmsgh_size = OutP->Head.msgh_size;\n\n");
 
 	fprintf(file,
-	    "\tif ((OutP->Head.msgh_bits & MACH_MSGH_BITS_COMPLEX) ||\n");
+	    "\tif (mig_unlikely ("
+	    "(OutP->Head.msgh_bits & MACH_MSGH_BITS_COMPLEX) ||\n");
 	if (rt->rtNoReplyArgs)
-	    fprintf(file, "\t    (OutP->Head.msgh_size != %d))\n",
+	    fprintf(file, "\t    (OutP->Head.msgh_size != %d)))\n",
 			rt->rtReplySize);
 	else {
 	    fprintf(file, "\t    ((msgh_size %s %d) &&\n",
 		(rt->rtNumReplyVar > 0) ? "<" : "!=",
 		rt->rtReplySize);
 	    fprintf(file, "\t     ((msgh_size != sizeof(mig_reply_header_t)) ||\n");
-	    fprintf(file, "\t      (OutP->RetCode == KERN_SUCCESS))))\n");
+	    fprintf(file, "\t      (OutP->RetCode == KERN_SUCCESS)))))\n");
 	}
     }
     else {
@@ -727,7 +728,7 @@ WriteCheckIdentity(FILE *file, const routine_t *rt)
 	fprintf(file, "\tmsgh_simple = !(OutP->Head.msgh_bits & MACH_MSGH_BITS_COMPLEX);\n");
 	fprintf(file, "\n");
 
-	fprintf(file, "\tif (((msgh_size %s %d)",
+	fprintf(file, "\tif (mig_unlikely (((msgh_size %s %d)",
 		(rt->rtNumReplyVar > 0) ? "<" : "!=",
 		rt->rtReplySize);
 
@@ -740,7 +741,7 @@ WriteCheckIdentity(FILE *file, const routine_t *rt)
 
 	fprintf(file, "\t    ((msgh_size != sizeof(mig_reply_header_t)) ||\n");
 	fprintf(file, "\t     !msgh_simple ||\n");
-	fprintf(file, "\t     (OutP->RetCode == KERN_SUCCESS)))\n");
+	fprintf(file, "\t     (OutP->RetCode == KERN_SUCCESS))))\n");
     }
     WriteMsgError(file, rt, "MIG_TYPE_ERROR");
     fprintf(file, "#endif\t/* TypeCheck */\n");
@@ -778,7 +779,7 @@ WriteTypeCheck(FILE *file, const argument_t *arg)
     }
     else
     {
-	fprintf(file, "\tif (");
+	fprintf(file, "\tif (mig_unlikely (");
 	if (!it->itIndefinite) {
 	    fprintf(file, "(OutP->%s%s.msgt_inline != %s) ||\n\t    ",
 		arg->argTTName,
@@ -806,7 +807,7 @@ WriteTypeCheck(FILE *file, const argument_t *arg)
 		    arg->argTTName,
 		    arg->argLongForm ? "l" : "",
 		    it->itNumber);
-	fprintf(file, "\t    (OutP->%s.msgt%s_size != %d))\n",
+	fprintf(file, "\t    (OutP->%s.msgt%s_size != %d)))\n",
 		arg->argTTName,
 		arg->argLongForm ? "l" : "",
 		it->itSize);
@@ -861,10 +862,10 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
     if (arg->argReplyPos == rt->rtMaxReplyPos)
     {
 	fprintf(file, "#if\tTypeCheck\n");
-	fprintf(file, "\tif (msgh_size != %d + (",
+	fprintf(file, "\tif (mig_unlikely (msgh_size != %d + (",
 		rt->rtReplySize);
 	WriteCheckArgSize(file, arg);
-	fprintf(file, "))\n");
+	fprintf(file, ")))\n");
 
 	WriteMsgError(file, rt, "MIG_TYPE_ERROR");
 	fprintf(file, "#endif\t/* TypeCheck */\n");
@@ -892,10 +893,12 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	   it won't underflow. */
 
 	if (LastVarArg)
-	    fprintf(file, "\tif (msgh_size != %d + msgh_size_delta)\n",
+	    fprintf(file,
+		"\tif (mig_unlikely (msgh_size != %d + msgh_size_delta))\n",
 		rt->rtReplySize);
 	else
-	    fprintf(file, "\tif (msgh_size < %d + msgh_size_delta)\n",
+	    fprintf(file,
+		"\tif (mig_unlikely (msgh_size < %d + msgh_size_delta))\n",
 		rt->rtReplySize);
 	WriteMsgError(file, rt, "MIG_TYPE_ERROR");
 

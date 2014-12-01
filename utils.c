@@ -60,6 +60,11 @@ WriteBogusDefines(FILE *file)
     fprintf(file, "#endif\n");
     fprintf(file, "\n");
 
+    fprintf(file, "#ifndef\tmig_unlikely\n");
+    fprintf(file, "#define\tmig_unlikely(X)\t__builtin_expect (!! (X), 0)\n");
+    fprintf(file, "#endif\n");
+    fprintf(file, "\n");
+
     fprintf(file, "#ifndef\tTypeCheck\n");
     fprintf(file, "#define\tTypeCheck 1\n");
     fprintf(file, "#endif\n");
@@ -70,11 +75,11 @@ WriteBogusDefines(FILE *file)
     fprintf(file, "#endif\n");
     fprintf(file, "\n");
 
-    fprintf(file, "#define BAD_TYPECHECK(type, check) ({\\\n");
+    fprintf(file, "#define BAD_TYPECHECK(type, check) mig_unlikely (({\\\n");
     fprintf(file,
 	    "  union { mach_msg_type_t t; unsigned32_t w; } _t, _c;\\\n");
     fprintf(file,
-	    "  _t.t = *(type); _c.t = *(check); _t.w != _c.w; })\n");
+	    "  _t.t = *(type); _c.t = *(check);_t.w != _c.w; }))\n");
 }
 
 void

@@ -402,16 +402,16 @@ WriteCheckHead(FILE *file, const routine_t *rt)
 	fprintf(file, "\tmsgh_simple = !(In0P->Head.msgh_bits & MACH_MSGH_BITS_COMPLEX);\n");
 
     if (rt->rtNumRequestVar > 0)
-	fprintf(file, "\tif ((msgh_size < %d)",
+	fprintf(file, "\tif (mig_unlikely ((msgh_size < %d)",
 		rt->rtRequestSize);
     else
-	fprintf(file, "\tif ((In0P->Head.msgh_size != %d)",
+	fprintf(file, "\tif (mig_unlikely ((In0P->Head.msgh_size != %d)",
 		rt->rtRequestSize);
 
     if (rt->rtSimpleCheckRequest)
 	fprintf(file, " ||\n\t    %s(In0P->Head.msgh_bits & MACH_MSGH_BITS_COMPLEX)",
 		rt->rtSimpleReceiveRequest ? "" : "!");
-    fprintf(file, ")\n");
+    fprintf(file, "))\n");
     WriteMsgError(file, "MIG_BAD_ARGUMENTS");
     fprintf(file, "#endif\t/* TypeCheck */\n");
     fprintf(file, "\n");
@@ -429,7 +429,7 @@ WriteTypeCheck(FILE *file, const argument_t *arg)
 		arg->argRequestPos, arg->argTTName, arg->argVarName);
     else
     {
-	fprintf(file, "\tif (");
+	fprintf(file, "\tif (mig_unlikely (");
 	if (!it->itIndefinite) {
 	    fprintf(file, "(In%dP->%s%s.msgt_inline != %s) ||\n\t    ",
 		arg->argRequestPos, arg->argTTName,
@@ -457,7 +457,7 @@ WriteTypeCheck(FILE *file, const argument_t *arg)
 		    arg->argRequestPos, arg->argTTName,
 		    arg->argLongForm ? "l" : "",
 		    it->itNumber);
-	fprintf(file, "\t    (In%dP->%s.msgt%s_size != %d))\n",
+	fprintf(file, "\t    (In%dP->%s.msgt%s_size != %d)))\n",
 		arg->argRequestPos, arg->argTTName,
 		arg->argLongForm ? "l" : "",
 		it->itSize);
@@ -515,9 +515,10 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
     if (arg->argRequestPos == rt->rtMaxRequestPos)
     {
 	fprintf(file, "#if\tTypeCheck\n");
-	fprintf(file, "\tif (msgh_size != %d + (", rt->rtRequestSize);
+	fprintf(file, "\tif (mig_unlikely (msgh_size != %d + (",
+		rt->rtRequestSize);
 	WriteCheckArgSize(file, arg);
-	fprintf(file, "))\n");
+	fprintf(file, ")))\n");
 
 	WriteMsgError(file, "MIG_BAD_ARGUMENTS");
 	fprintf(file, "#endif\t/* TypeCheck */\n");
@@ -545,10 +546,12 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	   it won't underflow. */
 
 	if (LastVarArg)
-	    fprintf(file, "\tif (msgh_size != %d + msgh_size_delta)\n",
+	    fprintf(file,
+		    "\tif (mig_unlikely (msgh_size != %d + msgh_size_delta))\n",
 		rt->rtRequestSize);
 	else
-	    fprintf(file, "\tif (msgh_size < %d + msgh_size_delta)\n",
+	    fprintf(file,
+		    "\tif (mig_unlikely (msgh_size < %d + msgh_size_delta))\n",
 		rt->rtRequestSize);
 	WriteMsgError(file, "MIG_BAD_ARGUMENTS");
 
