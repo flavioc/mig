@@ -26,7 +26,7 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_YACC
 
-yacc_is_bison=`yacc --version | head -n 1 | cut '-d ' -f1`
+yacc_is_bison=`$YACC --version | head -n 1 | cut '-d ' -f1`
 [if [ x"$yacc_is_bison" != x"bison" ]; then ]
 	AC_MSG_ERROR([yacc is not provided by bison, check your alternative conf or your packages])
 [fi]
