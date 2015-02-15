@@ -239,10 +239,16 @@ WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 	 *	use the element type and maximum size specified.
 	 *	Note arg->argCount->argMultiplier == btype->itNumber.
 	 */
-	fprintf(file, "\t\t%s %s[%d];",
+	fprintf(file, "\t\tunion {\n");
+	fprintf(file, "\t\t\t%s %s[%d];\n",
 			(*tfunc)(btype),
 			arg->argMsgField,
 			it->itNumber/btype->itNumber);
+	fprintf(file, "\t\t\t%s *%s%s;\n",
+			(*tfunc)(btype),
+			arg->argMsgField,
+			OOLPostfix);
+	fprintf(file, "\t\t};");
     }
     else
 	fprintf(file, "\t\t%s %s;", (*tfunc)(it), arg->argMsgField);

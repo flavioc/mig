@@ -53,6 +53,7 @@ extern const_string_t UserPrefix;
 extern const_string_t ServerDemux;
 extern const_string_t SubrPrefix;
 extern const_string_t RoutinePrefix;
+extern const_string_t OOLPostfix;
 
 extern int yylineno;
 extern string_t yyinname;

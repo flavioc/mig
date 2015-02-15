@@ -48,6 +48,7 @@ const_string_t UserPrefix = "";
 const_string_t ServerDemux = strNULL;
 const_string_t SubrPrefix = "";
 const_string_t RoutinePrefix = "";
+const_string_t OOLPostfix = "P";
 
 string_t yyinname;
 

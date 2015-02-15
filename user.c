@@ -447,9 +447,9 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 			    arg->argLongForm ? ".msgtl_header" : "",
 			    arg->argDealloc->argByReferenceUser ? "*" : "",
 			    arg->argDealloc->argVarName);
-		fprintf(file, "\t\t*((%s **)InP->%s) = %s%s;\n",
-			FetchUserType(btype),
+		fprintf(file, "\t\tInP->%s%s = %s%s;\n",
 			arg->argMsgField,
+			OOLPostfix,
 			ref, arg->argVarName);
 		if (!arg->argRoutine->rtSimpleFixedRequest)
 		    fprintf(file, "\t\tmsgh_simple = FALSE;\n");
@@ -951,9 +951,10 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 	    fprintf(file, "\tif (!OutP->%s%s.msgt_inline)\n",
 		    arg->argTTName,
 		    arg->argLongForm ? ".msgtl_header" : "");
-	    fprintf(file, "\t    %s%s = *((%s **)OutP->%s);\n",
+	    fprintf(file, "\t    %s%s = OutP->%s%s;\n",
 		    ref, arg->argVarName,
-		    FetchUserType(btype), arg->argMsgField);
+		    arg->argMsgField,
+		    OOLPostfix);
 	    fprintf(file, "\telse if (OutP->%s", count->argMsgField);
 	    if (btype->itNumber > 1)
 		fprintf(file, " / %d", btype->itNumber);

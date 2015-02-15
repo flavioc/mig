@@ -777,9 +777,9 @@ WriteServerCallArg(FILE *file, const argument_t *arg)
 		    arg->argTTName,
 		    arg->argLongForm ? ".msgtl_header" : "");
 	    fprintf(file, "? %s ", InArgMsgField(arg));
-	    fprintf(file, ": *((%s **)%s)",
-			FetchServerType(arg->argType->itElement),
-			InArgMsgField(arg));
+	    fprintf(file, ": %s%s",
+		    InArgMsgField(arg),
+		    OOLPostfix);
 	}
 	else
 	    fprintf(file, "%s", InArgMsgField(arg));
@@ -816,8 +816,8 @@ WriteDestroyArg(FILE *file, const argument_t *arg)
 		arg->argRequestPos,
 		arg->argTTName,
 		arg->argLongForm ? ".msgtl_header" : "");
-	fprintf(file, "\t\t\t%smig_deallocate(* (vm_offset_t *) %s, ",
-		SubrPrefix, InArgMsgField(arg));
+	fprintf(file, "\t\t\t%smig_deallocate((vm_offset_t) %s%s, ",
+		SubrPrefix, InArgMsgField(arg), OOLPostfix);
 	if (multiplier > 1)
 	    fprintf(file, "%d * ", multiplier);
 	fprintf(file, " %s);\n", InArgMsgField(count));
@@ -978,9 +978,9 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 			    arg->argTTName,
 			    arg->argLongForm ? ".msgtl_header" : "",
 			    arg->argDealloc->argVarName);
-		fprintf(file, "\t\t*((%s **)OutP->%s) = %sP;\n",
-			FetchServerType(btype),
+		fprintf(file, "\t\tOutP->%s%s = %sP;\n",
 			arg->argMsgField,
+			OOLPostfix,
 			arg->argVarName);
 		if (!arg->argRoutine->rtSimpleFixedReply)
 		    fprintf(file, "\t\tmsgh_simple = FALSE;\n");
@@ -1203,9 +1203,9 @@ WritePackArg(FILE *file, const argument_t *arg)
 			arg->argTTName,
 			arg->argLongForm ? ".msgtl_header" : "",
 			arg->argDealloc->argVarName);
-	    fprintf(file, "\t\t*((%s **)OutP->%s) = %sP;\n",
-			FetchServerType(it->itElement),
+	    fprintf(file, "\t\tOutP->%s%s = %sP;\n",
 			arg->argMsgField,
+			OOLPostfix,
 			arg->argVarName);
 	    if (!arg->argRoutine->rtSimpleFixedReply)
 		fprintf(file, "\t\tmsgh_simple = FALSE;\n");
