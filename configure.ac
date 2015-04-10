@@ -2,7 +2,7 @@ dnl configure script for GNU MIG.
 
 AC_PREREQ([2.53])
 
-AC_INIT([GNU MIG], [1.4], [bug-hurd@gnu.org])
+AC_INIT([GNU MIG], [1.5], [bug-hurd@gnu.org])
 AC_CONFIG_SRCDIR([migcom.c])
 AC_CONFIG_AUX_DIR([build-aux])
 
