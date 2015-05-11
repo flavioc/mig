@@ -216,12 +216,6 @@ WriteEpilog(FILE *file, const statement_t *stats)
     fprintf(file, "}\n");
     fprintf(file, "\n");
 
-    /*
-     * Then, the <subsystem>_server_routine routine
-     */
-    WriteSubsystemServerRoutine(file, "mig_external");
-    fprintf(file, "\n");
-
     /* symtab */
 
     if (GenSymTab) {
