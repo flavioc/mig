@@ -1,3 +1,8 @@
+Version 1.6 (2015-10-XX)
+
+* Mig now emits RPC lookup functions that are declared `static inline'
+  improving compatibility with newer dialects of C.
+
 Version 1.5 (2015-04-10)
 
 * Add support for protected payloads.  The new `intranpayload' option
