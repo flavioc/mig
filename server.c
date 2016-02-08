@@ -749,6 +749,18 @@ WriteServerCallArg(FILE *file, const argument_t *arg)
     const ipc_type_t *it = arg->argType;
     boolean_t NeedClose = FALSE;
 
+    if (IsKernelServer) {
+        /* If the type (incl. array) is handled differently, then we need to
+           cast it to the real argument type.  */
+        if (it->itKernelPort ||
+            it->itInLine && it->itVarArray && it->itElement->itKernelPort) {
+            /* Some arguments are transformed into the correct type already.  */
+            if (!akCheckAll(arg->argKind, akbSendRcv|akbVarNeeded))
+              fprintf(file, "(%s%s)", it->itTransType,
+                      arg->argByReferenceServer ? "*" : "");
+        }
+    }
+
     if (arg->argByReferenceServer)
 	fprintf(file, "&");
 

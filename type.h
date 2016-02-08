@@ -129,6 +129,10 @@ typedef enum dealloc {
  *
  * itElement points to any substructure that the type may have.
  * It is only used with variable-sized array types.
+ *
+ * itKernelPort is used only on kernel interfaces and is set to TRUE when
+ * the initial type is mach_port_t, which in turn is actually translated to
+ * internal port pointers (ipc_port_t).
  */
 
 typedef struct ipc_type
@@ -158,6 +162,7 @@ typedef struct ipc_type
     boolean_t itString;
     boolean_t itVarArray;
     boolean_t itIndefinite;
+    boolean_t itKernelPort;
 
     struct ipc_type *itElement;	/* may be NULL */
 

@@ -219,16 +219,19 @@ itCalculateNameInfo(ipc_type_t *it)
 	(((it->itInName == MACH_MSG_TYPE_POLYMORPHIC) &&
 	  (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)) ||
 	 MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
-	 MACH_MSG_TYPE_PORT_ANY(it->itOutName)))
+	 MACH_MSG_TYPE_PORT_ANY(it->itOutName))) {
 	it->itServerType = "ipc_port_t";
-
-    if (IsKernelUser &&
+        it->itKernelPort = TRUE;
+    } else if (IsKernelUser &&
 	streql(it->itUserType, "mach_port_t") &&
 	(((it->itInName == MACH_MSG_TYPE_POLYMORPHIC) &&
 	  (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)) ||
 	 MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
-	 MACH_MSG_TYPE_PORT_ANY(it->itOutName)))
+	 MACH_MSG_TYPE_PORT_ANY(it->itOutName))) {
 	it->itUserType = "ipc_port_t";
+        it->itKernelPort = TRUE;
+    } else
+        it->itKernelPort = FALSE;
 
     if (it->itTransType == strNULL)
 	it->itTransType = it->itServerType;
