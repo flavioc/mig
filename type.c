@@ -113,6 +113,7 @@ itAlloc(void)
 	FALSE,			/* boolean_t itString */
 	FALSE,			/* boolean_t itVarArray */
 	FALSE,			/* boolean_t itIndefinite */
+	FALSE,			/* boolean_t itKernelPort */
 	itNULL,			/* ipc_type_t *itElement */
 	strNULL,		/* identifier_t itUserType */
 	strNULL,		/* identifier_t itServerType */
