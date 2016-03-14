@@ -85,6 +85,8 @@ FileName	({QString}|{AString})
 
 extern YYSTYPE yylval;		/* added by rm */
 
+extern void yyerror(const char *);
+
 int lineno;
 char *inname;
 

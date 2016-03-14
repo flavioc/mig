@@ -3,9 +3,11 @@
 libexec_PROGRAMS = migcom
 bin_SCRIPTS = mig
 
+AM_YFLAGS = -d
+
 EXTRA_DIST = gensym.awk cpu.sym
 
-CLEANFILES = cpu.h *.sym[co] lexxer.c parser.c
+CLEANFILES = cpu.h *.sym[co] lexxer.c parser.c parser.h
 
 AWK_V = $(AWK_V_$(V))
 AWK_V_ = $(AWK_V_$(AM_DEFAULT_VERBOSITY))
@@ -28,6 +30,8 @@ SUFFIXES = .h .symo .symc .sym
 	$(AM_V_GEN) sed -e '/^[^*].*$$/d' -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' \
 	    $< > $@
 cpu.symc: $(srcdir)/gensym.awk
+
+lexxer.c: parser.h
 
 $(migcom_OBJECTS): cpu.h
 
