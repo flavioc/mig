@@ -77,7 +77,7 @@ WriteBogusDefines(FILE *file)
 
     fprintf(file, "#define BAD_TYPECHECK(type, check) mig_unlikely (({\\\n");
     fprintf(file,
-	    "  union { mach_msg_type_t t; unsigned32_t w; } _t, _c;\\\n");
+	    "  union { mach_msg_type_t t; uint32_t w; } _t, _c;\\\n");
     fprintf(file,
 	    "  _t.t = *(type); _c.t = *(check);_t.w != _c.w; }))\n");
 }
