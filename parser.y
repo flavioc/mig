@@ -27,9 +27,6 @@
 %token	sySkip
 %token	syRoutine
 %token	sySimpleRoutine
-%token	sySimpleProcedure
-%token	syProcedure
-%token	syFunction
 
 %token	sySubsystem
 %token	syKernelUser
@@ -111,7 +108,6 @@
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
-%type	<routine> Procedure SimpleProcedure Function
 %type	<direction> Direction
 %type	<argument> Argument Arguments ArgumentList
 %type	<flag> IPCFlags
@@ -582,9 +578,6 @@ IntExp			: 	IntExp	syPlus	IntExp
  
 RoutineDecl		:	Routine			{ $$ = $1; }
 			|	SimpleRoutine		{ $$ = $1; }
-			|	Procedure		{ $$ = $1; }
-			|	SimpleProcedure		{ $$ = $1; }
-			|	Function		{ $$ = $1; }
 			;
 
 Routine			:	syRoutine syIdentifier Arguments
@@ -593,18 +586,6 @@ Routine			:	syRoutine syIdentifier Arguments
 
 SimpleRoutine		:	sySimpleRoutine syIdentifier Arguments
 				{ $$ = rtMakeSimpleRoutine($2, $3); }
-			;
-
-Procedure		:	syProcedure syIdentifier Arguments
-				{ $$ = rtMakeProcedure($2, $3); }
-			;
-
-SimpleProcedure		:	sySimpleProcedure syIdentifier Arguments
-				{ $$ = rtMakeSimpleProcedure($2, $3); }
-			;
-
-Function		:	syFunction syIdentifier Arguments ArgumentType
-				{ $$ = rtMakeFunction($2, $3, $4); }
 			;
 
 Arguments		:	syLParen syRParen

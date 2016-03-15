@@ -59,7 +59,6 @@ rtAlloc(void)
 	fatal("rtAlloc(): %s", unix_error_string(errno));
     new->rtNumber = rtNumber++;
     new->rtName = strNULL;
-    new->rtErrorName = strNULL;
     new->rtUserName = strNULL;
     new->rtServerName = strNULL;
 
@@ -136,54 +135,6 @@ rtMakeSimpleRoutine(identifier_t name, argument_t *args)
     return rt;
 }
 
-routine_t *
-rtMakeProcedure(identifier_t name, argument_t *args)
-{
-    routine_t *rt = rtAlloc();
-
-    rt->rtName = name;
-    rt->rtKind = rkProcedure;
-    rt->rtArgs = args;
-
-    warn("Procedure %s: obsolete routine kind", name);
-
-    return rt;
-}
-
-routine_t *
-rtMakeSimpleProcedure(identifier_t name, argument_t *args)
-{
-    routine_t *rt = rtAlloc();
-
-    rt->rtName = name;
-    rt->rtKind = rkSimpleProcedure;
-    rt->rtArgs = args;
-
-    warn("SimpleProcedure %s: obsolete routine kind", name);
-
-    return rt;
-}
-
-routine_t *
-rtMakeFunction(identifier_t name, argument_t *args, ipc_type_t *type)
-{
-    routine_t *rt = rtAlloc();
-    argument_t *ret = argAlloc();
-
-    ret->argName = name;
-    ret->argKind = akReturn;
-    ret->argType = type;
-    ret->argNext = args;
-
-    rt->rtName = name;
-    rt->rtKind = rkFunction;
-    rt->rtArgs = ret;
-
-    warn("Function %s: obsolete routine kind", name);
-
-    return rt;
-}
-
 const char *
 rtRoutineKindToStr(routine_kind_t rk)
 {
@@ -193,12 +144,6 @@ rtRoutineKindToStr(routine_kind_t rk)
 	return "Routine";
       case rkSimpleRoutine:
 	return "SimpleRoutine";
-      case rkProcedure:
-	return "Procedure";
-      case rkSimpleProcedure:
-	return "SimpleProcedure";
-      case rkFunction:
-	return "Function";
       default:
 	fatal("rtRoutineKindToStr(%d): not a routine_kind_t", rk);
 	/*NOTREACHED*/
@@ -290,12 +235,7 @@ rtPrintRoutine(const routine_t *rt)
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext)
 	rtPrintArg(arg);
 
-    if (rt->rtKind == rkFunction)
-	printf("): %s\n", rt->rtReturn->argType->itName);
-    else
-	printf(")\n");
-
-    printf("\n");
+    printf(")\n");
 }
 
 /*
@@ -932,15 +872,10 @@ rtCheckArgTypes(routine_t *rt)
 	error("%s %s doesn't have a server port argument",
 	      rtRoutineKindToStr(rt->rtKind), rt->rtName);
 
-    if ((rt->rtKind == rkFunction) &&
-	(rt->rtReturn == argNULL))
-	error("Function %s doesn't have a return arg", rt->rtName);
+    if (rt->rtReturn != argNULL)
+	error("routine %s has a return arg", rt->rtName);
 
-    if ((rt->rtKind != rkFunction) &&
-	(rt->rtReturn != argNULL))
-	error("non-function %s has a return arg", rt->rtName);
-
-    if ((rt->rtReturn == argNULL) && !rt->rtProcedure)
+    if (rt->rtReturn == argNULL)
 	rt->rtReturn = rt->rtRetCode;
 
     rt->rtServerReturn = rt->rtReturn;
@@ -1250,12 +1185,7 @@ rtCheckRoutine(routine_t *rt)
 {
     /* Initialize random fields. */
 
-    rt->rtErrorName = ErrorProc;
-    rt->rtOneWay = ((rt->rtKind == rkSimpleProcedure) ||
-		    (rt->rtKind == rkSimpleRoutine));
-    rt->rtProcedure = ((rt->rtKind == rkProcedure) ||
-		       (rt->rtKind == rkSimpleProcedure));
-    rt->rtUseError = rt->rtProcedure || (rt->rtKind == rkFunction);
+    rt->rtOneWay = (rt->rtKind == rkSimpleRoutine);
     rt->rtServerName = strconcat(ServerPrefix, rt->rtName);
     rt->rtServerName = strconcat(RoutinePrefix, rt->rtServerName);
     rt->rtUserName = strconcat(UserPrefix, rt->rtName);
@@ -1342,8 +1272,5 @@ rtCheckRoutine(routine_t *rt)
     rtCheckDestroy(rt);
     rtAddByReference(rt);
 
-    if (rt->rtKind == rkFunction)
-	rt->rtNoReplyArgs = FALSE;
-    else
-	rt->rtNoReplyArgs = !rtCheckMask(rt->rtArgs, akbReturnSnd);
+    rt->rtNoReplyArgs = !rtCheckMask(rt->rtArgs, akbReturnSnd);
 }

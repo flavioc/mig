@@ -108,9 +108,6 @@ static void doSharp(const char *body); /* process body of # directives */
 %%
 
 <Normal>(?i:routine)		RETURN(syRoutine);
-<Normal>(?i:function)		RETURN(syFunction);
-<Normal>(?i:procedure)		RETURN(syProcedure);
-<Normal>(?i:simpleprocedure)	RETURN(sySimpleProcedure);
 <Normal>(?i:simpleroutine)	RETURN(sySimpleRoutine);
 <Normal>(?i:subsystem)		RETURN(sySubsystem);
 <Normal>(?i:msgoption)		RETURN(syMsgOption);

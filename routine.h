@@ -264,7 +264,6 @@ typedef u_int  arg_kind_t;
 
 typedef struct argument
 {
-    /* if argKind == akReturn, then argName is name of the function */
     identifier_t argName;
     struct argument *argNext;
 
@@ -305,18 +304,14 @@ typedef struct argument
 
 /*
  * The various routine kinds' peculiarities are abstracted by rtCheckRoutine
- * into attributes like rtOneWay, rtProcedure, etc.  These are what
- * code generation should use.  It is Bad Form for code generation to
- * test rtKind.
+ * into attributes like rtOneWay, etc.  These are what code generation should
+ * use.  It is bad Form for code generation to test rtKind.
  */
 
 typedef enum
 {
     rkRoutine,
     rkSimpleRoutine,
-    rkSimpleProcedure,
-    rkProcedure,
-    rkFunction,
 } routine_kind_t;
 
 typedef struct routine
@@ -329,12 +324,7 @@ typedef struct routine
     identifier_t rtUserName;	/* user-visible name (UserPrefix + Name) */
     identifier_t rtServerName;	/* server-side name (ServerPrefix + Name) */
 
-    /* rtErrorName is only used for Procs, SimpleProcs, & Functions */
-    identifier_t rtErrorName;	/* error-handler name */
-
-    boolean_t rtOneWay;		/* SimpleProcedure or SimpleRoutine */
-    boolean_t rtProcedure;	/* Procedure or SimpleProcedure */
-    boolean_t rtUseError;	/* Procedure or Function */
+    boolean_t rtOneWay;		/* TRUE for SimpleRoutine */
 
     boolean_t rtSimpleFixedRequest;	/* fixed msg-simple value in request */
     boolean_t rtSimpleSendRequest;	/* in any case, initial value */
@@ -362,7 +352,7 @@ typedef struct routine
     argument_t *rtRequestPort;	/* always non-NULL, defaults to first arg */
     argument_t *rtUReplyPort;	/* always non-NULL, defaults to Mig-supplied */
     argument_t *rtSReplyPort;	/* always non-NULL, defaults to Mig-supplied */
-    argument_t *rtReturn;	/* non-NULL unless rtProcedure */
+    argument_t *rtReturn;	/* non-NULL */
     argument_t *rtServerReturn;	/* NULL or rtReturn  */
     argument_t *rtRetCode;	/* always non-NULL */
     argument_t *rtWaitTime;	/* if non-NULL, will use MACH_RCV_TIMEOUT */
@@ -388,10 +378,6 @@ extern boolean_t rtCheckMaskFunction(const argument_t *args, u_int mask,
 
 extern routine_t *rtMakeRoutine(identifier_t name, argument_t *args);
 extern routine_t *rtMakeSimpleRoutine(identifier_t name, argument_t *args);
-extern routine_t *rtMakeProcedure(identifier_t name, argument_t *args);
-extern routine_t *rtMakeSimpleProcedure(identifier_t name, argument_t *args);
-extern routine_t *rtMakeFunction(identifier_t name, argument_t *args,
-				 ipc_type_t *type);
 
 extern void rtPrintRoutine(const routine_t *rt);
 extern void rtCheckRoutine(routine_t *rt);

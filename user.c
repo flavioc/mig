@@ -213,7 +213,7 @@ WriteVarDecls(FILE *file, const routine_t *rt)
 	fprintf(file, "\tReply *OutP = &Mess.Out;\n");
     fprintf(file, "\n");
 
-    if (!rt->rtOneWay || rt->rtProcedure)
+    if (!rt->rtOneWay)
 	fprintf(file, "\tmach_msg_return_t msg_result;\n");
 
     if (!rt->rtSimpleFixedRequest)
@@ -252,11 +252,9 @@ WriteVarDecls(FILE *file, const routine_t *rt)
 static void
 WriteMsgError(FILE *file, const routine_t *rt, const char *error_msg)
 {
-    if (rt->rtProcedure)
-	fprintf(file, "\t\t{ %s(%s); return; }\n", rt->rtErrorName, error_msg);
-    else if (rt->rtReturn != rt->rtRetCode)
+    if (rt->rtReturn != rt->rtRetCode)
     {
-	fprintf(file, "\t\t{ %s(%s); ", rt->rtErrorName, error_msg);
+	fprintf(file, "\t\t{ (%s); ", error_msg);
 	if (rt->rtNumReplyVar > 0)
 	    fprintf(file, "OutP = &Mess.Out; ");
 	fprintf(file, "return OutP->%s; }\n", rt->rtReturn->argMsgField);
@@ -267,16 +265,12 @@ WriteMsgError(FILE *file, const routine_t *rt, const char *error_msg)
 
 /*************************************************************
  *   Writes the send call when there is to be no subsequent
- *   receive. Called by WriteRoutine for SimpleProcedures
- *   or SimpleRoutines
+ *   receive. Called by WriteRoutine for SimpleRoutines.
  *************************************************************/
 static void
 WriteMsgSend(FILE *file, const routine_t *rt)
 {
-    const char *MsgResult = (rt->rtProcedure)
-			? "msg_result ="
-			: "return";
-
+    const char *MsgResult = "return";
     char SendSize[24];
 
     if (rt->rtNumRequestVar == 0)
@@ -300,12 +294,6 @@ WriteMsgSend(FILE *file, const routine_t *rt)
 	fprintf(file,
 		" MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);\n"
 		);
-    }
-
-    if (rt->rtProcedure)
-    {
-	fprintf(file, "\tif (msg_result != MACH_MSG_SUCCESS)\n");
-	WriteMsgError(file, rt, "msg_result");
     }
 }
 
@@ -342,7 +330,7 @@ WriteMsgCheckReceive(FILE *file, const routine_t *rt, const char *success)
 /*************************************************************
  *  Writes the rpc call and the code to check for errors.
  *  This is the default code to be generated. Called by WriteRoutine
- *  for all routine types except SimpleProcedure and SimpleRoutine.
+ *  for all routine types except SimpleRoutine.
  *************************************************************/
 static void
 WriteMsgRPC(FILE *file, const routine_t *rt)
@@ -1213,12 +1201,8 @@ WriteRoutine(FILE *file, const routine_t *rt)
 	else {
 	    WriteReplyArgs(file, rt);
 
-	    /* return the return value, if any */
-
-	    if (rt->rtProcedure)
-		fprintf(file, "\t/* Procedure - no return needed */\n");
-	    else
-		WriteReturnValue(file, rt);
+	    /* return the return value */
+            WriteReturnValue(file, rt);
 	}
     }
 
