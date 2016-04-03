@@ -53,8 +53,6 @@ FileName	({QString}|{AString})
 /* We do not need the input function.  */
 #define YY_NO_INPUT
 
-#define	stringize(x)	#x
-
 #ifdef	LDEBUG
 #define RETURN(sym)							\
 {									\
@@ -68,14 +66,22 @@ FileName	({QString}|{AString})
 #define	TPRETURN(intype, outtype, tsize)				\
 {									\
     yylval.symtype.innumber = (intype);					\
-    yylval.symtype.instr = stringize(intype);				\
+    yylval.symtype.instr = #intype;					\
     yylval.symtype.outnumber = (outtype);				\
-    yylval.symtype.outstr = stringize(outtype);				\
+    yylval.symtype.outstr = #outtype;					\
     yylval.symtype.size = (tsize);					\
     RETURN(sySymbolicType);						\
 }
 
-#define	TRETURN(type, tsize)	TPRETURN(type,type,tsize)
+#define	TRETURN(type, tsize)						\
+{									\
+    yylval.symtype.innumber = (type);					\
+    yylval.symtype.instr = #type;					\
+    yylval.symtype.outnumber = (type);					\
+    yylval.symtype.outstr = #type;					\
+    yylval.symtype.size = (tsize);					\
+    RETURN(sySymbolicType);						\
+}
 
 #define	FRETURN(val)							\
 {									\
