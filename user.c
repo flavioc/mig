@@ -497,7 +497,7 @@ WriteArgSize(FILE *file, const argument_t *arg)
 	fprintf(file, "(InP->%s%s.msgt_inline) ? ",
 		arg->argTTName, arg->argLongForm ? ".msgtl_header" : "");
     }
-    if (bsize % 4 != 0)
+    if (bsize % word_size != 0)
 	fprintf(file, "(");
 
     if (bsize > 1)
@@ -513,11 +513,11 @@ WriteArgSize(FILE *file, const argument_t *arg)
 		count->argVarName);
 
     /*
-     * If the base type size is not a multiple of sizeof(int) [4],
+     * If the base type size is not a multiple of word_size,
      * we have to round up.
      */
-    if (bsize % 4 != 0)
-	fprintf(file, " + 3) & ~3");
+    if (bsize % word_size != 0)
+	fprintf(file, " + %d) & ~%d", word_size - 1, word_size - 1);
 
     if (ptype->itIndefinite) {
 	fprintf(file, " : sizeof(%s *)",
@@ -821,7 +821,7 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
 		arg->argTTName, arg->argLongForm ? ".msgtl_header" : "");
     }
 
-    if (btype->itTypeSize % 4 != 0)
+    if (btype->itTypeSize % word_size != 0)
 	fprintf(file, "(");
 
     if (multiplier > 1)
@@ -829,10 +829,10 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
 
     fprintf(file, "OutP->%s", count->argMsgField);
 
-    /* If the base type size of the data field isn`t a multiple of 4,
+    /* If the base type size of the data field isn`t a multiple of word_size,
        we have to round up. */
-    if (btype->itTypeSize % 4 != 0)
-	fprintf(file, " + 3) & ~3");
+    if (btype->itTypeSize % word_size != 0)
+	fprintf(file, " + %d) & ~%d", word_size - 1, word_size - 1);
 
     if (ptype->itIndefinite)
 	fprintf(file, " : sizeof(%s *)", FetchUserType(btype));
@@ -867,8 +867,8 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	boolean_t LastVarArg = arg->argReplyPos+1 == rt->rtNumReplyVar;
 
 	/* calculate the actual size in bytes of the data field.  note
-	   that this quantity must be a multiple of four.  hence, if
-	   the base type size isn't a multiple of four, we have to
+	   that this quantity must be a multiple of word_size.  hence, if
+	   the base type size isn't a multiple of word_size, we have to
 	   round up.  note also that btype->itNumber must
 	   divide btype->itTypeSize (see itCalculateSizeInfo). */
 
@@ -1116,7 +1116,7 @@ WriteReturnValue(FILE *file, const routine_t *rt)
 /*************************************************************
  *  Writes the elements of the message type declaration: the
  *  msg_type structure, the argument itself and any padding
- *  that is required to make the argument a multiple of 4 bytes.
+ *  that is required to make the argument a multiple of word_size bytes.
  *  Called by WriteRoutine for all the arguments in the request
  *  message first and then the reply message.
  *************************************************************/

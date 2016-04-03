@@ -155,7 +155,7 @@ itCalculateSizeInfo(ipc_type_t *it)
     if (it->itInLine)
     {
 	u_int bytes = (it->itNumber * it->itSize + 7) / 8;
-	u_int padding = (4 - bytes%4)%4;
+	u_int padding = (word_size - bytes % word_size) % word_size;
 
 	it->itTypeSize = bytes;
 	it->itPadSize = padding;

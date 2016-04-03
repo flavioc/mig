@@ -479,7 +479,7 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
 		arg->argLongForm ? ".msgtl_header" : "");
     }
 
-    if (btype->itTypeSize % 4 != 0)
+    if (btype->itTypeSize % word_size != 0)
 	fprintf(file, "(");
 
     if (multiplier > 1)
@@ -487,10 +487,10 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
 
     fprintf(file, "In%dP->%s", arg->argRequestPos, count->argMsgField);
 
-    /* If the base type size of the data field isn`t a multiple of 4,
+    /* If the base type size of the data field isn`t a multiple of word_size,
        we have to round up. */
-    if (btype->itTypeSize % 4 != 0)
-	fprintf(file, " + 3) & ~3");
+    if (btype->itTypeSize % word_size != 0)
+	fprintf(file, " + %d) & ~%d", word_size - 1, word_size - 1);
 
     if (ptype->itIndefinite) {
 	fprintf(file, " : sizeof(%s *)", FetchServerType(btype));
@@ -526,8 +526,8 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	boolean_t LastVarArg = arg->argRequestPos+1 == rt->rtNumRequestVar;
 
 	/* calculate the actual size in bytes of the data field.  note
-	   that this quantity must be a multiple of four.  hence, if
-	   the base type size isn't a multiple of four, we have to
+	   that this quantity must be a multiple of word_size.  hence, if
+	   the base type size isn't a multiple of word_size, we have to
 	   round up.  note also that btype->itNumber must
 	   divide btype->itTypeSize (see itCalculateSizeInfo). */
 
@@ -1083,7 +1083,7 @@ WriteArgSize(FILE *file, const argument_t *arg)
 		arg->argLongForm ? ".msgtl_header" : "");
     }
 
-    if (bsize % 4 != 0)
+    if (bsize % word_size != 0)
 	fprintf(file, "(");
 
     if (bsize > 1)
@@ -1096,11 +1096,11 @@ WriteArgSize(FILE *file, const argument_t *arg)
 	fprintf(file, "%s", count->argVarName);
 
     /*
-     * If the base type size is not a multiple of sizeof(int) [4],
+     * If the base type size is not a multiple of word_size,
      * we have to round up.
      */
-    if (bsize % 4 != 0)
-	fprintf(file, " + 3) & ~3");
+    if (bsize % word_size != 0)
+	fprintf(file, " + %d) & ~%d", word_size - 1, word_size - 1);
 
     if (ptype->itIndefinite) {
 	fprintf(file, " : sizeof(%s *)",
