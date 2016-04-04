@@ -47,6 +47,7 @@ WriteIncludes(FILE *file)
     fprintf(file, "#include <mach/mig_support.h>\n");
     if (IsKernelServer)
 	fprintf(file, "#include <ipc/ipc_port.h>\n");
+    fprintf(file, "#include <stdint.h>\n");
     fprintf(file, "\n");
 }
 

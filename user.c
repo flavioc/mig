@@ -92,6 +92,7 @@ WriteIncludes(FILE *file)
     fprintf(file, "#include <mach/msg_type.h>\n");
     if (IsKernelUser)
 	fprintf(file, "#include <kern/ipc_mig.h>\n");
+    fprintf(file, "#include <stdint.h>\n");
     fprintf(file, "\n");
 }
 
