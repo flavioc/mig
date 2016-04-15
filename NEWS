@@ -1,3 +1,17 @@
+Version 1.7 (2016-04-XX)
+
+* The generated code uses integer types from 'stdint.h' now instead of
+  the old Mach types.
+
+* Code that was hard-coding the word size has been identified and
+  fixed.
+
+* Support for the obsolete kinds of RPC routines 'functions',
+  'procedures', and 'simple procedures' has been removed.
+
+* MIG now emits code that casts objects translated from capabilities
+  to the correct C type.
+
 Version 1.6 (2015-10-31)
 
 * MIG now emits RPC lookup functions that are declared `static inline'
