@@ -9,6 +9,8 @@ EXTRA_DIST = gensym.awk cpu.sym
 
 CLEANFILES = cpu.h *.sym[co] lexxer.c parser.c parser.h
 
+SUBDIRS = tests
+
 AWK_V = $(AWK_V_$(V))
 AWK_V_ = $(AWK_V_$(AM_DEFAULT_VERBOSITY))
 AWK_V_0 = @echo "  AWK    $@";

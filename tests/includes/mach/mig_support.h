@@ -1,0 +1,1 @@
+/* This file allows the testsuite to compile under Linux.  */

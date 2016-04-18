@@ -59,4 +59,7 @@ AC_SUBST([MIGCOM])
 [MIG=`echo mig | sed "$program_transform_name"`]
 AC_SUBST([MIG])
 
-AC_OUTPUT([Makefile mig])
+AC_OUTPUT([Makefile mig tests/Makefile \
+           tests/good/Makefile \
+           tests/generate-only/Makefile \
+           tests/bad/Makefile])
