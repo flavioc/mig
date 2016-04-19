@@ -25,6 +25,9 @@
 
 expr	sizeof(integer_t)		word_size
 expr	sizeof(integer_t)*8		word_size_in_bits
+expr	sizeof(int)			sizeof_int
+expr	sizeof(char)			sizeof_char
+expr	sizeof(short)			sizeof_short
 expr	sizeof(void*)			sizeof_pointer
 expr	sizeof(mach_msg_header_t)	sizeof_mach_msg_header_t
 expr	sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t
