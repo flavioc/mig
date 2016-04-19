@@ -713,6 +713,40 @@ itCStringDecl(u_int count, boolean_t varying)
     return it;
 }
 
+/* Creates a new MIG type based on a basic integral C type. */
+static ipc_type_t *
+itCIntTypeDecl(const_string_t ctype, const size_t size)
+{
+    ipc_type_t *it;
+    switch (size) {
+      case 1:
+          it = itShortDecl(MACH_MSG_TYPE_CHAR, "MACH_MSG_TYPE_CHAR",
+              MACH_MSG_TYPE_CHAR, "MACH_MSG_TYPE_CHAR", size * 8);
+          break;
+      case 2:
+          it = itShortDecl(MACH_MSG_TYPE_INTEGER_16,
+              "MACH_MSG_TYPE_INTEGER_16", MACH_MSG_TYPE_INTEGER_16,
+              "MACH_MSG_TYPE_INTEGER_16", size * 8);
+          break;
+      case 4:
+          it = itShortDecl(MACH_MSG_TYPE_INTEGER_32,
+              "MACH_MSG_TYPE_INTEGER_32", MACH_MSG_TYPE_INTEGER_32,
+              "MACH_MSG_TYPE_INTEGER_32", size * 8);
+          break;
+      case 8:
+          it = itShortDecl(MACH_MSG_TYPE_INTEGER_64,
+              "MACH_MSG_TYPE_INTEGER_64", MACH_MSG_TYPE_INTEGER_64,
+              "MACH_MSG_TYPE_INTEGER_64", size * 8);
+          break;
+      default:
+          fprintf(stderr, "Unrecognized size %zu for type %s\n", size, ctype);
+          exit(EXIT_FAILURE);
+    }
+    it->itName = ctype;
+    itCalculateNameInfo(it);
+    return it;
+}
+
 ipc_type_t *
 itMakeCountType(void)
 {
@@ -741,23 +775,6 @@ itMakeNaturalType(const char *name)
     it->itOutName = word_size_name;
     it->itOutNameStr = word_size_name_string;
     it->itSize = word_size_in_bits;
-
-    itCalculateSizeInfo(it);
-    itCalculateNameInfo(it);
-    return it;
-}
-
-extern ipc_type_t *
-itMakeIntType()
-{
-    ipc_type_t *it = itAlloc();
-
-    it->itName = "int";
-    it->itInName = MACH_MSG_TYPE_INTEGER_32;
-    it->itInNameStr = "MACH_MSG_TYPE_INTEGER_32";
-    it->itOutName = MACH_MSG_TYPE_INTEGER_32;
-    it->itOutNameStr = "MACH_MSG_TYPE_INTEGER_32";
-    it->itSize = 32;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
@@ -856,6 +873,11 @@ init_type(void)
 
     itWaitTimeType = itMakeNaturalType("mach_msg_timeout_t");
     itMsgOptionType = itMakeNaturalType("mach_msg_option_t");
+
+    /* Define basic C integral types. */
+    itInsert("char", itCIntTypeDecl("char", sizeof_char));
+    itInsert("short", itCIntTypeDecl("short", sizeof_short));
+    itInsert("int", itCIntTypeDecl("int", sizeof_int));
 }
 
 /******************************************************
