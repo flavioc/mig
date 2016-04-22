@@ -22,13 +22,19 @@
  */
 
 #include <mach/message.h>
+#include "long_types.h"
 
 expr	sizeof(integer_t)		word_size
-expr	sizeof(integer_t)*8		word_size_in_bits
-expr	sizeof(int)			sizeof_int
+expr	sizeof(integer_t)*8	word_size_in_bits
+expr	sizeof(int)				sizeof_int
+expr	sizeof(long)			sizeof_long
+expr	sizeof(llong)			sizeof_long_long
 expr	sizeof(char)			sizeof_char
 expr	sizeof(short)			sizeof_short
 expr	sizeof(void*)			sizeof_pointer
+expr	sizeof(float)			sizeof_float
+expr	sizeof(double)			sizeof_double
+expr	sizeof(ldouble)			sizeof_long_double
 expr	sizeof(mach_msg_header_t)	sizeof_mach_msg_header_t
 expr	sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t
 expr	sizeof(mach_msg_type_long_t)	sizeof_mach_msg_type_long_t

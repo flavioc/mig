@@ -535,7 +535,7 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
     return it;
 }
 
-static ipc_type_t *
+ipc_type_t *
 itCopyType(const ipc_type_t *old)
 {
     ipc_type_t *new = itAlloc();
@@ -747,6 +747,12 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
     return it;
 }
 
+static ipc_type_t *
+itInsertCType(const_string_t ctype, const size_t size)
+{
+    itInsert(ctype, itCIntTypeDecl(ctype, size));
+}
+
 ipc_type_t *
 itMakeCountType(void)
 {
@@ -875,9 +881,16 @@ init_type(void)
     itMsgOptionType = itMakeNaturalType("mach_msg_option_t");
 
     /* Define basic C integral types. */
-    itInsert("char", itCIntTypeDecl("char", sizeof_char));
-    itInsert("short", itCIntTypeDecl("short", sizeof_short));
-    itInsert("int", itCIntTypeDecl("int", sizeof_int));
+    itInsertCType("char", sizeof_char);
+    itInsertCType("unsigned char", sizeof_char);
+    itInsertCType("short", sizeof_short);
+    itInsertCType("unsigned short", sizeof_short);
+    itInsertCType("int", sizeof_int);
+    itInsertCType("unsigned int", sizeof_int);
+    itInsertCType("long", sizeof_long);
+    itInsertCType("unsigned long", sizeof_long);
+    itInsertCType("long long", sizeof_long_long);
+    itInsertCType("unsigned long long", sizeof_long_long);
 }
 
 /******************************************************

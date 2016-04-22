@@ -94,6 +94,7 @@
 %token	<string>	syString syQString
 %token	<string>	syFileName
 %token	<flag>		syIPCFlag
+%token	<c_type>	syCTypeKeyword
 
 %token	syInTranPayload
 
@@ -101,10 +102,12 @@
 %left	syStar syDiv
 
 
+%type	<c_type> CTypeKeyword
+%type	<identifier> CandidateCType TypeIdentifier
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
-%type	<type> CStringSpec
+%type	<type> CStringSpec BuiltinType
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
@@ -114,6 +117,7 @@
 
 %{
 
+#include <assert.h>
 #include <stdio.h>
 
 #include "error.h"
@@ -131,7 +135,18 @@ yyerror(const char *s)
 {
     error("%s", s);
 }
+
 %}
+
+%code requires {
+   typedef enum {
+       CTYPE_NOT_SET,
+       CTYPE_INT,
+       CTYPE_CHAR,
+       CTYPE_FLOAT,
+       CTYPE_DOUBLE
+   } c_type_t;
+}
 
 %union
 {
@@ -140,6 +155,14 @@ yyerror(const char *s)
     const_string_t string;
     statement_kind_t statement_kind;
     ipc_type_t *type;
+    struct
+    {
+	c_type_t basic_type;
+	boolean_t is_short;
+      	boolean_t is_signed;
+      	boolean_t is_unsigned;
+      	size_t long_count;
+    } c_type;
     struct
     {
 	u_int innumber;		/* msgt_name value, when sending */
@@ -153,7 +176,6 @@ yyerror(const char *s)
     argument_t *argument;
     ipc_flags_t flag;
 }
-
 %%
 
 Statements		:	/* empty */
@@ -337,14 +359,38 @@ TypeDecl		:	syType NamedTypeSpec
 }
 			;
 
-NamedTypeSpec		:	syIdentifier syEqual TransTypeSpec
+NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
+			;
+
+TypeIdentifier		:	syIdentifier
+				{ $$ = $1; }
+			|	syCTypeKeyword
+{
+    if ($1.is_unsigned)
+        $$ = "unsigned";
+    else if ($1.is_signed)
+        $$ = "signed";
+    else if ($1.is_short)
+        $$ = "short";
+    else if ($1.long_count == 1)
+        $$ = "long";
+    else {
+        switch ($1.basic_type) {
+            case CTYPE_INT: $$ = "int"; break;
+            case CTYPE_CHAR: $$ = "char"; break;
+            case CTYPE_FLOAT: $$ = "float"; break;
+            case CTYPE_DOUBLE: $$ = "double"; break;
+            default: error("unrecognized C keyword"); break;
+        }
+    }
+}
 			;
 
 TransTypeSpec		:	TypeSpec
 				{ $$ = itResetType($1); }
-			|	TransTypeSpec syInTran syColon syIdentifier
-				syIdentifier syLParen syIdentifier syRParen 
+			|	TransTypeSpec syInTran syColon CandidateCType
+				syIdentifier syLParen CandidateCType syRParen 
 {
     $$ = $1;
 
@@ -378,8 +424,8 @@ TransTypeSpec		:	TypeSpec
 	     $$->itInTransPayload, $5);
     $$->itInTransPayload = $5;
 }
-			|	TransTypeSpec syOutTran syColon syIdentifier
-				syIdentifier syLParen syIdentifier syRParen
+			|	TransTypeSpec syOutTran syColon CandidateCType
+				syIdentifier syLParen CandidateCType syRParen
 {
     $$ = $1;
 
@@ -413,7 +459,7 @@ TransTypeSpec		:	TypeSpec
 	     $$->itTransType, $6);
     $$->itTransType = $6;
 }
-			|	TransTypeSpec syCType syColon syIdentifier
+			|	TransTypeSpec syCType syColon CandidateCType
 {
     $$ = $1;
 
@@ -427,7 +473,7 @@ TransTypeSpec		:	TypeSpec
 	     $$->itServerType, $4);
     $$->itServerType = $4;
 }
-			|	TransTypeSpec syCUserType syColon syIdentifier
+			|	TransTypeSpec syCUserType syColon CandidateCType
 {
     $$ = $1;
 
@@ -437,7 +483,7 @@ TransTypeSpec		:	TypeSpec
     $$->itUserType = $4;
 }
 			|	TransTypeSpec syCServerType
-				syColon syIdentifier
+				syColon CandidateCType
 {
     $$ = $1;
 
@@ -448,10 +494,18 @@ TransTypeSpec		:	TypeSpec
 }
 			;
 
+CandidateCType		:	syIdentifier
+				{ $$ = $1; }
+			|	BuiltinType
+				{ $$ = $1->itName; }
+			;
+
 TypeSpec		:	BasicTypeSpec
 				{ $$ = $1; }
 			|	PrevTypeSpec
 				{ $$ = $1; }
+			|	BuiltinType
+				{ $$ = itCopyType($1); }
 			|	VarArrayHead TypeSpec
 				{ $$ = itVarArrayDecl($1, $2); }
 			|	ArrayHead TypeSpec
@@ -604,13 +658,13 @@ ArgumentList		:	Argument
 }
 			;
 
-Argument		:	Direction syIdentifier ArgumentType IPCFlags
+Argument		:	Direction syIdentifier syColon ArgumentType IPCFlags
 {
     $$ = argAlloc();
     $$->argKind = $1;
     $$->argName = $2;
-    $$->argType = $3;
-    $$->argFlags = $4;
+    $$->argType = $4;
+    $$->argFlags = $5;
 }
 			;
 
@@ -627,14 +681,16 @@ Direction		:	/* empty */	{ $$ = akNone; }
 			|	syMsgSeqno	{ $$ = akMsgSeqno; }
 			;
 
-ArgumentType		:	syColon syIdentifier
+ArgumentType		:	syIdentifier
 {
-    $$ = itLookUp($2);
+    $$ = itLookUp($1);
     if ($$ == itNULL)
-	error("type '%s' not defined", $2);
+	error("type '%s' not defined", $1);
 }
-			|	syColon NamedTypeSpec
-				{ $$ = $2; }
+                        |       BuiltinType
+                                { $$ = $1; }
+			|	NamedTypeSpec
+				{ $$ = $1; }
 			;
 
 LookString		:	/* empty */
@@ -649,6 +705,118 @@ LookQString		:	/* empty */
 				{ LookQString(); }
 			;
 
+BuiltinType		:	CTypeKeyword
+				 	{
+						char *type;
+						switch ($1.basic_type) {
+							case CTYPE_FLOAT:
+								if ($1.is_short || $1.is_signed || $1.is_unsigned
+									|| $1.long_count > 0) {
+									error("invalid float qualifiers");
+								}
+								type = "float";
+								break;
+							case CTYPE_DOUBLE:
+								if ($1.is_short || $1.is_signed || $1.is_unsigned
+									|| $1.long_count > 1)
+									error("invalid double qualifiers");
+								if ($1.long_count == 1)
+									type = "long double";
+								else
+									type = "double";
+								break;
+							case CTYPE_INT:
+								if ($1.is_short) {
+									if ($1.is_unsigned)
+										type = "unsigned short";
+									else
+										type = "short";
+								} else if ($1.long_count == 1) {
+									if ($1.is_unsigned)
+										type = "unsigned long";
+									else
+										type = "long";
+								} else if ($1.long_count == 2) {
+									if ($1.is_unsigned)
+										type = "unsigned long long";
+									else
+										type = "long long";
+								} else {
+									if ($1.is_signed)
+										type = "int";
+									if ($1.is_unsigned)
+										type = "unsigned int";
+									else
+										type = "int";
+								}
+								break;
+							case CTYPE_CHAR:
+								if ($1.is_unsigned)
+									type = "unsigned char";
+								else
+									type = "char";
+								break;
+							case CTYPE_NOT_SET:
+								if ($1.is_short) {
+									if ($1.is_unsigned)
+										type = "unsigned short";
+									else
+										type = "short";
+								} else if ($1.long_count == 1) {
+									if ($1.is_unsigned)
+										type = "unsigned long";
+									else
+										type = "long";
+								} else if ($1.long_count == 2) {
+									if ($1.is_unsigned)
+										type = "unsigned long long";
+									else
+										type = "long long";
+								} else if ($1.is_signed) {
+									type = "int";
+								} else if ($1.is_unsigned) {
+									type = "unsigned int";
+								} else {
+									error("invalid type");
+								}
+								break;
+							default:
+								error("invalid type");
+								break;
+						}
+						assert(type);
+						$$ = itLookUp(type);
+						if (!$$)
+							error("could not find type %s", type);
+					}
+				 ;
+
+CTypeKeyword	:	syCTypeKeyword
+					 	{ $$ = $1; }
+						|	CTypeKeyword syCTypeKeyword
+						{
+							$$ = $1;
+							if ($$.basic_type != CTYPE_NOT_SET)
+								error("bad type declaration");
+							$$.basic_type = $2.basic_type;
+							$$.long_count += $2.long_count;
+							if ($$.is_short && $2.is_short)
+								error("short can be used twice");
+							$$.is_short |= $2.is_short;
+							if ($$.is_signed && $2.is_signed)
+								error("signed cannot be used twice");
+							$$.is_signed |= $2.is_signed;
+							if ($$.is_unsigned && $2.is_unsigned)
+								error("unsigned cannot be used twice");
+							$$.is_unsigned |= $2.is_unsigned;
+							if ($$.is_short && $$.long_count > 0)
+								error("long and short used together");
+							if ($$.is_signed && $$.is_unsigned)
+								error("signed and unsigned used together");
+							if ($$.long_count > 2)
+								error("too many long qualifiers");
+						}
+						;
 %%
 
 static const char *

@@ -89,6 +89,22 @@ FileName	({QString}|{AString})
     RETURN(syIPCFlag);							\
 }
 
+#define INIT_CTYPE()							\
+{												\
+    yylval.c_type.basic_type = CTYPE_NOT_SET;	\
+    yylval.c_type.is_unsigned = FALSE;			\
+    yylval.c_type.is_signed = FALSE;			\
+    yylval.c_type.is_short = FALSE;				\
+    yylval.c_type.long_count = 0;				\
+}
+
+#define CRETURN(field, value)					\
+{												\
+    INIT_CTYPE();								\
+    yylval.c_type.field = (value);			\
+    RETURN(syCTypeKeyword);						\
+}
+
 extern YYSTYPE yylval;		/* added by rm */
 
 extern void yyerror(const char *);
@@ -158,6 +174,15 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:servercopy)         FRETURN(flServerCopy);
 <Normal>(?i:countinout)		FRETURN(flCountInOut);
 <Normal>(?i:retcode)		FRETURN(flNone);
+
+<Normal>(?i:int)			CRETURN(basic_type, CTYPE_INT);
+<Normal>(?i:char)			CRETURN(basic_type, CTYPE_CHAR);
+<Normal>(?i:unsigned)		CRETURN(is_unsigned, TRUE);
+<Normal>(?i:short)			CRETURN(is_short, TRUE);
+<Normal>(?i:signed)			CRETURN(is_signed, TRUE);
+<Normal>(?i:long)			CRETURN(long_count, 1);
+<Normal>(?i:float)			CRETURN(basic_type, CTYPE_FLOAT);
+<Normal>(?i:double)			CRETURN(basic_type, CTYPE_DOUBLE);
 
 <Normal>(?i:polymorphic)	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 

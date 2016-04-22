@@ -189,6 +189,7 @@ extern ipc_type_t *itLongDecl(u_int inname, const_string_t instr,
 			      u_int outname, const_string_t outstr,
 			      u_int defsize, u_int size, ipc_flags_t flags);
 extern ipc_type_t *itPrevDecl(identifier_t name);
+extern ipc_type_t *itCopyType(const ipc_type_t *it);
 extern ipc_type_t *itResetType(ipc_type_t *it);
 extern ipc_type_t *itVarArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);

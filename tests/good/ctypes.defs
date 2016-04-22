@@ -1,0 +1,35 @@
+/* Tests simple types and port types.  */
+subsystem types 0;
+
+import <stdint.h>;
+import "types.h";
+#include "../base_types.defs"
+
+type ulli = unsigned long long int;
+
+routine testsimple(port : mach_port_t;
+						 c : char;
+						 sc : signed char;
+						 uc : unsigned char;
+						 s : short;
+						 si : short int;
+						 ss : signed short;
+						 ssi : signed short int;
+						 us : unsigned short;
+						 usi : unsigned short int;
+						 i : int;
+						 signedonly : signed;
+						 signedint : signed int;
+						 unsignedonly : unsigned;
+						 ui : unsigned int;
+						 longonly : long;
+						 sl : signed long;
+						 sli : signed long int;
+						 ul : unsigned long;
+						 uli : unsigned long int;
+						 ll : long long;
+						 lli : long long int;
+						 sll : signed long long;
+						 slli : signed long long int;
+						 ull : unsigned long long;
+						 ulli : unsigned long long int);
