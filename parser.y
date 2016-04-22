@@ -604,13 +604,13 @@ ArgumentList		:	Argument
 }
 			;
 
-Argument		:	Direction syIdentifier ArgumentType IPCFlags
+Argument		:	Direction syIdentifier syColon ArgumentType IPCFlags
 {
     $$ = argAlloc();
     $$->argKind = $1;
     $$->argName = $2;
-    $$->argType = $3;
-    $$->argFlags = $4;
+    $$->argType = $4;
+    $$->argFlags = $5;
 }
 			;
 
@@ -627,14 +627,14 @@ Direction		:	/* empty */	{ $$ = akNone; }
 			|	syMsgSeqno	{ $$ = akMsgSeqno; }
 			;
 
-ArgumentType		:	syColon syIdentifier
+ArgumentType		:	syIdentifier
 {
-    $$ = itLookUp($2);
+    $$ = itLookUp($1);
     if ($$ == itNULL)
-	error("type '%s' not defined", $2);
+	error("type '%s' not defined", $1);
 }
-			|	syColon NamedTypeSpec
-				{ $$ = $2; }
+			|	NamedTypeSpec
+				{ $$ = $1; }
 			;
 
 LookString		:	/* empty */
