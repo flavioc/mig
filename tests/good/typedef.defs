@@ -1,0 +1,41 @@
+subsystem typedefs 0;
+
+#include "../base_types.defs"
+
+typedef int boolean_t;
+typedef int kern_return_t;
+typedef unsigned int natural_t;
+typedef int integer_t;
+typedef int int32;
+typedef unsigned int uint32;
+typedef unsigned long vm_offset_t;
+typedef vm_offset_t * vm_offset_array_t;
+typedef unsigned long phys_addr_t;
+typedef natural_t vm_size_t;
+typedef signed char signed8_t;
+typedef signed short signed16_t;
+typedef signed int signed32_t;
+typedef signed long long signed64_t;
+typedef unsigned char unsigned8_t;
+typedef unsigned short unsigned16_t;
+typedef unsigned int unsigned32_t;
+typedef unsigned long long unsigned64_t;
+//typedef float float32_t;
+//typedef double float64_t;
+typedef mach_port_t *mach_port_array_t;
+typedef int *rpc_signature_info_t;
+typedef natural_t mach_port_right_t;
+typedef natural_t mach_port_type_t;
+typedef mach_port_type_t *mach_port_type_array_t;
+typedef natural_t mach_port_urefs_t;
+typedef integer_t mach_port_delta_t;
+typedef natural_t mach_port_seqno_t;
+typedef unsigned int mach_port_mscount_t;
+typedef unsigned int mach_port_msgcount_t;
+typedef unsigned int mach_port_rights_t;
+
+typedef vm_offset_t pointer_t;
+typedef vm_offset_t vm_address_t;
+
+routine usedef1(port : mach_port_t; count : mach_port_mscount_t);
+routine usedef2(port : mach_port_t; ptr : vm_offset_array_t);

@@ -86,6 +86,8 @@
 %token	syRBrack
 %token	syBar
 
+%token	syTypedef
+
 %token	syError			/* lex error */
 
 %token	<number>	syNumber
@@ -103,12 +105,13 @@
 
 
 %type	<c_type> CTypeKeyword
-%type	<identifier> CandidateCType TypeIdentifier
+%type	<identifier> IdentifierOrCTypeName TypeIdentifier
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
-%type	<type> CStringSpec BuiltinType
+%type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
+%type	<type> CTypeSpec
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -190,6 +193,7 @@ Statement		:	Subsystem sySemi
 			|	UserPrefix sySemi
 			|	ServerDemux sySemi
 			|	TypeDecl sySemi
+			|	Typedef sySemi
 			|	RoutineDecl sySemi
 {
     statement_t *st = stAlloc();
@@ -349,6 +353,22 @@ RCSDecl			:	LookQString syRCSId syQString
 }
 			;
 
+Typedef		:	syTypedef TypedefConstruct
+			{
+				identifier_t name = $2->itName;
+				if (itLookUp(name) != itNULL)
+					warn("overriding previous definition of %s", name);
+				itInsert(name, $2);
+			}
+		;
+
+TypedefConstruct	:	CTypeSpec syIdentifier
+				{
+					$$ = itResetType($1);
+					itTypeDecl($2, $$);
+				}
+			;
+
 TypeDecl		:	syType NamedTypeSpec
 {
     identifier_t name = $2->itName;
@@ -389,8 +409,8 @@ TypeIdentifier		:	syIdentifier
 
 TransTypeSpec		:	TypeSpec
 				{ $$ = itResetType($1); }
-			|	TransTypeSpec syInTran syColon CandidateCType
-				syIdentifier syLParen CandidateCType syRParen 
+			|	TransTypeSpec syInTran syColon IdentifierOrCTypeName
+				syIdentifier syLParen IdentifierOrCTypeName syRParen 
 {
     $$ = $1;
 
@@ -424,8 +444,8 @@ TransTypeSpec		:	TypeSpec
 	     $$->itInTransPayload, $5);
     $$->itInTransPayload = $5;
 }
-			|	TransTypeSpec syOutTran syColon CandidateCType
-				syIdentifier syLParen CandidateCType syRParen
+			|	TransTypeSpec syOutTran syColon IdentifierOrCTypeName
+				syIdentifier syLParen IdentifierOrCTypeName syRParen
 {
     $$ = $1;
 
@@ -459,7 +479,7 @@ TransTypeSpec		:	TypeSpec
 	     $$->itTransType, $6);
     $$->itTransType = $6;
 }
-			|	TransTypeSpec syCType syColon CandidateCType
+			|	TransTypeSpec syCType syColon IdentifierOrCTypeName
 {
     $$ = $1;
 
@@ -473,7 +493,7 @@ TransTypeSpec		:	TypeSpec
 	     $$->itServerType, $4);
     $$->itServerType = $4;
 }
-			|	TransTypeSpec syCUserType syColon CandidateCType
+			|	TransTypeSpec syCUserType syColon IdentifierOrCTypeName
 {
     $$ = $1;
 
@@ -483,7 +503,7 @@ TransTypeSpec		:	TypeSpec
     $$->itUserType = $4;
 }
 			|	TransTypeSpec syCServerType
-				syColon CandidateCType
+				syColon IdentifierOrCTypeName
 {
     $$ = $1;
 
@@ -494,7 +514,7 @@ TransTypeSpec		:	TypeSpec
 }
 			;
 
-CandidateCType		:	syIdentifier
+IdentifierOrCTypeName		:	syIdentifier
 				{ $$ = $1; }
 			|	BuiltinType
 				{ $$ = $1->itName; }
@@ -502,10 +522,8 @@ CandidateCType		:	syIdentifier
 
 TypeSpec		:	BasicTypeSpec
 				{ $$ = $1; }
-			|	PrevTypeSpec
+			|	CTypeSpec
 				{ $$ = $1; }
-			|	BuiltinType
-				{ $$ = itCopyType($1); }
 			|	VarArrayHead TypeSpec
 				{ $$ = itVarArrayDecl($1, $2); }
 			|	ArrayHead TypeSpec
@@ -517,6 +535,16 @@ TypeSpec		:	BasicTypeSpec
 			|	CStringSpec
 				{ $$ = $1; }
 			;
+
+/* This includes type definitions that are found in the C language.  */
+CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
+			{ $$ = $1; }
+			/* A builtin type based on unsigned/signed int/char/float.  */
+		|	BuiltinType
+			{ $$ = itCopyType($1); }
+		|	CTypeSpec syStar
+			{ $$ = itPtrDecl($1); }
+		;
 
 BasicTypeSpec		:	IPCType
 {
@@ -687,8 +715,11 @@ ArgumentType		:	syIdentifier
     if ($$ == itNULL)
 	error("type '%s' not defined", $1);
 }
-                        |       BuiltinType
-                                { $$ = $1; }
+			|	BuiltinType
+				{
+					const identifier_t name = $1->itName;
+					itTypeDecl(name, $$ = itCopyType($1));
+				}
 			|	NamedTypeSpec
 				{ $$ = $1; }
 			;
