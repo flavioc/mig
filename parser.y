@@ -84,6 +84,8 @@
 %token	syRAngle
 %token	syLBrack
 %token	syRBrack
+%token	syLCrack
+%token	syRCrack
 %token	syBar
 
 %token	syTypedef
@@ -111,7 +113,7 @@
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
-%type	<type> CTypeSpec
+%type	<type> CTypeSpec StructMember StructMembers StructDef
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -194,6 +196,7 @@ Statement		:	Subsystem sySemi
 			|	ServerDemux sySemi
 			|	TypeDecl sySemi
 			|	Typedef sySemi
+			|	StructDef sySemi
 			|	RoutineDecl sySemi
 {
     statement_t *st = stAlloc();
@@ -538,13 +541,55 @@ TypeSpec		:	BasicTypeSpec
 
 /* This includes type definitions that are found in the C language.  */
 CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
-			{ $$ = $1; }
-			/* A builtin type based on unsigned/signed int/char/float.  */
-		|	BuiltinType
-			{ $$ = itCopyType($1); }
-		|	CTypeSpec syStar
-			{ $$ = itPtrDecl($1); }
-		;
+					{ $$ = $1; }
+				/* A builtin type based on unsigned/signed int/char/float.  */
+				|	BuiltinType
+					{ $$ = itCopyType($1); }
+				|	syStruct syIdentifier
+					{
+						ipc_type_t *str = structLookUp($2);
+						if (str == itNULL)
+							error("struct %s is not defined", $2);
+						$$ = itCopyType(str);
+					}
+				|  syStruct syIdentifier syLCrack StructMembers syRCrack
+        			{
+						if (structLookUp($2) != itNULL)
+							error("struct %s is already defined", $2);
+						$$ = structCreateNew($2, $4);
+						structRegister($2, $$);
+						$$ = itCopyType($$);
+         		}
+				|	syStruct syLCrack StructMembers syRCrack
+					{ $$ = structCreateNew("(unnamed)", $3); }
+				|	CTypeSpec syStar
+					{ $$ = itPtrDecl($1); }
+				;
+
+StructMembers  :  StructMember
+						{ $$ = $1; assert($$->itNext == itNULL); }
+					|	StructMembers StructMember
+						{
+							$2->itNext = $1;
+							$$ = $2;
+						}
+					;
+
+StructMember	:	CTypeSpec syIdentifier sySemi
+						{
+							fprintf(stderr, "New member %s\n", $2);
+							$$ = $1;
+						}
+					;
+
+StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack
+					{
+						if (structLookUp($2) != itNULL)
+							error("struct %s is already defined", $2);
+						$$ = structCreateNew($2, $4);
+						structRegister($2, $$);
+					}
+				;
 
 BasicTypeSpec		:	IPCType
 {

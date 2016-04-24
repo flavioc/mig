@@ -230,6 +230,8 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>">"		RETURN(syRAngle);
 <Normal>"["		RETURN(syLBrack);
 <Normal>"]"		RETURN(syRBrack);
+<Normal>"{"		RETURN(syLCrack);
+<Normal>"}"		RETURN(syRCrack);
 <Normal>"|"		RETURN(syBar);
 
 <Normal>{Ident}		{ yylval.identifier = strmake(yytext);

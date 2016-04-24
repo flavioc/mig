@@ -223,4 +223,10 @@ extern dealloc_t itCheckDeallocate(const ipc_type_t *it, ipc_flags_t flags,
 extern boolean_t itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags,
 			       boolean_t dfault, identifier_t name);
 
+/* C structs related functions.  */
+
+void structRegister(identifier_t name, ipc_type_t *it);
+ipc_type_t* structLookUp(identifier_t name);
+ipc_type_t* structCreateNew(identifier_t name, ipc_type_t *members);
+
 #endif	/* _TYPE_H */

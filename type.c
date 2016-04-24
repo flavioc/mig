@@ -52,7 +52,40 @@ ipc_type_t *itRealReplyPortType;/* used for default Reply port arg */
 ipc_type_t *itWaitTimeType;	/* used for dummy WaitTime args */
 ipc_type_t *itMsgOptionType;	/* used for dummy MsgOption args */
 
-static ipc_type_t *list = itNULL;
+/* Defines a symbol table.  */
+typedef struct symbol_table {
+	ipc_type_t *list;
+} symbol_table_t;
+
+static symbol_table_t type_table = {NULL};
+
+static ipc_type_t *
+tableLookUp(symbol_table_t *table, identifier_t name)
+{
+    ipc_type_t *it, **last;
+
+    for (it = *(last = &table->list); it != itNULL;
+			 it = *(last = &it->itNext))
+	if (streql(name, it->itName))
+	{
+	    /* move this type to the front of the list */
+	    *last = it->itNext;
+	    it->itNext = table->list;
+	    table->list = it;
+
+	    return it;
+	}
+
+    return itNULL;
+}
+
+static void
+tableInsert(symbol_table_t *table, identifier_t name, ipc_type_t *it)
+{
+    it->itName = name;
+    it->itNext = table->list;
+    table->list = it;
+}
 
 /*
  *  Searches for a named type.  We use a simple
@@ -61,20 +94,7 @@ static ipc_type_t *list = itNULL;
 ipc_type_t *
 itLookUp(identifier_t name)
 {
-    ipc_type_t *it, **last;
-
-    for (it = *(last = &list); it != itNULL; it = *(last = &it->itNext))
-	if (streql(name, it->itName))
-	{
-	    /* move this type to the front of the list */
-	    *last = it->itNext;
-	    it->itNext = list;
-	    list = it;
-
-	    return it;
-	}
-
-    return itNULL;
+	return tableLookUp(&type_table, name);
 }
 
 /*
@@ -84,9 +104,7 @@ itLookUp(identifier_t name)
 void
 itInsert(identifier_t name, ipc_type_t *it)
 {
-    it->itName = name;
-    it->itNext = list;
-    list = it;
+	tableInsert(&type_table, name, it);
 }
 
 static ipc_type_t *
@@ -978,4 +996,88 @@ itCheckNaturalType(name, it)
 	!it->itStruct ||
 	it->itVarArray)
 	error("argument %s should have been a %s", name, word_size_name_string);
+}
+
+/******************************************************
+ *  Functions related to C-based structs.
+ ******************************************************/
+
+static symbol_table_t struct_table = {NULL};
+
+void structRegister(identifier_t name, ipc_type_t *type)
+{
+	tableInsert(&struct_table, name, type);
+}
+
+ipc_type_t *
+structLookUp(identifier_t name)
+{
+	return tableLookUp(&struct_table, name);
+}
+
+ipc_type_t *
+structCreateNew(identifier_t name, ipc_type_t *members)
+{
+	// Number of bits required to store the whole struct.
+	size_t total_size = 0;
+	// If all members of the struct have the same type,
+	// this is the number of smaller numbers required to represent
+	// the whole struct using the basic type.
+	size_t total_number = 0;
+
+	boolean_t all_equal_names = TRUE;
+	boolean_t all_equal_sizes = TRUE;
+	for (ipc_type_t *it = members; it != itNULL; it = it->itNext) {
+		total_size += it->itSize * it->itNumber;
+		total_number += it->itNumber;
+		if (it->itInName == MACH_MSG_TYPE_POLYMORPHIC ||
+				it->itOutName == MACH_MSG_TYPE_POLYMORPHIC) {
+			error("cannot have polymorphic types in structures");
+		}
+		if (all_equal_names) {
+			if (members->itInName != it->itInName ||
+					members->itOutName != it->itOutName) {
+				all_equal_names = FALSE;
+				if (members->itSize != it->itSize)
+					all_equal_sizes = FALSE;
+				if (members->itInNameStr != it->itInNameStr)
+					fprintf(stderr, "can't be all of the same type (%s vs %s)\n",
+							members->itInNameStr, it->itInNameStr);
+				if (members->itOutNameStr != it->itOutNameStr)
+					fprintf(stderr, "can't be all of the same type (%s vs %s)\n",
+							members->itOutNameStr, it->itOutNameStr);
+			}
+		} else if (all_equal_sizes) {
+			if (members->itSize != it->itSize)
+				all_equal_sizes = FALSE;
+		}
+	}
+
+	ipc_type_t *ret = itNULL;
+	if (all_equal_names) {
+		ret = itResetType(itCopyType(members));
+		ret->itNumber = total_number;
+	} else if (all_equal_sizes) {
+		ret = itCIntTypeDecl(name, members->itSize / 8);
+		ret->itNumber = total_number;
+	} else {
+		ret = itCIntTypeDecl(name, 1);
+		ret->itNumber = total_size / 8;
+	}
+
+	ret->itStruct = TRUE;
+	ret->itString = FALSE;
+
+	itCalculateSizeInfo(ret);
+
+	// Free all members of the structure.
+	while (members) {
+		ipc_type_t *copy = members->itNext;
+
+		free(members);
+
+		members = copy;
+	}
+
+	return ret;
 }
