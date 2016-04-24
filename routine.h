@@ -27,6 +27,7 @@
 #ifndef	_ROUTINE_H
 #define	_ROUTINE_H
 
+#include <stdio.h>
 #include <sys/types.h>
 
 #include "boolean.h"
@@ -383,5 +384,8 @@ extern void rtPrintRoutine(const routine_t *rt);
 extern void rtCheckRoutine(routine_t *rt);
 
 extern const char *rtRoutineKindToStr(routine_kind_t rk);
+
+extern void rtPrintTypeAsserts(FILE *file, const routine_t *rt,
+      boolean_t user);
 
 #endif	/* _ROUTINE_H */

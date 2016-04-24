@@ -1150,6 +1150,9 @@ WriteRoutine(FILE *file, const routine_t *rt)
 
     WriteStubDecl(file, rt);
 
+    /* write asserts */
+    rtPrintTypeAsserts(file, rt, TRUE);
+
     /* typedef of structure for Request and Reply messages */
 
     WriteStructDecl(file, rt->rtArgs, WriteFieldDecl, akbRequest, "Request");

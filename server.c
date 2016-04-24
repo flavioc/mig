@@ -1320,6 +1320,9 @@ WriteRoutine(FILE *file, const routine_t *rt)
     fprintf(file, "\t(mach_msg_header_t *InHeadP, mach_msg_header_t *OutHeadP)\n");
 
     fprintf(file, "{\n");
+
+    rtPrintTypeAsserts(file, rt, FALSE);
+
     WriteStructDecl(file, rt->rtArgs, WriteFieldDecl, akbRequest, "Request");
     WriteStructDecl(file, rt->rtArgs, WriteFieldDecl, akbReply, "Reply");
 

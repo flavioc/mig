@@ -1274,3 +1274,18 @@ rtCheckRoutine(routine_t *rt)
 
     rt->rtNoReplyArgs = !rtCheckMask(rt->rtArgs, akbReturnSnd);
 }
+
+void
+rtPrintTypeAsserts(FILE *file, const routine_t *rt, boolean_t user)
+{
+    const argument_t *arg;
+    rtPrintRoutine(rt);
+    for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
+        ipc_type_t *it = arg->argType;
+
+        if (akCheckAll(arg->argKind, akbRequest) &&
+              it->itStruct)
+           fprintf(file, "\t_Static_assert(%d == sizeof(%s), \"bad size\");\n",
+                 it->itTypeSize, user ? it->itUserType : it->itServerType);
+   }
+}
