@@ -16,33 +16,23 @@
    You should have received a copy of the GNU General Public License
    along with GNU MIG.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef TEST_TYPES_H
-#define TEST_TYPES_H
+subsystem arrays 0;
 
-#include <stdint.h>
+#include "../base_types.defs"
+#
+import "types.h";
+import <mach/thread_status.h>;
 
-typedef int another_int;
-
-typedef struct char_struct {
-  char c1;
-  char c2;
-  char c3;
-  char c4;
-} char_struct_t;
-
-typedef char* string_t;
+#define	THREAD_STATE_MAX	(1024)		/* Maximum array size */
+typedef unsigned int	thread_state_data_t[THREAD_STATE_MAX];
 
 typedef struct {
    int x;
    int arr[2 + 2];
+   int ptr[];
 } array_struct_t;
 
-static inline int8_t int_to_int8(int n) {
-  return (int8_t) n;
-}
+typedef unsigned int uintptr_t[];
 
-static inline int int8_to_int(int8_t n) {
-  return (int) n;
-}
-
-#endif
+routine usearray(port : mach_port_t; arr : thread_state_data_t;
+      arr2 : array_struct_t; x : uintptr_t);

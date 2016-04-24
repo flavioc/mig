@@ -370,6 +370,17 @@ TypedefConstruct	:	CTypeSpec syIdentifier
 					$$ = itResetType($1);
 					itTypeDecl($2, $$);
 				}
+			|	CTypeSpec syIdentifier syLBrack IntExp syRBrack
+				{
+					$$ = itArrayDecl($4, $1);
+					free($1);
+					itTypeDecl($2, $$);
+				}
+			|	CTypeSpec syIdentifier syLBrack syRBrack
+				{
+					$$ = itPtrDecl($1);
+					itTypeDecl($2, $$);
+				}
 			;
 
 TypeDecl		:	syType NamedTypeSpec
@@ -577,8 +588,16 @@ StructMembers  :  StructMember
 
 StructMember	:	CTypeSpec syIdentifier sySemi
 						{
-							fprintf(stderr, "New member %s\n", $2);
 							$$ = $1;
+						}
+					|	CTypeSpec syIdentifier syLBrack IntExp syRBrack sySemi
+						{
+							$$ = itArrayDecl($4, $1);
+							free($1);
+						}
+					|	CTypeSpec syIdentifier syLBrack syRBrack sySemi
+						{
+							$$ = itPtrDecl($1);
 						}
 					;
 

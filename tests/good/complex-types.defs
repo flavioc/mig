@@ -19,7 +19,6 @@
 /* Tests complex types such as pointers, arrays and structs.  */
 subsystem types 0;
 
-import <stdint.h>;
 import "types.h";
 
 type byte = MACH_MSG_TYPE_BYTE;

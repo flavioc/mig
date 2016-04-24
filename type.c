@@ -1028,7 +1028,17 @@ structCreateNew(identifier_t name, ipc_type_t *members)
 	boolean_t all_equal_names = TRUE;
 	boolean_t all_equal_sizes = TRUE;
 	for (ipc_type_t *it = members; it != itNULL; it = it->itNext) {
-		total_size += it->itSize * it->itNumber;
+		if (!it->itInLine)
+		{
+			/* This is a pointer so itSize will be 0.
+			 * We must stop trying to find the right names and sizes and
+			 * just use bytes instead.  */
+			total_size += word_size_in_bits;
+			all_equal_names = FALSE;
+			all_equal_sizes = FALSE;
+			warn("using a pointer as a member of struct %s", name);
+		} else
+			total_size += it->itSize * it->itNumber;
 		total_number += it->itNumber;
 		if (it->itInName == MACH_MSG_TYPE_POLYMORPHIC ||
 				it->itOutName == MACH_MSG_TYPE_POLYMORPHIC) {
