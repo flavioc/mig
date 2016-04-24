@@ -21,6 +21,7 @@ subsystem structs 0;
 import <mach/time_value.h>;
 import <mach/thread_info.h>;
 #include "../base_types.defs"
+import "types.h";
 
 typedef int integer_t;
 typedef unsigned int natural_t;
@@ -55,9 +56,22 @@ typedef struct thread_basic_info {
 	integer_t	sleep_time;	/* number of seconds that thread
 					   has been sleeping */
 	time_value_t	creation_time;	/* time stamp of creation */
-} thread_basic_info_t;
+} thread_basic_info_data_t;
+
+typedef struct padding_struct {
+   char a;
+   short b;
+   int c;
+   int *d;
+} padding_struct_t;
+
+typedef struct small_struct {
+  char c1;
+} small_struct_t;
 
 routine usestruct(port : mach_port_t; str : mach_port_status_t;
 				  time : time_value_t;
-				  thread : thread_basic_info_t;
+				  thread : thread_basic_info_data_t;
+              padding : padding_struct_t;
+              small : small_struct_t;
 				  out result : mach_port_status_t);

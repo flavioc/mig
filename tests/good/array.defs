@@ -29,7 +29,7 @@ typedef unsigned int	thread_state_data_t[THREAD_STATE_MAX];
 typedef struct {
    int x;
    int arr[2 + 2];
-   int ptr[];
+   int *ptr;
 } array_struct_t;
 
 typedef unsigned int uintptr_t[];

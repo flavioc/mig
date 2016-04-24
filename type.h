@@ -174,6 +174,8 @@ typedef struct ipc_type
     identifier_t itInTransPayload;	/* may be NULL */
     identifier_t itOutTrans;	/* may be NULL */
     identifier_t itDestructor;	/* may be NULL */
+
+    u_int itAlignment;  /* amount of alignment for this type in bytes */
 } ipc_type_t;
 
 #define	itNULL		((ipc_type_t *) 0)

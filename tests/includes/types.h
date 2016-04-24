@@ -30,11 +30,23 @@ typedef struct char_struct {
   char c4;
 } char_struct_t;
 
+typedef struct padding_struct {
+   char a;
+   short b;
+   int c;
+   int *d;
+} padding_struct_t;
+
+typedef struct small_struct {
+  char c1;
+} small_struct_t;
+
 typedef char* string_t;
 
 typedef struct {
    int x;
    int arr[2 + 2];
+   int *ptr;
 } array_struct_t;
 
 union union_type {
@@ -44,6 +56,14 @@ union union_type {
 typedef union union_type union_type_t;
 typedef union { int a; char b; } union_type2_t;
 typedef union union_type3 { int a; char b; } union_type3_t;
+
+typedef struct {
+   int x;
+   union {
+      int a;
+      char b;
+   };
+} union_struct_t;
 
 static inline int8_t int_to_int8(int n) {
   return (int8_t) n;

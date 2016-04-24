@@ -7,22 +7,6 @@ import "types.h";
 
 typedef unsigned int natural_t;
 typedef int integer_t;
-typedef unsigned int mach_msg_bits_t;
-typedef unsigned int mach_msg_size_t;
-typedef natural_t mach_msg_seqno_t;
-typedef mach_msg_seqno_t mach_port_seqno_t;
-typedef integer_t mach_msg_id_t;
-
-typedef	struct {
-    mach_msg_bits_t	msgh_bits;
-    mach_msg_size_t	msgh_size;
-    union {
-        unsigned int	msgh_local_port;
-        unsigned long	msgh_protected_payload;
-    };
-    mach_port_seqno_t	msgh_seqno;
-    mach_msg_id_t	msgh_id;
-} mach_msg_header_t;
 
 union union_type {
    int a;
@@ -33,5 +17,14 @@ typedef union union_type union_type_t;
 typedef union { int a; char b; } union_type2_t;
 typedef union union_type3 { int a; char b; } union_type3_t;
 
-routine useheader(port : mach_port_t; header : mach_msg_header_t;
-      un1 : union_type_t; un2 : union_type2_t; un3 : union_type3_t);
+typedef struct {
+   int x;
+   union {
+      int a;
+      char b;
+   };
+} union_struct_t;
+
+routine useheader(port : mach_port_t;
+      un1 : union_type_t; un2 : union_type2_t;
+      un3 : union_type3_t; un4 : union_struct_t);

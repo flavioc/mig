@@ -19,7 +19,6 @@
 /* Tests some keywords with different casing.  */
 SUBSYSTEM myroutine 100;
 
-TyPe int = MACH_MSG_TYPE_INTEGER_64;
 typE mach_port_t = MACH_MSG_TYPE_COPY_SEND;
 
 RouTine factorial(port : mach_port_t;

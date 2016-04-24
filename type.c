@@ -141,6 +141,7 @@ itAlloc(void)
 	strNULL,		/* identifier_t itInTransPayload */
 	strNULL,		/* identifier_t itOutTrans */
 	strNULL,		/* identifier_t itDestructor */
+   0,      /* u_int itAlignment */
     };
     ipc_type_t *new;
 
@@ -163,6 +164,12 @@ itNameToString(u_int name)
     return strmake(buffer);
 }
 
+static inline size_t
+computeSizePadding(const size_t size, const size_t align)
+{
+   return (align - size % align) % align;
+}
+
 /*
  * Calculate itTypeSize, itPadSize, itMinTypeSize.
  * Every type needs this info; it is recalculated
@@ -174,7 +181,7 @@ itCalculateSizeInfo(ipc_type_t *it)
     if (it->itInLine)
     {
 	u_int bytes = (it->itNumber * it->itSize + 7) / 8;
-	u_int padding = (word_size - bytes % word_size) % word_size;
+	u_int padding = computeSizePadding(bytes, word_size);
 
 	it->itTypeSize = bytes;
 	it->itPadSize = padding;
@@ -549,6 +556,7 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
 	it->itString = TRUE;
     }
     it->itFlags = flags;
+    it->itAlignment = size/8;
 
     itCalculateSizeInfo(it);
     return it;
@@ -642,6 +650,7 @@ itVarArrayDecl(u_int number, const ipc_type_t *old)
     it->itVarArray = TRUE;
     it->itStruct = FALSE;
     it->itString = FALSE;
+    // TODO: Set itAlignment.
 
     itCalculateSizeInfo(it);
     return it;
@@ -661,6 +670,7 @@ itArrayDecl(u_int number, const ipc_type_t *old)
     it->itNumber *= number;
     it->itStruct = FALSE;
     it->itString = FALSE;
+    it->itAlignment = old->itAlignment;
 
     itCalculateSizeInfo(it);
     return it;
@@ -681,6 +691,7 @@ itPtrDecl(ipc_type_t *it)
     it->itInLine = FALSE;
     it->itStruct = TRUE;
     it->itString = FALSE;
+    it->itAlignment = word_size;
 
     itCalculateSizeInfo(it);
     return it;
@@ -1016,30 +1027,52 @@ structLookUp(identifier_t name)
     return tableLookUp(&struct_union_table, name);
 }
 
+static ipc_type_t *
+reverseTypeList(ipc_type_t *ls)
+{
+   ipc_type_t *res = itNULL;
+
+   while (ls) {
+      ipc_type_t *next = ls->itNext;
+      ls->itNext = res;
+      res = ls;
+      ls = next;
+   }
+   return res;
+}
+
 ipc_type_t *
 structCreateNew(identifier_t name, ipc_type_t *members)
 {
-	// Number of bits required to store the whole struct.
+	/* Number of bytes required to store the whole struct. */
 	size_t total_size = 0;
-	// If all members of the struct have the same type,
-	// this is the number of smaller numbers required to represent
-	// the whole struct using the basic type.
+	/* If all members of the struct have the same type,
+	 * this is the number of smaller numbers required to represent
+	 * the whole struct using the basic type. */
 	size_t total_number = 0;
 
 	boolean_t all_equal_names = TRUE;
 	boolean_t all_equal_sizes = TRUE;
+   size_t max_struct_alignment = 0;
+
+   members = reverseTypeList(members);
 	for (ipc_type_t *it = members; it != itNULL; it = it->itNext) {
 		if (!it->itInLine)
 		{
 			/* This is a pointer so itSize will be 0.
 			 * We must stop trying to find the right names and sizes and
 			 * just use bytes instead.  */
-			total_size += word_size_in_bits;
 			all_equal_names = FALSE;
 			all_equal_sizes = FALSE;
 			warn("using a pointer as a member of struct %s", name);
-		} else
-			total_size += it->itSize * it->itNumber;
+		}
+      assert(it->itAlignment > 0);
+      if (max_struct_alignment < it->itAlignment)
+         max_struct_alignment = it->itAlignment;
+      if (total_size % it->itAlignment != 0)
+         total_size += computeSizePadding(total_size, it->itAlignment);
+      total_size += it->itTypeSize;
+      fprintf(stderr, "total_size: %d\n", total_size);
 		total_number += it->itNumber;
 		if (it->itInName == MACH_MSG_TYPE_POLYMORPHIC ||
 				it->itOutName == MACH_MSG_TYPE_POLYMORPHIC) {
@@ -1073,9 +1106,10 @@ structCreateNew(identifier_t name, ipc_type_t *members)
 		ret->itNumber = total_number;
 	} else {
 		ret = itCIntTypeDecl(name, 1);
-		ret->itNumber = total_size / 8;
+		ret->itNumber = total_size;
 	}
 
+   ret->itAlignment = max_struct_alignment;
 	ret->itStruct = TRUE;
 	ret->itString = FALSE;
 
