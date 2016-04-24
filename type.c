@@ -24,6 +24,7 @@
  * the rights to redistribute these changes.
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -1002,17 +1003,17 @@ itCheckNaturalType(name, it)
  *  Functions related to C-based structs.
  ******************************************************/
 
-static symbol_table_t struct_table = {NULL};
+static symbol_table_t struct_union_table = {NULL};
 
 void structRegister(identifier_t name, ipc_type_t *type)
 {
-	tableInsert(&struct_table, name, type);
+    tableInsert(&struct_union_table, name, type);
 }
 
 ipc_type_t *
 structLookUp(identifier_t name)
 {
-	return tableLookUp(&struct_table, name);
+    return tableLookUp(&struct_union_table, name);
 }
 
 ipc_type_t *
@@ -1080,14 +1081,80 @@ structCreateNew(identifier_t name, ipc_type_t *members)
 
 	itCalculateSizeInfo(ret);
 
-	// Free all members of the structure.
+	/* Free all members of the structure.  */
 	while (members) {
 		ipc_type_t *copy = members->itNext;
-
 		free(members);
-
 		members = copy;
 	}
 
 	return ret;
+}
+
+/******************************************************
+ *  Functions related to C-based unions.
+ ******************************************************/
+
+ipc_type_t *
+unionCreateNew(identifier_t name, ipc_type_t *members)
+{
+    assert(members != itNULL);
+
+    ipc_type_t *largest_member = members;
+    size_t largest_size;
+
+    if (largest_member->itInLine) {
+        largest_size = members->itSize * members->itNumber;
+    } else {
+       /* This is a pointer.  */
+       warn("Pointer used in union %s", name);
+       largest_size = word_size_in_bits;
+    }
+
+    /* Look for the largest member in the list of members.  */
+    for (ipc_type_t *it = members->itNext; it != itNULL; it = it->itNext) {
+        if (it->itInLine) {
+            if (word_size_in_bits > largest_size) {
+	        largest_size = word_size_in_bits;
+		largest_member = it;
+	    }
+	} else {
+	   warn("Pointer used in union %s", name);
+	   if (it->itSize * it->itNumber > largest_size) {
+	      largest_size = it->itSize * it->itNumber;
+	      largest_member = it;
+	   }
+	}
+    }
+
+    /* Free all members of the structure.  */
+    while (members) {
+        ipc_type_t *copy = members->itNext;
+
+	/* Keep the largest member since it will represent the union.  */
+	if (members != largest_member)
+	   free(members);
+
+	members = copy;
+    }
+
+    largest_member->itNext = itNULL;
+    if (!largest_member->itInLine) {
+        /* If the largest member is a pointer, we turn it into a normal type.  */
+        largest_member->itInLine = FALSE;
+        largest_member->itSize = word_size_in_bits;
+        largest_member->itNumber = 1;
+    }
+    return largest_member;
+}
+
+ipc_type_t*
+unionLookUp(identifier_t name)
+{
+    return tableLookUp(&struct_union_table, name);
+}
+
+void unionRegister(identifier_t name, ipc_type_t *type)
+{
+    tableInsert(&struct_union_table, name, type);
 }

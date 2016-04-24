@@ -185,6 +185,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:double)			CRETURN(basic_type, CTYPE_DOUBLE);
 
 <Normal>(?i:typedef)		RETURN(syTypedef);
+<Normal>(?i:union)		RETURN(syUnion);
 
 <Normal>(?i:polymorphic)	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 

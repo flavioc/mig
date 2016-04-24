@@ -89,6 +89,7 @@
 %token	syBar
 
 %token	syTypedef
+%token   syUnion
 
 %token	syError			/* lex error */
 
@@ -113,7 +114,8 @@
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
-%type	<type> CTypeSpec StructMember StructMembers StructDef
+%type	<type> CTypeSpec StructMember StructMembers
+%type	<type> StructDef UnionDef SimpleUnion
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -197,6 +199,7 @@ Statement		:	Subsystem sySemi
 			|	TypeDecl sySemi
 			|	Typedef sySemi
 			|	StructDef sySemi
+			|	UnionDef sySemi
 			|	RoutineDecl sySemi
 {
     statement_t *st = stAlloc();
@@ -381,6 +384,12 @@ TypedefConstruct	:	CTypeSpec syIdentifier
 					$$ = itPtrDecl($1);
 					itTypeDecl($2, $$);
 				}
+			/* TODO: Refactor these two rules once the old MIG language
+			 * is gone from the parser.  */
+			|	UnionDef syIdentifier
+				{ itTypeDecl($2, $$ = $1); }
+			|	SimpleUnion syIdentifier
+				{ itTypeDecl($2, $$ = $1); }
 			;
 
 TypeDecl		:	syType NamedTypeSpec
@@ -395,7 +404,7 @@ TypeDecl		:	syType NamedTypeSpec
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
-			;
+				;
 
 TypeIdentifier		:	syIdentifier
 				{ $$ = $1; }
@@ -573,6 +582,13 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
          		}
 				|	syStruct syLCrack StructMembers syRCrack
 					{ $$ = structCreateNew("(unnamed)", $3); }
+				|	syUnion syIdentifier
+					{
+						ipc_type_t *uni = unionLookUp($2);
+						if (uni == itNULL)
+							error("union %s is not defined", $2);
+						$$ = itCopyType(uni);
+					}
 				|	CTypeSpec syStar
 					{ $$ = itPtrDecl($1); }
 				;
@@ -599,16 +615,34 @@ StructMember	:	CTypeSpec syIdentifier sySemi
 						{
 							$$ = itPtrDecl($1);
 						}
+					|	SimpleUnion sySemi
+						{ $$ = $1; }
 					;
 
 StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack
 					{
 						if (structLookUp($2) != itNULL)
-							error("struct %s is already defined", $2);
+							error("struct %s or struct is already defined", $2);
 						$$ = structCreateNew($2, $4);
 						structRegister($2, $$);
 					}
 				;
+
+UnionDef		:	syUnion syIdentifier syLCrack StructMembers syRCrack
+					{
+						if (unionLookUp($2) != itNULL)
+							error("union or struct %s is already defined", $2);
+						$$ = unionCreateNew($2, $4);
+						unionRegister($2, $$);
+					}
+				;
+
+/* Unnamed union such as union { ... }.  */
+SimpleUnion		:	syUnion syLCrack StructMembers syRCrack
+					{
+						$$ = unionCreateNew("(unnamed)", $3);
+					}
+					;
 
 BasicTypeSpec		:	IPCType
 {

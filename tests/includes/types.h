@@ -37,6 +37,14 @@ typedef struct {
    int arr[2 + 2];
 } array_struct_t;
 
+union union_type {
+   int a;
+   int b;
+};
+typedef union union_type union_type_t;
+typedef union { int a; char b; } union_type2_t;
+typedef union union_type3 { int a; char b; } union_type3_t;
+
 static inline int8_t int_to_int8(int n) {
   return (int8_t) n;
 }

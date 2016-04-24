@@ -229,4 +229,10 @@ void structRegister(identifier_t name, ipc_type_t *it);
 ipc_type_t* structLookUp(identifier_t name);
 ipc_type_t* structCreateNew(identifier_t name, ipc_type_t *members);
 
+/* C unions related functions.  */
+
+void unionRegister(identifier_t name, ipc_type_t *it);
+ipc_type_t* unionCreateNew(identifier_t name, ipc_type_t *members);
+ipc_type_t* unionLookUp(identifier_t name);
+
 #endif	/* _TYPE_H */
