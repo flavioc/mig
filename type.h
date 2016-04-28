@@ -52,6 +52,16 @@ typedef enum dealloc {
 /* Convert dealloc_t to TRUE/FALSE */
 #define	strdealloc(d)	(strbool(d == d_YES))
 
+typedef enum {
+   CTYPE_NONE, /* Not a C Type at all. */
+   CTYPE_BASIC, /* Includes basic types such as int. */
+   CTYPE_STRUCT, /* Structures passed by value. */
+   CTYPE_UNION, /* Unions passed by value. */
+   CTYPE_POINTER, /* Simple pointers using *. */
+   CTYPE_VARARRAY, /* Arrays using [] syntax. */
+   CTYPE_ARRAY /* Arrays using [N] syntax. */
+} CTypeConstruct;
+
 /*
  * itName and itNext are internal fields (not used for code generation).
  * They are only meaningful for types entered into the symbol table.
@@ -176,6 +186,8 @@ typedef struct ipc_type
     identifier_t itDestructor;	/* may be NULL */
 
     u_int itAlignment;  /* amount of alignment for this type in bytes */
+
+    CTypeConstruct itTypeConstruct;  /* Type of C construct if any */
 } ipc_type_t;
 
 #define	itNULL		((ipc_type_t *) 0)
@@ -192,10 +204,14 @@ extern ipc_type_t *itLongDecl(u_int inname, const_string_t instr,
 			      u_int defsize, u_int size, ipc_flags_t flags);
 extern ipc_type_t *itPrevDecl(identifier_t name);
 extern ipc_type_t *itCopyType(const ipc_type_t *it);
+extern ipc_type_t *itCopyBuiltinType(const ipc_type_t *it);
 extern ipc_type_t *itResetType(ipc_type_t *it);
 extern ipc_type_t *itVarArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);
+extern ipc_type_t *itCArrayDecl(u_int number, const ipc_type_t *it);
+extern ipc_type_t *itCVarArrayDecl(const ipc_type_t *it);
 extern ipc_type_t *itPtrDecl(ipc_type_t *it);
+extern ipc_type_t *itCPtrDecl(ipc_type_t *it);
 extern ipc_type_t *itStructDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itCStringDecl(u_int number, boolean_t varying);
 

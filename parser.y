@@ -375,13 +375,12 @@ TypedefConstruct	:	CTypeSpec syIdentifier
 				}
 			|	CTypeSpec syIdentifier syLBrack IntExp syRBrack
 				{
-					$$ = itArrayDecl($4, $1);
-					free($1);
+					$$ = itCArrayDecl($4, $1);
 					itTypeDecl($2, $$);
 				}
 			|	CTypeSpec syIdentifier syLBrack syRBrack
 				{
-					$$ = itPtrDecl($1);
+					$$ = itCVarArrayDecl($1);
 					itTypeDecl($2, $$);
 				}
 			/* TODO: Refactor these two rules once the old MIG language
@@ -564,7 +563,7 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 					{ $$ = $1; }
 				/* A builtin type based on unsigned/signed int/char/float.  */
 				|	BuiltinType
-					{ $$ = itCopyType($1); }
+					{ $$ = itCopyBuiltinType($1); }
 				|	syStruct syIdentifier
 					{
 						ipc_type_t *str = structLookUp($2);
@@ -590,7 +589,9 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 						$$ = itCopyType(uni);
 					}
 				|	CTypeSpec syStar
-					{ $$ = itPtrDecl($1); }
+					{
+						$$ = itCPtrDecl($1);
+					}
 				;
 
 StructMembers  :  StructMember
@@ -608,12 +609,11 @@ StructMember	:	CTypeSpec syIdentifier sySemi
 						}
 					|	CTypeSpec syIdentifier syLBrack IntExp syRBrack sySemi
 						{
-							$$ = itArrayDecl($4, $1);
-							free($1);
+							$$ = itCArrayDecl($4, $1);
 						}
 					|	CTypeSpec syIdentifier syLBrack syRBrack sySemi
 						{
-							$$ = itPtrDecl($1);
+							$$ = itCVarArrayDecl($1);
 						}
 					|	SimpleUnion sySemi
 						{ $$ = $1; }

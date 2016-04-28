@@ -142,6 +142,7 @@ itAlloc(void)
 	strNULL,		/* identifier_t itOutTrans */
 	strNULL,		/* identifier_t itDestructor */
    0,      /* u_int itAlignment */
+   CTYPE_NONE  /* C type constructor */
     };
     ipc_type_t *new;
 
@@ -419,8 +420,9 @@ itCheckDecl(identifier_t name, ipc_type_t *it)
     if (it->itVarArray && it->itInLine) {
 	if ((it->itElement->itUserType == strNULL) ||
 	    (it->itElement->itServerType == strNULL))
-	    error("%s: variable-sized in-line arrays need a named base type",
-		  name);
+	    error("%s: variable-sized in-line arrays need a named base type %s %s",
+		  name, it->itElement->itUserType,
+        it->itElement->itServerType);
     }
 
     /* process the IPC flag specification */
@@ -576,6 +578,15 @@ itCopyType(const ipc_type_t *old)
     return new;
 }
 
+ipc_type_t *
+itCopyBuiltinType(const ipc_type_t *old)
+{
+   ipc_type_t *copy = itCopyType(old);
+   copy->itName = old->itName;
+   itCalculateNameInfo(copy);
+   return copy;
+}
+
 /*
  * A call to itCopyType is almost always followed with itResetType.
  * The exception is itPrevDecl.  Also called before adding any new
@@ -634,23 +645,23 @@ itVarArrayDecl(u_int number, const ipc_type_t *old)
     ipc_type_t *it = itResetType(itCopyType(old));
 
     if (!it->itInLine || it->itVarArray)
-	error("IPC type decl is too complicated");
+        error("IPC type decl is too complicated");
     if (number != 0)
-	it->itNumber *= number;
+        it->itNumber *= number;
     else {
-	/*
-	 * Send at most 2048 bytes inline.
-	 */
-	u_int	bytes;
+        /*
+         * Send at most 2048 bytes inline.
+         */
+        u_int	bytes;
 
-	bytes = (it->itNumber * it->itSize + 7) / 8;
-	it->itNumber = (2048 / bytes) * it->itNumber;
-	it->itIndefinite = TRUE;
+        bytes = (it->itNumber * it->itSize + 7) / 8;
+        it->itNumber = (2048 / bytes) * it->itNumber;
+        it->itIndefinite = TRUE;
     }
     it->itVarArray = TRUE;
     it->itStruct = FALSE;
     it->itString = FALSE;
-    // TODO: Set itAlignment.
+    it->itAlignment = old->itAlignment;
 
     itCalculateSizeInfo(it);
     return it;
@@ -677,6 +688,30 @@ itArrayDecl(u_int number, const ipc_type_t *old)
 }
 
 /*
+ * Handles the declaration
+ * typedef old new[N];
+ */
+ipc_type_t *
+itCArrayDecl(const u_int number, const ipc_type_t *old)
+{
+   ipc_type_t *it = itArrayDecl(number, old);
+   it->itTypeConstruct = CTYPE_ARRAY;
+   return it;
+}
+
+/*
+ * Handles the declaration
+ * typedef old new[];
+ */
+ipc_type_t *
+itCVarArrayDecl(const ipc_type_t *old)
+{
+   ipc_type_t *it = itVarArrayDecl(0, old);
+   it->itTypeConstruct = CTYPE_VARARRAY;
+   return it;
+}
+
+/*
  *  Handles the declaration
  *	type new = ^ old;
  */
@@ -695,6 +730,17 @@ itPtrDecl(ipc_type_t *it)
 
     itCalculateSizeInfo(it);
     return it;
+}
+
+/*
+ * Handles the declaration
+ * typedef old *new;
+ */
+ipc_type_t *
+itCPtrDecl(ipc_type_t *it)
+{
+   itPtrDecl(it);
+   it->itTypeConstruct = CTYPE_POINTER;
 }
 
 /*
@@ -779,7 +825,9 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
 static ipc_type_t *
 itInsertCType(const_string_t ctype, const size_t size)
 {
-    itInsert(ctype, itCIntTypeDecl(ctype, size));
+    ipc_type_t *type = itCIntTypeDecl(ctype, size);
+    type->itTypeConstruct = CTYPE_BASIC;
+    itInsert(ctype, type);
 }
 
 ipc_type_t *
@@ -1121,6 +1169,7 @@ structCreateNew(identifier_t name, ipc_type_t *members)
 		free(members);
 		members = copy;
 	}
+   ret->itTypeConstruct = CTYPE_STRUCT;
 
 	return ret;
 }
@@ -1179,6 +1228,7 @@ unionCreateNew(identifier_t name, ipc_type_t *members)
         largest_member->itSize = word_size_in_bits;
         largest_member->itNumber = 1;
     }
+    largest_member->itTypeConstruct = CTYPE_UNION;
     return largest_member;
 }
 
