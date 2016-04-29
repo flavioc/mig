@@ -636,7 +636,9 @@ itPrevDecl(identifier_t name)
 void
 itSetServerType(ipc_type_t *it, identifier_t server_type)
 {
-    if (it->itServerType != strNULL && !streql(it->itServerType, server_type))
+    if (it->itServerType != strNULL &&
+        it->itServerType != it->itName && /* Default server type. */
+        !streql(it->itServerType, server_type))
         warn("Conflicting server types (%s, %s)", it->itServerType,
             server_type);
     it->itServerType = server_type;
@@ -645,7 +647,9 @@ itSetServerType(ipc_type_t *it, identifier_t server_type)
 void
 itSetUserType(ipc_type_t *it, identifier_t user_type)
 {
-    if (it->itUserType != strNULL && !streql(it->itUserType, user_type))
+    if (it->itUserType != strNULL &&
+        it->itUserType != it->itName && /* Default user type. */
+        !streql(it->itUserType, user_type))
         warn("Conflicting user types (%s, %s)", it->itUserType,
             user_type);
     it->itUserType = user_type;
@@ -672,7 +676,9 @@ itSetInTrans(ipc_type_t *it, identifier_t in_trans)
 void
 itSetTransType(ipc_type_t *it, identifier_t trans_type)
 {
-    if (it->itTransType != strNULL && !streql(it->itTransType, trans_type))
+    if (it->itTransType != strNULL &&
+        it->itTransType != it->itName && /* Default type. */
+        !streql(it->itTransType, trans_type))
         warn("Conflicting translation types (%s, %s)", it->itTransType,
             trans_type);
     it->itTransType = trans_type;

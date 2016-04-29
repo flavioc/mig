@@ -1,0 +1,31 @@
+/*
+   Copyright (C) 2016 Free Software Foundation, Inc.
+
+   This file is part of GNU MIG.
+
+   GNU MIG is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation; either version 2, or (at
+   your option) any later version.
+
+   GNU MIG is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with GNU MIG.  If not, see <http://www.gnu.org/licenses/>.  */
+
+subsystem modtypesystem 0;
+
+#include "../base_types.defs"
+import <stdint.h>;
+
+typedef unsigned int uint32_t;
+
+modtype uint32_t 
+        cusertype: int32_t
+        intran: int8_t int_to_int8(uint32_t)
+        outtran: uint32_t int8_to_int(int8_t);
+
+routine usemod(port : mach_port_t; x : uint32_t; out result : uint32_t);

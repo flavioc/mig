@@ -93,6 +93,7 @@
 
 %token   syInline
 %token   syHard
+%token	syModType
 
 %token	syError			/* lex error */
 
@@ -120,7 +121,7 @@
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
-%type <type> InlineDef
+%type <type> InlineDef TransModType ModTypeDecl
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -205,7 +206,8 @@ Statement		:	Subsystem sySemi
 			|	Typedef sySemi
 			|	StructDef sySemi
 			|	UnionDef sySemi
-         |  InlineDef sySemi
+			|  InlineDef sySemi
+			|	ModTypeDecl sySemi
 			|	RoutineDecl sySemi
 {
     statement_t *st = stAlloc();
@@ -504,6 +506,58 @@ TransTypeSpec		:	TypeSpec
 					itSetServerType($$, $2);
 				}
 			;
+
+ModTypeDecl	:	syModType TransModType
+					{ $$ = $2; }
+				;
+
+TransModType	:	syIdentifier
+						{
+							$$ = itLookUp($1);
+							if ($$ == itNULL)
+								error("Type %s was not found", $1);
+						}
+					|	TransModType DefineUserType
+						{
+							$$ = $1;
+							itSetUserType($$, $2);
+						}
+					|	TransModType DefineServerType
+						{
+							$$ = $1;
+							itSetServerType($$, $2);
+						}
+					|	TransModType syDestructor syColon syIdentifier
+						syLParen syIdentifier syRParen
+						{
+							$$ = $1;
+							itSetDestructor($$, $4);
+							itSetTransType($$, $6);
+						}
+					|	TransModType syOutTran syColon IdentifierOrCTypeName
+						syIdentifier syLParen IdentifierOrCTypeName syRParen
+						{
+							$$ = $1;
+							itSetServerType($$, $4);
+							itSetOutTrans($$, $5);
+							itSetTransType($$, $7);
+						}
+					|	TransModType syInTran syColon IdentifierOrCTypeName
+						syIdentifier syLParen IdentifierOrCTypeName syRParen 
+						{
+							$$ = $1;
+							itSetTransType($$, $4);
+							itSetInTrans($$, $5);
+							itSetServerType($$, $7);
+						}
+					|	TransModType syInTranPayload syColon
+						syIdentifier syIdentifier
+						{
+							$$ = $1;
+							itSetTransType($$, $4);
+							itSetInTransPayload($$, $5);
+						}
+					;
 
 DefineCType			:	syCType syColon IdentifierOrCTypeName
 							{ $$ = $3; }
