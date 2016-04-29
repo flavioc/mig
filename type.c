@@ -739,8 +739,10 @@ itPtrDecl(ipc_type_t *it)
 ipc_type_t *
 itCPtrDecl(ipc_type_t *it)
 {
-   itPtrDecl(it);
-   it->itTypeConstruct = CTYPE_POINTER;
+   ipc_type_t *ret = itVarArrayDecl(0, it);
+   itPtrDecl(ret);
+   ret->itTypeConstruct = CTYPE_POINTER;
+   return ret;
 }
 
 /*
