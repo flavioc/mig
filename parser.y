@@ -112,6 +112,7 @@
 
 %type	<c_type> CTypeKeyword
 %type	<identifier> IdentifierOrCTypeName TypeIdentifier
+%type	<identifier> DefineCType DefineUserType DefineServerType
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
@@ -458,108 +459,61 @@ TransTypeSpec		:	TypeSpec
 				{ $$ = itResetType($1); }
 			|	TransTypeSpec syInTran syColon IdentifierOrCTypeName
 				syIdentifier syLParen IdentifierOrCTypeName syRParen 
-{
-    $$ = $1;
-
-    if (($$->itTransType != strNULL) && !streql($$->itTransType, $4))
-	warn("conflicting translation types (%s, %s)",
-	     $$->itTransType, $4);
-    $$->itTransType = $4;
-
-    if (($$->itInTrans != strNULL) && !streql($$->itInTrans, $5))
-	warn("conflicting in-translation functions (%s, %s)",
-	     $$->itInTrans, $5);
-    $$->itInTrans = $5;
-
-    if (($$->itServerType != strNULL) && !streql($$->itServerType, $7))
-	warn("conflicting server types (%s, %s)",
-	     $$->itServerType, $7);
-    $$->itServerType = $7;
-}
+				{
+					$$ = $1;
+					itSetTransType($$, $4);
+					itSetInTrans($$, $5);
+					itSetServerType($$, $7);
+				}
 			|	TransTypeSpec syInTranPayload syColon
 				syIdentifier syIdentifier
-{
-    $$ = $1;
-
-    if (($$->itTransType != strNULL) && !streql($$->itTransType, $4))
-	warn("conflicting translation types (%s, %s)",
-	     $$->itTransType, $4);
-    $$->itTransType = $4;
-
-    if (($$->itInTransPayload != strNULL) && !streql($$->itInTransPayload, $5))
-	warn("conflicting in-translation functions (%s, %s)",
-	     $$->itInTransPayload, $5);
-    $$->itInTransPayload = $5;
-}
+				{
+					$$ = $1;
+					itSetTransType($$, $4);
+					itSetInTransPayload($$, $5);
+				}
 			|	TransTypeSpec syOutTran syColon IdentifierOrCTypeName
 				syIdentifier syLParen IdentifierOrCTypeName syRParen
-{
-    $$ = $1;
-
-    if (($$->itServerType != strNULL) && !streql($$->itServerType, $4))
-	warn("conflicting server types (%s, %s)",
-	     $$->itServerType, $4);
-    $$->itServerType = $4;
-
-    if (($$->itOutTrans != strNULL) && !streql($$->itOutTrans, $5))
-	warn("conflicting out-translation functions (%s, %s)",
-	     $$->itOutTrans, $5);
-    $$->itOutTrans = $5;
-
-    if (($$->itTransType != strNULL) && !streql($$->itTransType, $7))
-	warn("conflicting translation types (%s, %s)",
-	     $$->itTransType, $7);
-    $$->itTransType = $7;
-}
+				{
+					$$ = $1;
+					itSetServerType($$, $4);
+					itSetOutTrans($$, $5);
+					itSetTransType($$, $7);
+				}
 			|	TransTypeSpec syDestructor syColon syIdentifier
 				syLParen syIdentifier syRParen
-{
-    $$ = $1;
-
-    if (($$->itDestructor != strNULL) && !streql($$->itDestructor, $4))
-	warn("conflicting destructor functions (%s, %s)",
-	     $$->itDestructor, $4);
-    $$->itDestructor = $4;
-
-    if (($$->itTransType != strNULL) && !streql($$->itTransType, $6))
-	warn("conflicting translation types (%s, %s)",
-	     $$->itTransType, $6);
-    $$->itTransType = $6;
-}
-			|	TransTypeSpec syCType syColon IdentifierOrCTypeName
-{
-    $$ = $1;
-
-    if (($$->itUserType != strNULL) && !streql($$->itUserType, $4))
-	warn("conflicting user types (%s, %s)",
-	     $$->itUserType, $4);
-    $$->itUserType = $4;
-
-    if (($$->itServerType != strNULL) && !streql($$->itServerType, $4))
-	warn("conflicting server types (%s, %s)",
-	     $$->itServerType, $4);
-    $$->itServerType = $4;
-}
-			|	TransTypeSpec syCUserType syColon IdentifierOrCTypeName
-{
-    $$ = $1;
-
-    if (($$->itUserType != strNULL) && !streql($$->itUserType, $4))
-	warn("conflicting user types (%s, %s)",
-	     $$->itUserType, $4);
-    $$->itUserType = $4;
-}
-			|	TransTypeSpec syCServerType
-				syColon IdentifierOrCTypeName
-{
-    $$ = $1;
-
-    if (($$->itServerType != strNULL) && !streql($$->itServerType, $4))
-	warn("conflicting server types (%s, %s)",
-	     $$->itServerType, $4);
-    $$->itServerType = $4;
-}
+				{
+					$$ = $1;
+					itSetDestructor($$, $4);
+					itSetTransType($$, $6);
+				}
+			|	TransTypeSpec DefineCType
+				{
+					$$ = $1;
+					itSetUserType($$, $2);
+					itSetServerType($$, $2);
+				}
+			|	TransTypeSpec DefineUserType
+				{
+					$$ = $1;
+					itSetUserType($$, $2);
+				}
+			|	TransTypeSpec DefineServerType
+				{
+					$$ = $1;
+					itSetServerType($$, $2);
+				}
 			;
+
+DefineCType			:	syCType syColon IdentifierOrCTypeName
+							{ $$ = $3; }
+						;
+DefineServerType	:	syCServerType syColon IdentifierOrCTypeName
+							{ $$ = $3; }
+						;
+DefineUserType	:	syCUserType syColon IdentifierOrCTypeName
+							{ $$ = $3; }
+					;
 
 IdentifierOrCTypeName		:	syIdentifier
 				{ $$ = $1; }

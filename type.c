@@ -633,6 +633,70 @@ itPrevDecl(identifier_t name)
 	return itCopyType(old);
 }
 
+void
+itSetServerType(ipc_type_t *it, identifier_t server_type)
+{
+    if (it->itServerType != strNULL && !streql(it->itServerType, server_type))
+        warn("Conflicting server types (%s, %s)", it->itServerType,
+            server_type);
+    it->itServerType = server_type;
+}
+
+void
+itSetUserType(ipc_type_t *it, identifier_t user_type)
+{
+    if (it->itUserType != strNULL && !streql(it->itUserType, user_type))
+        warn("Conflicting user types (%s, %s)", it->itUserType,
+            user_type);
+    it->itUserType = user_type;
+}
+
+void
+itSetOutTrans(ipc_type_t *it, identifier_t out_trans)
+{
+    if (it->itOutTrans != strNULL && !streql(it->itOutTrans, out_trans))
+        warn("Conflicting out-translation functions (%s, %s)",
+            it->itOutTrans, out_trans);
+	 it->itOutTrans = out_trans;
+}
+
+void
+itSetInTrans(ipc_type_t *it, identifier_t in_trans)
+{
+    if (it->itInTrans != strNULL && !streql(it->itInTrans, in_trans))
+        warn("Conflicting in-translation functions (%s, %s)",
+            it->itInTrans, in_trans);
+    it->itInTrans = in_trans;
+}
+
+void
+itSetTransType(ipc_type_t *it, identifier_t trans_type)
+{
+    if (it->itTransType != strNULL && !streql(it->itTransType, trans_type))
+        warn("Conflicting translation types (%s, %s)", it->itTransType,
+            trans_type);
+    it->itTransType = trans_type;
+}
+
+void
+itSetInTransPayload(ipc_type_t *it, identifier_t in_trans_payload)
+{
+    if (it->itInTransPayload != strNULL &&
+            !streql(it->itInTransPayload, in_trans_payload))
+        warn("conflicting in-translation payload functions (%s, %s)",
+             it->itInTransPayload, in_trans_payload);
+    it->itInTransPayload = in_trans_payload;
+}
+
+void
+itSetDestructor(ipc_type_t *it, identifier_t destructor)
+{
+    if (it->itDestructor != strNULL && !streql(it->itDestructor, destructor))
+        warn("Conflicting destructor functions (%s, %s)", it->itDestructor,
+            destructor);
+    it->itDestructor = destructor;
+}
+
 /*
  * Allows a type to be set as a variable array even if it was turned into
  * a pointer before. This allows an array to be sent inline for up to

@@ -209,6 +209,13 @@ extern ipc_type_t *itResetType(ipc_type_t *it);
 extern ipc_type_t *itVarArrayDecl(u_int number, const ipc_type_t *it);
 extern void itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
       const boolean_t indefinite);
+extern void itSetServerType(ipc_type_t *it, identifier_t server_type);
+extern void itSetUserType(ipc_type_t *it, identifier_t user_type);
+extern void itSetInTrans(ipc_type_t *it, identifier_t in_trans);
+extern void itSetOutTrans(ipc_type_t *it, identifier_t out_trans);
+extern void itSetTransType(ipc_type_t *it, identifier_t trans_type);
+extern void itSetInTransPayload(ipc_type_t *it, identifier_t in_trans_payload);
+extern void itSetDestructor(ipc_type_t *it, identifier_t destructor);
 extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itCArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itCVarArrayDecl(const ipc_type_t *it);
