@@ -207,6 +207,8 @@ extern ipc_type_t *itCopyType(const ipc_type_t *it);
 extern ipc_type_t *itCopyBuiltinType(const ipc_type_t *it);
 extern ipc_type_t *itResetType(ipc_type_t *it);
 extern ipc_type_t *itVarArrayDecl(u_int number, const ipc_type_t *it);
+extern void itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
+      const boolean_t indefinite);
 extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itCArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itCVarArrayDecl(const ipc_type_t *it);

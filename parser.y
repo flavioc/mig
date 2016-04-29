@@ -91,6 +91,9 @@
 %token	syTypedef
 %token   syUnion
 
+%token   syInline
+%token   syHard
+
 %token	syError			/* lex error */
 
 %token	<number>	syNumber
@@ -116,6 +119,7 @@
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
+%type <type> InlineDef
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -200,6 +204,7 @@ Statement		:	Subsystem sySemi
 			|	Typedef sySemi
 			|	StructDef sySemi
 			|	UnionDef sySemi
+         |  InlineDef sySemi
 			|	RoutineDecl sySemi
 {
     statement_t *st = stAlloc();
@@ -358,6 +363,26 @@ RCSDecl			:	LookQString syRCSId syQString
     RCSId = $3;
 }
 			;
+
+InlineDef   :  syInline syIdentifier syDiv IntExp
+               {
+                  ipc_type_t *it = itLookUp($2);
+                  if (it == itNULL)
+                     error("type %s could not be found", $2);
+                  if (it->itTypeConstruct != CTYPE_POINTER)
+                     error("type %s is not a pointer type", $2);
+                  itSetAsVarArray(it, $4, TRUE);
+               }
+            |  syInline syHard syIdentifier syDiv IntExp
+               {
+                  ipc_type_t *it = itLookUp($3);
+                  if (it == itNULL)
+                     error("type %s could not be found", $3);
+                  if (it->itTypeConstruct != CTYPE_POINTER)
+                     error("type %s is not a pointer type", $3);
+                  itSetAsVarArray(it, $5, FALSE);
+               }
+            ;
 
 Typedef		:	syTypedef TypedefConstruct
 			{

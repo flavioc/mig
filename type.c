@@ -634,6 +634,30 @@ itPrevDecl(identifier_t name)
 }
 
 /*
+ * Allows a type to be set as a variable array even if it was turned into
+ * a pointer before. This allows an array to be sent inline for up to
+ * 'inlined_elements'. If 'indefinite' is set to TRUE, then the array can be
+ * sent out-of-line if its size surpasses 'inlined_elements'.
+ */
+void
+itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
+      const boolean_t indefinite)
+{
+    ipc_type_t *element = it->itElement;
+    if (!element->itInLine || element->itVarArray)
+         error("IPC type decl is too complicated");
+    it->itNumber = inlined_elements * element->itNumber;
+    it->itSize = element->itSize;
+    it->itIndefinite = indefinite;
+    it->itVarArray = TRUE;
+    it->itStruct = FALSE;
+    it->itString = FALSE;
+    it->itInLine = TRUE;
+    it->itAlignment = element->itAlignment;
+    itCalculateSizeInfo(it);
+}
+
+/*
  *  Handles the declarations
  *	type new = array[] of old;	// number is 0
  *	type new = array[*] of old;	// number is 0
@@ -644,26 +668,15 @@ itVarArrayDecl(u_int number, const ipc_type_t *old)
 {
     ipc_type_t *it = itResetType(itCopyType(old));
 
-    if (!it->itInLine || it->itVarArray)
-        error("IPC type decl is too complicated");
-    if (number != 0)
-        it->itNumber *= number;
-    else {
-        /*
-         * Send at most 2048 bytes inline.
-         */
-        u_int	bytes;
-
-        bytes = (it->itNumber * it->itSize + 7) / 8;
-        it->itNumber = (2048 / bytes) * it->itNumber;
-        it->itIndefinite = TRUE;
+    const boolean_t indefinite = number == 0;
+    if (number == 0)
+    {
+        /* Compute the number of elements that can be sent using 2048 bytes. */
+        const u_int bytes = (it->itNumber * it->itSize + 7) / 8;
+        number = (2048 / bytes) * it->itNumber;
     }
-    it->itVarArray = TRUE;
-    it->itStruct = FALSE;
-    it->itString = FALSE;
-    it->itAlignment = old->itAlignment;
+    itSetAsVarArray(it, number, indefinite);
 
-    itCalculateSizeInfo(it);
     return it;
 }
 
