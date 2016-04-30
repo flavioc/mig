@@ -27,7 +27,8 @@ SUFFIXES = .h .symo .symc .sym
 .sym.symc:
 	$(AWK_V) $(AWK) -f $(srcdir)/gensym.awk $< > $@
 .symc.symo:
-	$(AM_V_CC) $(TARGET_CC) -S $(TARGET_CPPFLAGS) $(TARGET_CFLAGS) -x c -o $@ $<
+	$(AM_V_CC) $(TARGET_CC) $(DEFAULT_INCLUDES) -S $(TARGET_CPPFLAGS) \
+		$(TARGET_CFLAGS) -x c -o $@ $<
 .symo.h:
 	$(AM_V_GEN) sed -e '/^[^*].*$$/d' -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' \
 	    $< > $@
