@@ -20,4 +20,4 @@ MOSTLYCLEANFILES = *.[coh]
 
 TEST_EXTENSIONS = .defs
 AM_TESTS_ENVIRONMENT = SRCDIR='$(top_srcdir)' BUILDDIR='$(top_builddir)' \
-                       CC='$(CC)'
+                       CC='$(TARGET_CC)'
