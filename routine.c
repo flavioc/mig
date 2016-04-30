@@ -1279,7 +1279,6 @@ void
 rtPrintTypeAsserts(FILE *file, const routine_t *rt, boolean_t user)
 {
     const argument_t *arg;
-    rtPrintRoutine(rt);
     for (arg = rt->rtArgs; arg != argNULL; arg = arg->argNext) {
         ipc_type_t *it = arg->argType;
 

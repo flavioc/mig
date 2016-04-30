@@ -38,7 +38,7 @@ migcom=${MIGDIR-$libexecdir}/${MIGCOM-@MIGCOM@}
 # The expansion of TARGET_CC might refer to ${CC}, so make sure it is defined.
 default_cc="@CC@"
 CC="${CC-${default_cc}}"
-default_cpp="@TARGET_CC@ -E -x c -undef -ansi"
+default_cpp="@TARGET_CC@ -E -x c -undef -ansi -"
 cpp="${CPP-${default_cpp}}"
 
 cppflags=
@@ -127,9 +127,18 @@ EOT
     esac
 done
 
+replace_include_header () {
+    file="$1"
+    if [ "$file" = "/dev/null" ]; then
+        sed 's/include_header \(.*\);/import \1;\n#include \1/g'
+    else
+        sed 's/include_header \(.*\);/import \1;\n#include \1/g' $file
+    fi
+}
+
 for file in $files
 do
-    eval "$cpp $cppflags $file | $migcom $migflags || exit"
+    eval "replace_include_header $file | $cpp $cppflags - | $migcom $migflags || exit"
 
     if [ $sawMD ]
     then
