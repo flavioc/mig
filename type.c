@@ -1238,6 +1238,8 @@ structCreateNew(identifier_t name, ipc_type_t *members)
 		ret = itCIntTypeDecl(name, members->itSize / 8);
 		ret->itNumber = total_number;
 	} else {
+      if (total_size % max_struct_alignment != 0)
+         total_size += computeSizePadding(total_size, max_struct_alignment);
 		ret = itCIntTypeDecl(name, 1);
 		ret->itNumber = total_size;
 	}
