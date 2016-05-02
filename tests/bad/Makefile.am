@@ -17,6 +17,7 @@
 #
 
 TESTS = invalid_subsystem.defs no_request_port.defs no_subsystem.defs
+EXTRA_DIST = $(TESTS) run_bad_test.sh
 DEFS_LOG_COMPILER = sh ./$(srcdir)/run_bad_test.sh
 
 include $(srcdir)/../Makeconf.am

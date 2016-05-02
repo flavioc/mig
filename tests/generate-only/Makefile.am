@@ -17,6 +17,7 @@
 #
 
 TESTS = subsystem-kernel.defs subsystem-user.defs
+EXTRA_DIST = $(TESTS) run_generate_only_test.sh
 DEFS_LOG_COMPILER = sh ./$(srcdir)/run_generate_only_test.sh
 
 include $(srcdir)/../Makeconf.am
