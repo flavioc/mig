@@ -46,7 +46,7 @@ typedef char* string_t;
 
 typedef struct {
    int x;
-   int arr[2 + 2];
+   int arr[2 + 2][2];
    int *ptr;
 } array_struct_t;
 

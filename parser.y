@@ -116,7 +116,7 @@
 %type	<identifier> IdentifierOrCTypeName TypeIdentifier
 %type	<identifier> DefineCType DefineUserType DefineServerType
 %type	<statement_kind> ImportIndicant
-%type	<number> VarArrayHead ArrayHead StructHead IntExp
+%type	<number> VarArrayHead ArrayHead StructHead IntExp CArraySpec
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
@@ -402,9 +402,9 @@ TypedefConstruct	:	CTypeSpec syIdentifier
 					$$ = itResetType($1);
 					itTypeDecl($2, $$);
 				}
-			|	CTypeSpec syIdentifier syLBrack IntExp syRBrack
+			|	CTypeSpec syIdentifier CArraySpec
 				{
-					$$ = itCArrayDecl($4, $1);
+					$$ = itCArrayDecl($3, $1);
 					itTypeDecl($2, $$);
 				}
 			|	CTypeSpec syIdentifier syLBrack syRBrack
@@ -641,9 +641,9 @@ StructMember	:	CTypeSpec syIdentifier sySemi
 						{
 							$$ = $1;
 						}
-					|	CTypeSpec syIdentifier syLBrack IntExp syRBrack sySemi
+					|	CTypeSpec syIdentifier CArraySpec sySemi
 						{
-							$$ = itCArrayDecl($4, $1);
+							$$ = itCArrayDecl($3, $1);
 						}
 					|	CTypeSpec syIdentifier syLBrack syRBrack sySemi
 						{
@@ -660,6 +660,12 @@ StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack
 						$$ = structCreateNew($2, $4);
 						structRegister($2, $$);
 					}
+				;
+
+CArraySpec	:	syLBrack IntExp syRBrack
+					{ $$ = $2; }
+				|	CArraySpec syLBrack IntExp syRBrack
+					{ $$ = $1 * $3; }
 				;
 
 UnionDef		:	syUnion syIdentifier syLCrack StructMembers syRCrack
