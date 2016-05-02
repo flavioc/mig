@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 typedef int another_int;
+typedef int *int_array;
 
 typedef struct char_struct {
   char c1;

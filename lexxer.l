@@ -190,6 +190,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:inline)		RETURN(syInline);
 <Normal>(?i:hard)       RETURN(syHard);
 <Normal>(?i:modtype)		RETURN(syModType);
+<Normal>(?i:sizeof)		RETURN(sySizeof);
 
 <Normal>(?i:polymorphic)	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 

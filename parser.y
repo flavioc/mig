@@ -94,6 +94,7 @@
 %token   syInline
 %token   syHard
 %token	syModType
+%token   sySizeof
 
 %token	syError			/* lex error */
 
@@ -782,6 +783,11 @@ IntExp			: 	IntExp	syPlus	IntExp
 				{ $$ = $1 * $3;	}
 			| 	IntExp	syDiv	IntExp
 				{ $$ = $1 / $3;	}
+			|	sySizeof syLParen CTypeSpec syRParen
+				{
+					$$ = $3->itTypeSize;
+					free($3);
+				}
 			|	syNumber
 				{ $$ = $1;	}
 			|	syLParen IntExp syRParen
