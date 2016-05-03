@@ -575,7 +575,6 @@ itCopyType(const ipc_type_t *old)
     ipc_type_t *new = itAlloc();
 
     *new = *old;
-    new->itName = strNULL;
     new->itNext = itNULL;
     new->itElement = (ipc_type_t *) old;
 
