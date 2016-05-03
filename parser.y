@@ -99,6 +99,8 @@
 %token	syAttribute
 %token	syExtension
 %token	syNoReturn
+%token	syNoThrow
+%token	syAttrLeaf
 %token	syAligned
 %token	syExtern
 %token	syEnum
@@ -731,6 +733,10 @@ CAttributeList	:	CAttributeMember
 CAttributeMember	:	syAligned syLParen IntExp syRParen
 							{ $$.min_alignment = $3; }
 						|	syNoReturn
+							{ $$ = CAttributesDefault(); }
+						|	syNoThrow
+							{ $$ = CAttributesDefault(); }
+						|	syAttrLeaf
 							{ $$ = CAttributesDefault(); }
 						;
 
