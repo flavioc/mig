@@ -75,6 +75,14 @@ inline CAttributes CAttributesDefault()
 	 return def;
 }
 
+inline CAttributes CAttributesMerge(const CAttributes a, const CAttributes b)
+{
+    CAttributes ret = a;
+	 if (b.min_alignment > ret.min_alignment)
+        ret.min_alignment = b.min_alignment;
+	 return ret;
+}
+
 /*
  * itName and itNext are internal fields (not used for code generation).
  * They are only meaningful for types entered into the symbol table.

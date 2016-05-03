@@ -194,6 +194,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:sizeof)		RETURN(sySizeof);
 <Normal>"__attribute__"	RETURN(syAttribute);
 <Normal>"__extension__"	RETURN(syExtension);
+<Normal>"__noreturn__"	RETURN(syNoReturn);
 <Normal>"aligned"			RETURN(syAligned);
 <Normal>"extern"			RETURN(syExtern);
 <Normal>"enum"				RETURN(syEnum);

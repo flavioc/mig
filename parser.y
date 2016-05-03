@@ -98,6 +98,7 @@
 %token   sySizeof
 %token	syAttribute
 %token	syExtension
+%token	syNoReturn
 %token	syAligned
 %token	syExtern
 %token	syEnum
@@ -136,7 +137,7 @@
 %type	<direction> Direction
 %type	<argument> Argument Arguments ArgumentList
 %type	<flag> IPCFlags
-%type	<cattr> CAttribute
+%type	<cattr> CAttribute CAttributeList CAttributeMember
 
 %{
 
@@ -704,11 +705,23 @@ StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack CAttribute
 					}
 				;
 
-CAttribute	:	syAttribute syLParen syLParen syAligned syLParen IntExp syRParen syRParen syRParen
-					{ $$.min_alignment = $6; }
+CAttribute	:	syAttribute syLParen syLParen CAttributeList  syRParen syRParen
+					{ $$ = $4;; }
 				|	%empty
 					{ $$ = CAttributesDefault(); }
 				;
+
+CAttributeList	:	CAttributeMember
+						{ $$ = $1; }
+					|	CAttributeList syComma CAttributeMember
+						{ $$ = CAttributesMerge($1, $3); }
+					;
+
+CAttributeMember	:	syAligned syLParen IntExp syRParen
+							{ $$.min_alignment = $3; }
+						|	syNoReturn
+							{ $$ = CAttributesDefault(); }
+						;
 
 CArraySpec	:	syLBrack IntExp syRBrack
 					{ $$ = $2; }
