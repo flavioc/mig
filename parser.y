@@ -105,6 +105,7 @@
 %token	syExtern
 %token	syEnum
 %token	syVoid
+%token	syConst
 
 %token	syError			/* lex error */
 
@@ -133,7 +134,7 @@
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
 %type <type> InlineDef TransModType ModTypeDecl
-%type	<type> CVarDecl EnumDef
+%type	<type> CVarDecl CVarDeclNameAndType EnumDef
 %type	<identifier> EnumMember EnumMembers
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
@@ -450,18 +451,18 @@ TypeDecl		:	syType NamedTypeSpec
 }
 			;
 
-TopLevelCVarDecl	:	CVarQualifiers CVarDecl
+TopLevelCVarDecl	:	CVarTopQualifiers CVarDecl
 							{ itFree($2); }
 						|	CVarDecl
 							{ itFree($1); }
 						;
 
-CVarQualifiers	:	CVarQualifier
-					|	CVarQualifiers CVarQualifier
-					;
+CVarTopQualifiers	:	CVarTopQualifier
+						|	CVarTopQualifiers CVarTopQualifier
+						;
 
-CVarQualifier	:	syExtern
-					;
+CVarTopQualifier	:	syExtern
+						;
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
@@ -688,17 +689,23 @@ EnumMember	:	syIdentifier
 			  	|	syIdentifier syEqual IntExp
 				;
 
-CVarDecl	:	CTypeSpec syIdentifier
-				{ $$ = $1; }
-			|	CTypeSpec syIdentifier CArraySpec
-				{ $$ = itCArrayDecl($3, $1); }
-			|	CTypeSpec syIdentifier CFunctionSpec
-				{ $$ = itNULL; }
-			|	CTypeSpec syIdentifier syLBrack syRBrack
-				{ $$ = itCVarArrayDecl($1); }
-			|	SimpleUnion
-				{ $$ = $1; }
+CVarDecl	:	syConst CVarDeclNameAndType
+				{ $$ = $2; }
+         |  CVarDeclNameAndType
+            { $$ = $1; }
 			;
+
+CVarDeclNameAndType	:	CTypeSpec syIdentifier
+								{ $$ = $1; }
+							|	CTypeSpec syIdentifier CArraySpec
+								{ $$ = itCArrayDecl($3, $1); }
+							|	CTypeSpec syIdentifier CFunctionSpec
+								{ $$ = itNULL; }
+							|	CTypeSpec syIdentifier syLBrack syRBrack
+								{ $$ = itCVarArrayDecl($1); }
+							|	SimpleUnion
+								{ $$ = $1; }
+							;
 
 EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
 		  		{

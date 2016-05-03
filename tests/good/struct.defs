@@ -28,8 +28,8 @@ typedef int integer_t;
 typedef unsigned int natural_t;
 typedef natural_t mach_port_seqno_t;
 struct time_value {
-	integer_t	seconds;
-	integer_t	microseconds;
+	const integer_t	seconds;
+	const integer_t	microseconds;
 };
 typedef	struct time_value time_value_t;
 
