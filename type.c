@@ -1175,7 +1175,7 @@ reverseTypeList(ipc_type_t *ls)
 }
 
 ipc_type_t *
-structCreateNew(identifier_t name, ipc_type_t *members)
+structCreateNew(identifier_t name, ipc_type_t *members, const CAttributes attrs)
 {
 	/* Number of bytes required to store the whole struct. */
 	size_t total_size = 0;
@@ -1231,13 +1231,15 @@ structCreateNew(identifier_t name, ipc_type_t *members)
 	}
 
 	ipc_type_t *ret = itNULL;
-	if (all_equal_names) {
+	if (attrs.min_alignment == 0 && all_equal_names) {
 		ret = itResetType(itCopyType(members));
 		ret->itNumber = total_number;
-	} else if (all_equal_sizes) {
+	} else if (attrs.min_alignment == 0 && all_equal_sizes) {
 		ret = itCIntTypeDecl(name, members->itSize / 8);
 		ret->itNumber = total_number;
 	} else {
+		if (max_struct_alignment < attrs.min_alignment)
+			max_struct_alignment = attrs.min_alignment;
       if (total_size % max_struct_alignment != 0)
          total_size += computeSizePadding(total_size, max_struct_alignment);
 		ret = itCIntTypeDecl(name, 1);

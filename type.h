@@ -62,6 +62,17 @@ typedef enum {
    CTYPE_ARRAY /* Arrays using [N] syntax. */
 } CTypeConstruct;
 
+typedef struct {
+    int min_alignment; /* Minimum alignment. */
+} CAttributes;
+
+inline CAttributes CAttributesDefault()
+{
+    CAttributes def;
+	 def.min_alignment = 0;
+	 return def;
+}
+
 /*
  * itName and itNext are internal fields (not used for code generation).
  * They are only meaningful for types entered into the symbol table.
@@ -254,7 +265,7 @@ extern boolean_t itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags,
 
 void structRegister(identifier_t name, ipc_type_t *it);
 ipc_type_t* structLookUp(identifier_t name);
-ipc_type_t* structCreateNew(identifier_t name, ipc_type_t *members);
+ipc_type_t* structCreateNew(identifier_t name, ipc_type_t *members, const CAttributes attr);
 
 /* C unions related functions.  */
 

@@ -192,6 +192,8 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:hard)       RETURN(syHard);
 <Normal>(?i:modtype)		RETURN(syModType);
 <Normal>(?i:sizeof)		RETURN(sySizeof);
+<Normal>"__attribute__"	RETURN(syAttribute);
+<Normal>"aligned"			RETURN(syAligned);
 
 <Normal>(?i:polymorphic)	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 

@@ -96,6 +96,8 @@
 %token   syHard
 %token	syModType
 %token   sySizeof
+%token	syAttribute
+%token	syAligned
 
 %token	syError			/* lex error */
 
@@ -130,6 +132,7 @@
 %type	<direction> Direction
 %type	<argument> Argument Arguments ArgumentList
 %type	<flag> IPCFlags
+%type	<cattr> CAttribute
 
 %{
 
@@ -171,6 +174,7 @@ yyerror(const char *s)
     const_string_t string;
     statement_kind_t statement_kind;
     ipc_type_t *type;
+    CAttributes cattr;
     struct
     {
 	c_type_t basic_type;
@@ -194,7 +198,7 @@ yyerror(const char *s)
 }
 %%
 
-Statements		:	/* empty */
+Statements		:	%empty
 			|	Statements Statement
 			;
 
@@ -257,7 +261,7 @@ SubsystemStart		:	sySubsystem
 }
 			;
 
-SubsystemMods		:	/* empty */
+SubsystemMods		:	%empty
 			|	SubsystemMods SubsystemMod
 			;
 
@@ -607,16 +611,10 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 							error("struct %s is not defined", $2);
 						$$ = itCopyType(str);
 					}
-				|  syStruct syIdentifier syLCrack StructMembers syRCrack
-        			{
-						if (structLookUp($2) != itNULL)
-							error("struct %s is already defined", $2);
-						$$ = structCreateNew($2, $4);
-						structRegister($2, $$);
-						$$ = itCopyType($$);
-         		}
+				|  StructDef
+					{ $$ = itCopyType($1); }
 				|	syStruct syLCrack StructMembers syRCrack
-					{ $$ = structCreateNew("(unnamed)", $3); }
+					{ $$ = structCreateNew("(unnamed)", $3, CAttributesDefault()); }
 				|	syUnion syIdentifier
 					{
 						ipc_type_t *uni = unionLookUp($2);
@@ -655,13 +653,19 @@ StructMember	:	CTypeSpec syIdentifier sySemi
 						{ $$ = $1; }
 					;
 
-StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack
+StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack CAttribute
 					{
 						if (structLookUp($2) != itNULL)
 							error("struct %s or struct is already defined", $2);
-						$$ = structCreateNew($2, $4);
+						$$ = structCreateNew($2, $4, $6);
 						structRegister($2, $$);
 					}
+				;
+
+CAttribute	:	syAttribute syLParen syLParen syAligned syLParen IntExp syRParen syRParen syRParen
+					{ $$.min_alignment = $6; }
+				|	%empty
+					{ $$ = CAttributesDefault(); }
 				;
 
 CArraySpec	:	syLBrack IntExp syRBrack
@@ -701,7 +705,7 @@ BasicTypeSpec		:	IPCType
 }
 			;
 
-IPCFlags		:	/* empty */
+IPCFlags		:	%empty
 				{ $$ = flNone; }
 			|	IPCFlags syComma syIPCFlag
 {
@@ -843,7 +847,7 @@ Argument		:	Direction syIdentifier syColon ArgumentType IPCFlags
 }
 			;
 
-Direction		:	/* empty */	{ $$ = akNone; }
+Direction		:	%empty	{ $$ = akNone; }
 			|	syIn		{ $$ = akIn; }
 			|	syOut		{ $$ = akOut; }
 			|	syInOut		{ $$ = akInOut; }
@@ -871,15 +875,15 @@ ArgumentType		:	syIdentifier
 				{ $$ = $1; }
 			;
 
-LookString		:	/* empty */
+LookString		:	%empty
 				{ LookString(); }
 			;
 
-LookFileName		:	/* empty */
+LookFileName		:	%empty
 				{ LookFileName(); }
 			;
 
-LookQString		:	/* empty */
+LookQString		:	%empty
 				{ LookQString(); }
 			;
 

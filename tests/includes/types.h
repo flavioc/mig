@@ -50,6 +50,8 @@ typedef struct {
    int *ptr;
 } array_struct_t;
 
+typedef struct i386_xfp_save i386_xfp_save_t;
+
 union union_type {
    int a;
    int b;

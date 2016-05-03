@@ -21,6 +21,7 @@ subsystem structs 0;
 import <mach/time_value.h>;
 import <mach/thread_info.h>;
 #include "../base_types.defs"
+import <mach/machine/fp_reg.h>;
 import "types.h";
 
 typedef int integer_t;
@@ -69,9 +70,30 @@ typedef struct small_struct {
   char c1;
 } small_struct_t;
 
+typedef struct i386_xfp_save {
+	unsigned short	fp_control;	/* control */
+	unsigned short	fp_status;	/* status */
+	unsigned short	fp_tag;		/* register tags */
+	unsigned short	fp_opcode;	/* opcode of failed instruction */
+	unsigned int	fp_eip;		/* eip at failed instruction */
+	unsigned short	fp_cs;		/* cs at failed instruction */
+	unsigned short	fp_unused_1;
+	unsigned int	fp_dp;		/* data address */
+	unsigned short	fp_ds;		/* data segment */
+	unsigned short	fp_unused_2;
+	unsigned int	fp_mxcsr;	/* MXCSR */
+	unsigned int	fp_mxcsr_mask;	/* MXCSR_MASK */
+	unsigned char	fp_reg_word[8][16];
+					/* space for 8 128-bit FP registers */
+	unsigned char	fp_xreg_word[8][16];
+					/* space for 8 128-bit XMM registers */
+	unsigned int	padding[56];
+} __attribute__((aligned(16))) i386_xfp_save_t;
+
 routine usestruct(port : mach_port_t; str : mach_port_status_t;
 				  time : time_value_t;
 				  thread : thread_basic_info_data_t;
               padding : padding_struct_t;
               small : small_struct_t;
+				  fp_regs : i386_xfp_save_t;
 				  out result : mach_port_status_t);
