@@ -108,6 +108,12 @@ itInsert(identifier_t name, ipc_type_t *it)
 	tableInsert(&type_table, name, it);
 }
 
+void
+itFree(ipc_type_t *it)
+{
+    free(it);
+}
+
 static ipc_type_t *
 itAlloc(void)
 {
@@ -585,16 +591,17 @@ itCopyType(const ipc_type_t *old)
 ipc_type_t *
 itCopyBuiltinType(const ipc_type_t *old)
 {
-   ipc_type_t *copy = itCopyType(old);
-   copy->itName = old->itName;
-   itCalculateNameInfo(copy);
-   return copy;
+    ipc_type_t *copy = itCopyType(old);
+    copy->itName = old->itName;
+    copy->itElement = itNULL;
+    itCalculateNameInfo(copy);
+    return copy;
 }
 
 /*
  * A call to itCopyType is almost always followed with itResetType.
- * The exception is itPrevDecl.  Also called before adding any new
- * translation/destruction/type info (see parser.y).
+ * Also called before adding any new translation/destruction/type info
+ * (see parser.y).
  *
  *	type new = old;	// new doesn't get old's info
  *	type new = array[*:10] of old;
@@ -618,23 +625,21 @@ itResetType(ipc_type_t *old)
     return old;
 }
 
-/*
- *  Handles the declaration
- *	type new = old;
- */
+/* Looks into the symbol table and copies the type. */
 ipc_type_t *
-itPrevDecl(identifier_t name)
+itCopyIdentifier(identifier_t name)
 {
-    ipc_type_t *old;
-
-    old = itLookUp(name);
+    ipc_type_t *old = itLookUp(name);
     if (old == itNULL)
     {
 	error("type '%s' not defined", name);
 	return itAlloc();
     }
-    else
-	return itCopyType(old);
+
+    ipc_type_t *it = itAlloc();
+	 *it = *old;
+	 it->itNext = itNULL;
+	 return it;
 }
 
 void
@@ -743,7 +748,7 @@ itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
     it->itString = element->itName != strNULL &&
         streql(element->itName, "char");
     if (it->itString) {
-        free(element);
+        itFree(element);
         it->itElement = itCreateStringElement();
         it->itTypeConstruct = CTYPE_STRING;
     }
@@ -1272,7 +1277,7 @@ structCreateNew(identifier_t name, ipc_type_t *members, const CAttributes attrs)
 	/* Free all members of the structure.  */
 	while (members) {
 		ipc_type_t *copy = members->itNext;
-		free(members);
+		itFree(members);
 		members = copy;
 	}
    ret->itTypeConstruct = CTYPE_STRUCT;
@@ -1322,7 +1327,7 @@ unionCreateNew(identifier_t name, ipc_type_t *members)
 
 	/* Keep the largest member since it will represent the union.  */
 	if (members != largest_member)
-	   free(members);
+	   itFree(members);
 
 	members = copy;
     }

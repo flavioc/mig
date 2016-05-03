@@ -443,9 +443,9 @@ TypeDecl		:	syType NamedTypeSpec
 			;
 
 TopLevelCVarDecl	:	CVarQualifiers CVarDecl
-							{ free($2); }
+							{ itFree($2); }
 						|	CVarDecl
-							{ free($1); }
+							{ itFree($1); }
 						;
 
 CVarQualifiers	:	CVarQualifier
@@ -798,7 +798,7 @@ IPCType			:	PrimIPCType
 			;
 
 PrevTypeSpec		:	syIdentifier
-				{ $$ = itPrevDecl($1); }
+				{ $$ = itCopyIdentifier($1); }
 			;
 
 VarArrayHead		:	syArray syLBrack syRBrack syOf
@@ -838,7 +838,7 @@ IntExp			: 	IntExp	syPlus	IntExp
 			|	sySizeof syLParen CTypeSpec syRParen
 				{
 					$$ = $3->itTypeSize;
-					free($3);
+					itFree($3);
 				}
 			|	syNumber
 				{ $$ = $1;	}

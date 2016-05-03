@@ -207,6 +207,7 @@ typedef struct ipc_type
 
 extern ipc_type_t *itLookUp(identifier_t name);
 extern void itInsert(identifier_t name, ipc_type_t *it);
+extern void itFree(ipc_type_t *it);
 extern void itTypeDecl(identifier_t name, ipc_type_t *it);
 
 extern ipc_type_t *itShortDecl(u_int inname, const_string_t instr,
@@ -215,7 +216,7 @@ extern ipc_type_t *itShortDecl(u_int inname, const_string_t instr,
 extern ipc_type_t *itLongDecl(u_int inname, const_string_t instr,
 			      u_int outname, const_string_t outstr,
 			      u_int defsize, u_int size, ipc_flags_t flags);
-extern ipc_type_t *itPrevDecl(identifier_t name);
+extern ipc_type_t *itCopyIdentifier(identifier_t name);
 extern ipc_type_t *itCopyType(const ipc_type_t *it);
 extern ipc_type_t *itCopyBuiltinType(const ipc_type_t *it);
 extern ipc_type_t *itResetType(ipc_type_t *it);
