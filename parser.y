@@ -87,6 +87,7 @@
 %token	syLCrack
 %token	syRCrack
 %token	syBar
+%token	syRShift
 
 %token	syTypedef
 %token   syUnion
@@ -109,6 +110,7 @@
 %token	syInTranPayload
 
 %left	syPlus syMinus
+%left syRShift
 %left	syStar syDiv
 
 
@@ -789,6 +791,8 @@ IntExp			: 	IntExp	syPlus	IntExp
 				{ $$ = $1 * $3;	}
 			| 	IntExp	syDiv	IntExp
 				{ $$ = $1 / $3;	}
+			|	IntExp syRShift IntExp
+				{ $$ = $1 >> $3;	}
 			|	sySizeof syLParen CTypeSpec syRParen
 				{
 					$$ = $3->itTypeSize;
