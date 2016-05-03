@@ -721,7 +721,9 @@ itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
     it->itIndefinite = indefinite;
     it->itVarArray = TRUE;
     it->itStruct = FALSE;
-    it->itString = FALSE;
+    it->itString = element->itName != strNULL &&
+        element->itTypeConstruct == CTYPE_BASIC &&
+        streql(element->itName, "char");
     it->itInLine = TRUE;
     it->itAlignment = element->itAlignment;
     itCalculateSizeInfo(it);
@@ -775,8 +777,15 @@ itArrayDecl(u_int number, const ipc_type_t *old)
  * typedef old new[N];
  */
 ipc_type_t *
-itCArrayDecl(const u_int number, const ipc_type_t *old)
+itCArrayDecl(const u_int number, ipc_type_t *old)
 {
+    if (streql(old->itName, "char")) {
+        /* We delete the char type and create the string type. */
+        free (old);
+        ipc_type_t *it = itCStringDecl(number, FALSE);
+        it->itTypeConstruct = CTYPE_STRING;
+        return it;
+   }
    ipc_type_t *it = itArrayDecl(number, old);
    it->itTypeConstruct = CTYPE_ARRAY;
    return it;
@@ -1205,7 +1214,6 @@ structCreateNew(identifier_t name, ipc_type_t *members, const CAttributes attrs)
       if (total_size % it->itAlignment != 0)
          total_size += computeSizePadding(total_size, it->itAlignment);
       total_size += it->itTypeSize;
-      fprintf(stderr, "total_size: %d\n", total_size);
 		total_number += it->itNumber;
 		if (it->itInName == MACH_MSG_TYPE_POLYMORPHIC ||
 				it->itOutName == MACH_MSG_TYPE_POLYMORPHIC) {
@@ -1217,12 +1225,6 @@ structCreateNew(identifier_t name, ipc_type_t *members, const CAttributes attrs)
 				all_equal_names = FALSE;
 				if (members->itSize != it->itSize)
 					all_equal_sizes = FALSE;
-				if (members->itInNameStr != it->itInNameStr)
-					fprintf(stderr, "can't be all of the same type (%s vs %s)\n",
-							members->itInNameStr, it->itInNameStr);
-				if (members->itOutNameStr != it->itOutNameStr)
-					fprintf(stderr, "can't be all of the same type (%s vs %s)\n",
-							members->itOutNameStr, it->itOutNameStr);
 			}
 		} else if (all_equal_sizes) {
 			if (members->itSize != it->itSize)

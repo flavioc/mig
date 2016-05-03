@@ -1,0 +1,12 @@
+subsystem strings 0;
+
+#include "../base_types.defs"
+import "types.h";
+
+type string1_t = c_string[1024];
+type string2_t = c_string[*:1024];
+typedef char string3_t[1024];
+typedef char *string4_t;
+inline hard string4_t/1024;
+
+routine call(port : mach_port_t; str : string1_t; str2 : string2_t; str3 : string3_t; str4 : string4_t);

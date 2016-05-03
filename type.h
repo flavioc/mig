@@ -59,7 +59,8 @@ typedef enum {
    CTYPE_UNION, /* Unions passed by value. */
    CTYPE_POINTER, /* Simple pointers using *. */
    CTYPE_VARARRAY, /* Arrays using [] syntax. */
-   CTYPE_ARRAY /* Arrays using [N] syntax. */
+   CTYPE_ARRAY, /* Arrays using [N] syntax. */
+   CTYPE_STRING /* Char arrays using the char[N] syntax. */
 } CTypeConstruct;
 
 typedef struct {
@@ -228,7 +229,7 @@ extern void itSetTransType(ipc_type_t *it, identifier_t trans_type);
 extern void itSetInTransPayload(ipc_type_t *it, identifier_t in_trans_payload);
 extern void itSetDestructor(ipc_type_t *it, identifier_t destructor);
 extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);
-extern ipc_type_t *itCArrayDecl(u_int number, const ipc_type_t *it);
+extern ipc_type_t *itCArrayDecl(u_int number, ipc_type_t *it);
 extern ipc_type_t *itCVarArrayDecl(const ipc_type_t *it);
 extern ipc_type_t *itPtrDecl(ipc_type_t *it);
 extern ipc_type_t *itCPtrDecl(ipc_type_t *it);

@@ -43,6 +43,10 @@ typedef struct small_struct {
 } small_struct_t;
 
 typedef char* string_t;
+typedef char string1_t[1024];
+typedef string1_t string3_t;
+typedef string_t string2_t;
+typedef string_t string4_t;
 
 typedef struct {
    int x;
