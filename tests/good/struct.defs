@@ -62,7 +62,11 @@ typedef struct thread_basic_info {
 typedef struct padding_struct {
    char a;
    short b;
-   int c;
+	enum {
+		ENUM1,
+		ENUM2,
+		ENUM3
+	} c;
    int *d;
 } padding_struct_t;
 

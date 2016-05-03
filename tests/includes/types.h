@@ -72,6 +72,14 @@ typedef struct {
    };
 } union_struct_t;
 
+typedef enum enum_type {
+	ENUM1 = 0, ENUM2 = 3
+} enum_type_t;
+
+typedef enum {
+	ENUM
+} enum_type2_t;
+
 static inline int8_t int_to_int8(int n) {
   return (int8_t) n;
 }

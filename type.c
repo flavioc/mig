@@ -1349,3 +1349,26 @@ void unionRegister(identifier_t name, ipc_type_t *type)
 {
     tableInsert(&struct_union_table, name, type);
 }
+
+/******************************************************
+ *  Functions related to C-based enums.
+ ******************************************************/
+
+ipc_type_t *
+enumCreateNew(identifier_t name)
+{
+    ipc_type_t *type = itCIntTypeDecl(name, sizeof_enum);
+	 type->itTypeConstruct = CTYPE_ENUM;
+	 return type;
+}
+
+ipc_type_t*
+enumLookUp(identifier_t name)
+{
+    return tableLookUp(&struct_union_table, name);
+}
+
+void enumRegister(identifier_t name, ipc_type_t *type)
+{
+    tableInsert(&struct_union_table, name, type);
+}

@@ -60,7 +60,8 @@ typedef enum {
    CTYPE_POINTER, /* Simple pointers using *. */
    CTYPE_VARARRAY, /* Arrays using [] syntax. */
    CTYPE_ARRAY, /* Arrays using [N] syntax. */
-   CTYPE_STRING /* Char arrays using the char[N] syntax. */
+   CTYPE_STRING, /* Char arrays using the char[N] syntax. */
+	CTYPE_ENUM
 } CTypeConstruct;
 
 typedef struct {
@@ -273,5 +274,11 @@ ipc_type_t* structCreateNew(identifier_t name, ipc_type_t *members, const CAttri
 void unionRegister(identifier_t name, ipc_type_t *it);
 ipc_type_t* unionCreateNew(identifier_t name, ipc_type_t *members);
 ipc_type_t* unionLookUp(identifier_t name);
+
+/* C enums related functions.  */
+
+void enumRegister(identifier_t name, ipc_type_t *it);
+ipc_type_t* enumCreateNew(identifier_t name);
+ipc_type_t* enumLookUp(identifier_t name);
 
 #endif	/* _TYPE_H */
