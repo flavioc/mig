@@ -23,6 +23,7 @@ import <stdint.h>;
 import "types.h";
 #include "../base_types.defs"
 
+type int8_t = unsigned char;
 type int16_t = MACH_MSG_TYPE_INTEGER_16;
 type boolean_t = MACH_MSG_TYPE_BOOLEAN;
 type uint16_t = MACH_MSG_TYPE_INTEGER_16;
@@ -43,10 +44,13 @@ type another_int = int
         cusertype: int32_t
         cservertype: uint32_t;
 
+extern void destroy_int(int8_t);
+
 type trans_int = int
         ctype: int
         intran: int8_t int_to_int8(int)
-        outtran: int int8_to_int(int8_t);
+        outtran: int int8_to_int(int8_t)
+		  destructor: destroy_int(int8_t);
 
 routine alltypes(port : mach_port_t;
                  c : char; s1 : int16_t; s2 : short; i : int;

@@ -961,6 +961,23 @@ itMakeCountType(void)
     return it;
 }
 
+ipc_type_t *
+itMakeVoidType(void)
+{
+    ipc_type_t *it = itAlloc();
+
+    it->itName = "void";
+    it->itInName = MACH_MSG_TYPE_UNSTRUCTURED;
+    it->itInNameStr = "MACH_MSG_TYPE_UNSTRUCTURED";
+    it->itOutName = it->itInName;
+    it->itOutNameStr = it->itInNameStr;
+    it->itSize = 0;
+
+    itCalculateSizeInfo(it);
+    itCalculateNameInfo(it);
+    return it;
+}
+
 static ipc_type_t *
 itMakeNaturalType(const char *name)
 {

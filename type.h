@@ -256,6 +256,7 @@ extern ipc_type_t *itMsgOptionType;
 extern ipc_type_t *itMakeCountType(void);
 extern ipc_type_t *itMakePolyType(void);
 extern ipc_type_t *itMakeDeallocType(void);
+extern ipc_type_t *itMakeVoidType(void);
 
 extern void init_type(void);
 

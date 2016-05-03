@@ -102,6 +102,7 @@
 %token	syAligned
 %token	syExtern
 %token	syEnum
+%token	syVoid
 
 %token	syError			/* lex error */
 
@@ -514,7 +515,7 @@ TransTypeSpec		:	TypeSpec
 					itSetTransType($$, $7);
 				}
 			|	TransTypeSpec syDestructor syColon syIdentifier
-				syLParen syIdentifier syRParen
+				syLParen IdentifierOrCTypeName syRParen
 				{
 					$$ = $1;
 					itSetDestructor($$, $4);
@@ -628,6 +629,8 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 				/* A builtin type based on unsigned/signed int/char/float.  */
 				|	BuiltinType
 					{ $$ = itCopyBuiltinType($1); }
+				|	syVoid
+					{ $$ = itMakeVoidType(); }
 				|	syStruct syIdentifier
 					{
 						ipc_type_t *str = structLookUp($2);
@@ -681,6 +684,8 @@ CVarDecl	:	CTypeSpec syIdentifier
 				{ $$ = $1; }
 			|	CTypeSpec syIdentifier CArraySpec
 				{ $$ = itCArrayDecl($3, $1); }
+			|	CTypeSpec syIdentifier CFunctionSpec
+				{ $$ = itNULL; }
 			|	CTypeSpec syIdentifier syLBrack syRBrack
 				{ $$ = itCVarArrayDecl($1); }
 			|	SimpleUnion
@@ -728,6 +733,21 @@ CArraySpec	:	syLBrack IntExp syRBrack
 				|	CArraySpec syLBrack IntExp syRBrack
 					{ $$ = $1 * $3; }
 				;
+
+CFunctionSpec	:	syLParen CFunctionArguments syRParen CAttribute
+					;
+
+CFunctionArguments	:	%empty
+							|	CFunctionList
+							;
+
+CFunctionList	:	CFunctionArgument
+					|	CFunctionList syComma CFunctionArgument
+					;
+
+CFunctionArgument	:	CTypeSpec { itFree($1); }
+						|	CVarDecl { itFree($1); }
+						;
 
 UnionDef		:	syUnion syIdentifier syLCrack StructMembers syRCrack
 					{
