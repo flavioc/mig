@@ -5,6 +5,7 @@ import "types.h";
 
 type string1_t = c_string[1024];
 type string2_t = c_string[*:1024];
+
 typedef char string3_t[1024];
 typedef char *string4_t;
 inline hard string4_t/1024;

@@ -389,6 +389,23 @@ itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags, boolean_t dfault,
     return islong;
 }
 
+static void
+itRecomputeFlags(ipc_type_t *it, identifier_t name)
+{
+    /* process the IPC flag specification */
+    enum uselong uselong;
+
+    it->itFlags = itCheckFlags(it->itFlags, name);
+
+    it->itDeallocate = itCheckDeallocate(it, it->itFlags, d_NO, name);
+
+    uselong = itUseLong(it);
+    if (uselong == TooLong)
+	warn("%s: too big for mach_msg_type_long_t", name);
+    it->itLongForm = itCheckIsLong(it, it->itFlags,
+				   (int)uselong >= (int)ShouldBeLong, name);
+}
+
 /******************************************************
  *  Checks for non-implemented types, conflicting type
  *  flags and whether the long or short form of msg type
@@ -398,8 +415,6 @@ itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags, boolean_t dfault,
 static void
 itCheckDecl(identifier_t name, ipc_type_t *it)
 {
-    enum uselong uselong;
-
     it->itName = name;
 
     itCalculateNameInfo(it);
@@ -425,17 +440,7 @@ itCheckDecl(identifier_t name, ipc_type_t *it)
         it->itElement->itServerType);
     }
 
-    /* process the IPC flag specification */
-
-    it->itFlags = itCheckFlags(it->itFlags, name);
-
-    it->itDeallocate = itCheckDeallocate(it, it->itFlags, d_NO, name);
-
-    uselong = itUseLong(it);
-    if (uselong == TooLong)
-	warn("%s: too big for mach_msg_type_long_t", name);
-    it->itLongForm = itCheckIsLong(it, it->itFlags,
-				   (int)uselong >= (int)ShouldBeLong, name);
+    itRecomputeFlags(it, name);
 }
 
 /*
@@ -703,6 +708,19 @@ itSetDestructor(ipc_type_t *it, identifier_t destructor)
     it->itDestructor = destructor;
 }
 
+/* Returns element type for strings. */
+ipc_type_t *
+itCreateStringElement()
+{
+    ipc_type_t *it = itShortDecl(MACH_MSG_TYPE_STRING_C,
+          "MACH_MSG_TYPE_STRING_C",
+          MACH_MSG_TYPE_STRING_C,
+          "MACH_MSG_TYPE_STRING_C",
+          8);
+    itCheckDecl("char", it);
+    return it;
+}
+
 /*
  * Allows a type to be set as a variable array even if it was turned into
  * a pointer before. This allows an array to be sent inline for up to
@@ -721,11 +739,18 @@ itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
     it->itIndefinite = indefinite;
     it->itVarArray = TRUE;
     it->itStruct = FALSE;
-    it->itString = element->itName != strNULL &&
-        element->itTypeConstruct == CTYPE_BASIC &&
-        streql(element->itName, "char");
     it->itInLine = TRUE;
     it->itAlignment = element->itAlignment;
+    it->itString = element->itName != strNULL &&
+        streql(element->itName, "char");
+    if (it->itString) {
+        free(element);
+        it->itElement = itCreateStringElement();
+        it->itTypeConstruct = CTYPE_STRING;
+    }
+    /* Flags may need to be recomputed since the sizes may have changed. */
+    itRecomputeFlags(it, it->itName);
+
     itCalculateSizeInfo(it);
 }
 
@@ -863,17 +888,8 @@ itStructDecl(u_int number, const ipc_type_t *old)
 ipc_type_t *
 itCStringDecl(u_int count, boolean_t varying)
 {
-    ipc_type_t *it;
-    ipc_type_t *itElement;
-
-    itElement = itShortDecl(MACH_MSG_TYPE_STRING_C,
-			    "MACH_MSG_TYPE_STRING_C",
-			    MACH_MSG_TYPE_STRING_C,
-			    "MACH_MSG_TYPE_STRING_C",
-			    8);
-    itCheckDecl("char", itElement);
-
-    it = itResetType(itCopyType(itElement));
+    ipc_type_t *itElement = itCreateStringElement();
+    ipc_type_t *it = itResetType(itCopyType(itElement));
     it->itNumber = count;
     it->itVarArray = varying;
     it->itStruct = FALSE;
