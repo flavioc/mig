@@ -100,6 +100,7 @@
 %token	syExtension
 %token	syNoReturn
 %token	syNoThrow
+%token	syNonNull
 %token	syAttrLeaf
 %token	syAligned
 %token	syExtern
@@ -141,7 +142,8 @@
 %type	<direction> Direction
 %type	<argument> Argument Arguments ArgumentList
 %type	<flag> IPCFlags
-%type	<cattr> CAttribute CAttributeList CAttributeMember
+%type	<cattr> Attributes ListOfAttributes CAttribute
+%type	<cattr> CAttributeList CAttributeMember
 
 %{
 
@@ -716,7 +718,7 @@ EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
 				}
 			;
 
-StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack CAttribute
+StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack Attributes
 					{
 						if (structLookUp($2) != itNULL)
 							error("struct %s or struct is already defined", $2);
@@ -725,10 +727,20 @@ StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack CAttribute
 					}
 				;
 
+Attributes	:	%empty
+					{ $$ = CAttributesDefault(); }
+				|	ListOfAttributes
+					{ $$ = $1; }
+				;
+
+ListOfAttributes	:	CAttribute
+							{ $$ = $1; }
+						|	ListOfAttributes CAttribute
+							{ $$ = CAttributesMerge($1, $2); }
+						;
+
 CAttribute	:	syAttribute syLParen syLParen CAttributeList  syRParen syRParen
 					{ $$ = $4;; }
-				|	%empty
-					{ $$ = CAttributesDefault(); }
 				;
 
 CAttributeList	:	CAttributeMember
@@ -739,6 +751,8 @@ CAttributeList	:	CAttributeMember
 
 CAttributeMember	:	syAligned syLParen IntExp syRParen
 							{ $$.min_alignment = $3; }
+						|	syNonNull syLParen ListIntExp syRParen
+							{ $$ = CAttributesDefault(); }
 						|	syNoReturn
 							{ $$ = CAttributesDefault(); }
 						|	syNoThrow
@@ -747,13 +761,17 @@ CAttributeMember	:	syAligned syLParen IntExp syRParen
 							{ $$ = CAttributesDefault(); }
 						;
 
+ListIntExp	:	IntExp
+				|	ListIntExp syComma IntExp
+				;
+
 CArraySpec	:	syLBrack IntExp syRBrack
 					{ $$ = $2; }
 				|	CArraySpec syLBrack IntExp syRBrack
 					{ $$ = $1 * $3; }
 				;
 
-CFunctionSpec	:	syLParen CFunctionArguments syRParen CAttribute
+CFunctionSpec	:	syLParen CFunctionArguments syRParen Attributes
 					;
 
 CFunctionArguments	:	%empty
