@@ -195,6 +195,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"__attribute__"	RETURN(syAttribute);
 <Normal>"aligned"			RETURN(syAligned);
 <Normal>"extern"			RETURN(syExtern);
+<Normal>"enum"				RETURN(syEnum);
 
 <Normal>(?i:polymorphic)	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 

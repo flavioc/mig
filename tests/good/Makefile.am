@@ -19,7 +19,7 @@
 TESTS = case.defs complex-types.defs directions.defs import.defs \
 			routine.defs types.defs waittime.defs ctypes.defs typedef.defs \
 			struct.defs array.defs union.defs inline.defs modtype.defs \
-			sizeof.defs string.defs
+			sizeof.defs string.defs enum.defs
 DEFS_LOG_COMPILER = sh ./$(srcdir)/run_good_test.sh
 
 include $(srcdir)/../Makeconf.am

@@ -99,6 +99,7 @@
 %token	syAttribute
 %token	syAligned
 %token	syExtern
+%token	syEnum
 
 %token	syError			/* lex error */
 
@@ -128,7 +129,8 @@
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
 %type <type> InlineDef TransModType ModTypeDecl
-%type	<type> CVarDecl
+%type	<type> CVarDecl EnumDef
+%type	<identifier> EnumMember EnumMembers
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -214,6 +216,7 @@ Statement		:	Subsystem sySemi
 			|	TypeDecl sySemi
 			|	Typedef sySemi
 			|	StructDef sySemi
+			|	EnumDef sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
 			|	TopLevelCVarDecl sySemi
@@ -629,6 +632,10 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 					}
 				|  StructDef
 					{ $$ = itCopyType($1); }
+				|	EnumDef
+					{ $$ = itCopyType($1); }
+				|	syEnum syLCrack EnumMembers syRCrack
+					{ $$ = enumCreateNew("(unnamed)"); }
 				|	syStruct syLCrack StructMembers syRCrack
 					{ $$ = structCreateNew("(unnamed)", $3, CAttributesDefault()); }
 				|	syUnion syIdentifier
@@ -657,6 +664,14 @@ StructMember	:	CVarDecl sySemi
 						{ $$ = $1; }
 					;
 
+EnumMembers	:	EnumMember
+				|	EnumMembers syComma EnumMember
+				;
+
+EnumMember	:	syIdentifier
+			  	|	syIdentifier syEqual IntExp
+				;
+
 CVarDecl	:	CTypeSpec syIdentifier
 				{ $$ = $1; }
 			|	CTypeSpec syIdentifier CArraySpec
@@ -665,6 +680,15 @@ CVarDecl	:	CTypeSpec syIdentifier
 				{ $$ = itCVarArrayDecl($1); }
 			|	SimpleUnion
 				{ $$ = $1; }
+			;
+
+EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
+		  		{
+					if (enumLookUp($2) != itNULL)
+						error("enum %s is already defined", $2);
+					$$ = enumCreateNew($2);
+					enumRegister($2, $$);
+				}
 			;
 
 StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack CAttribute
