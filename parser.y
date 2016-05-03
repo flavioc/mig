@@ -98,6 +98,7 @@
 %token   sySizeof
 %token	syAttribute
 %token	syAligned
+%token	syExtern
 
 %token	syError			/* lex error */
 
@@ -214,6 +215,7 @@ Statement		:	Subsystem sySemi
 			|	StructDef sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
+			|	CVarDecl sySemi
 			|	ModTypeDecl sySemi
 			|	RoutineDecl sySemi
 {
@@ -435,6 +437,19 @@ TypeDecl		:	syType NamedTypeSpec
     itInsert(name, $2);
 }
 			;
+
+CVarDecl	:	CVarQualifiers CTypeSpec syIdentifier
+				{ free($2); }
+			|	CTypeSpec syIdentifier
+				{ free($1); }
+			;
+
+CVarQualifiers	:	CVarQualifier
+					|	CVarQualifiers CVarQualifier
+					;
+
+CVarQualifier	:	syExtern
+					;
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
