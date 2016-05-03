@@ -128,6 +128,7 @@
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
 %type <type> InlineDef TransModType ModTypeDecl
+%type	<type> CVarDecl
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -215,7 +216,7 @@ Statement		:	Subsystem sySemi
 			|	StructDef sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
-			|	CVarDecl sySemi
+			|	TopLevelCVarDecl sySemi
 			|	ModTypeDecl sySemi
 			|	RoutineDecl sySemi
 {
@@ -438,11 +439,11 @@ TypeDecl		:	syType NamedTypeSpec
 }
 			;
 
-CVarDecl	:	CVarQualifiers CTypeSpec syIdentifier
-				{ free($2); }
-			|	CTypeSpec syIdentifier
-				{ free($1); }
-			;
+TopLevelCVarDecl	:	CVarQualifiers CVarDecl
+							{ free($2); }
+						|	CVarDecl
+							{ free($1); }
+						;
 
 CVarQualifiers	:	CVarQualifier
 					|	CVarQualifiers CVarQualifier
@@ -652,21 +653,19 @@ StructMembers  :  StructMember
 						}
 					;
 
-StructMember	:	CTypeSpec syIdentifier sySemi
-						{
-							$$ = $1;
-						}
-					|	CTypeSpec syIdentifier CArraySpec sySemi
-						{
-							$$ = itCArrayDecl($3, $1);
-						}
-					|	CTypeSpec syIdentifier syLBrack syRBrack sySemi
-						{
-							$$ = itCVarArrayDecl($1);
-						}
-					|	SimpleUnion sySemi
+StructMember	:	CVarDecl sySemi
 						{ $$ = $1; }
 					;
+
+CVarDecl	:	CTypeSpec syIdentifier
+				{ $$ = $1; }
+			|	CTypeSpec syIdentifier CArraySpec
+				{ $$ = itCArrayDecl($3, $1); }
+			|	CTypeSpec syIdentifier syLBrack syRBrack
+				{ $$ = itCVarArrayDecl($1); }
+			|	SimpleUnion
+				{ $$ = $1; }
+			;
 
 StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack CAttribute
 					{

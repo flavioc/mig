@@ -28,6 +28,8 @@ typedef struct mystruct {
 
 typedef int *int_array;
 
+extern int *myvar;
+
 inline hard int_array/sizeof(struct_t);
 
 routine call(port : mach_port_t; arr : int_array);
