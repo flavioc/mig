@@ -8,6 +8,7 @@
 
 Ident		([A-Za-z_][A-Za-z_0-9]*)
 Number		([0-9]+)
+HexaNumber (0x([0-9]|[a-f]|[A-F])+)
 String		([-/._$A-Za-z0-9]+)
 QString		(\"[^"\n]*\")
 AString		(\<[^>\n]*\>)
@@ -244,6 +245,14 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>{Ident}		{ yylval.identifier = strmake(yytext);
 			  RETURN(syIdentifier); }
 <Normal>{Number}	{ yylval.number = atoi(yytext); RETURN(syNumber); }
+<Normal>{HexaNumber}	{
+								char *str = yytext + 2; /* Skip 0x. */
+								char *endptr = NULL;
+								yylval.number = strtol(str, &endptr, 16);
+								if (*endptr != '\0')
+									yyerror("error parsing hexadecimal number");
+								RETURN(syNumber);
+							}
 
 <String>{String}	{ yylval.string = strmake(yytext);
 			  BEGIN Normal; RETURN(syString); }

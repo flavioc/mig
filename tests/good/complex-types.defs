@@ -29,7 +29,7 @@ type intptr_t = ^byte;
 
 type mach_port_t = MACH_MSG_TYPE_COPY_SEND;
 type mach_port_array_t = array[] of mach_port_t;
-type char_struct_t = struct[4] of char;
+type char_struct_t = struct[0x4] of char;
 type string_t = array[256] of char;
 
 routine callcomplex(port : mach_port_t;
