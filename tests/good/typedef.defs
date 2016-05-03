@@ -32,7 +32,7 @@ typedef integer_t mach_port_delta_t;
 typedef natural_t mach_port_seqno_t;
 typedef unsigned int mach_port_mscount_t;
 typedef unsigned int mach_port_msgcount_t;
-typedef unsigned int mach_port_rights_t;
+__extension__ typedef unsigned int mach_port_rights_t;
 
 typedef vm_offset_t pointer_t;
 typedef vm_offset_t vm_address_t;

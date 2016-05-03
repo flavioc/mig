@@ -97,6 +97,7 @@
 %token	syModType
 %token   sySizeof
 %token	syAttribute
+%token	syExtension
 %token	syAligned
 %token	syExtern
 %token	syEnum
@@ -116,7 +117,6 @@
 %left	syPlus syMinus
 %left syRShift
 %left	syStar syDiv
-
 
 %type	<c_type> CTypeKeyword
 %type	<identifier> IdentifierOrCTypeName TypeIdentifier
@@ -400,14 +400,18 @@ InlineDef   :  syInline syIdentifier syDiv IntExp
                }
             ;
 
-Typedef		:	syTypedef TypedefConstruct
+Typedef		:	TypedefQualifier syTypedef TypedefConstruct
 			{
-				identifier_t name = $2->itName;
+				identifier_t name = $3->itName;
 				if (itLookUp(name) != itNULL)
 					warn("overriding previous definition of %s", name);
-				itInsert(name, $2);
+				itInsert(name, $3);
 			}
 		;
+
+TypedefQualifier	:	%empty
+						|	syExtension
+						;
 
 TypedefConstruct	:	CTypeSpec syIdentifier
 				{
