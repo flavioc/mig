@@ -549,6 +549,12 @@ TransModType	:	syIdentifier
 							if ($$ == itNULL)
 								error("Type %s was not found", $1);
 						}
+					|	TransModType DefineCType
+						{
+							$$ = $1;
+							itSetUserType($$, $2);
+							itSetServerType($$, $2);
+						}
 					|	TransModType DefineUserType
 						{
 							$$ = $1;
