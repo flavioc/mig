@@ -90,6 +90,7 @@
 %token	syBar
 %token	syQuestion
 %token	syRShift
+%token	syAmper
 
 %token	syTypedef
 %token   syUnion
@@ -110,6 +111,7 @@
 %token	syRestrict
 %token	syAligned
 %token	syExtern
+%token	syReturn
 %token	syEnum
 %token	syVoid
 %token	syConst
@@ -236,6 +238,7 @@ Statement		:	Subsystem sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
 			|	TopLevelCVarDecl sySemi
+			|	TopLevelCDefinition
 			|	ModTypeDecl sySemi
 			|	RoutineDecl sySemi
 {
@@ -462,6 +465,10 @@ TypeDecl		:	syType NamedTypeSpec
 }
 			;
 
+TopLevelCDefinition	:	CVarTopQualifiers CFunctionDefinition
+							|	CFunctionDefinition
+							;
+
 TopLevelCVarDecl	:	CVarTopQualifiers CVarDecl
 							{ itFree($2); }
 						|	CVarDecl
@@ -475,6 +482,9 @@ CVarTopQualifiers	:	CVarTopQualifier
 CVarTopQualifier	:	syExtern
 						|	syInline2
 						;
+
+CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec syLCrack CFunctionBody syRCrack
+							;
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
@@ -807,6 +817,24 @@ CFunctionList	:	CFunctionArgument
 CFunctionArgument	:	CTypeSpec { itFree($1); }
 						|	CVarDecl { itFree($1); }
 						;
+
+CFunctionBody	: syReturn syIdentifier syLParen CCallArguments syRParen sySemi
+					;
+
+CCallArguments	:	%empty
+					|	CCallArgumentList
+					;
+
+CCallArgumentList	:	CCallArgument
+						|	CCallArgumentList syComma CCallArgument
+						;
+
+CCallArgument	:	syIdentifier
+					|	IntExp
+					|	syStar CCallArgument
+					|	syAmper CCallArgument
+					|	syLParen CCallArgument syRParen
+					;
 
 UnionDef		:	syUnion syIdentifier syLCrack StructMembers syRCrack
 					{

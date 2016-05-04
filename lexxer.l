@@ -208,6 +208,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"void"          RETURN(syVoid);
 <Normal>"const"			RETURN(syConst);
 <Normal>"__const"			RETURN(syConst);
+<Normal>"return"			RETURN(syReturn);
 
 <Normal>(?i:polymorphic)	TRETURN(MACH_MSG_TYPE_POLYMORPHIC,word_size_in_bits);
 
@@ -259,6 +260,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"}"		RETURN(syRCrack);
 <Normal>"|"		RETURN(syBar);
 <Normal>"?"		RETURN(syQuestion);
+<Normal>"&"		RETURN(syAmper);
 
 <Normal>{QString}		{ RETURN(syCStringLiteral); }
 
