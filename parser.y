@@ -685,6 +685,13 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 							error("union %s is not defined", $2);
 						$$ = itCopyType(uni);
 					}
+				|	syEnum syIdentifier
+					{
+						ipc_type_t *en = enumLookUp($2);
+						if (en == itNULL)
+							error("enum %s is not defined", $2);
+						$$ = itCopyType(en);
+					}
 				|	CTypeSpec syStar PointerOptions
 					{
 						$$ = itCPtrDecl($1);
