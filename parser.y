@@ -134,6 +134,7 @@
 %left	syPlus syMinus
 %left syRShift
 %left	syStar syDiv
+%right syAmper
 
 %type	<c_type> CTypeKeyword
 %type	<identifier> IdentifierOrCTypeName TypeIdentifier
@@ -833,7 +834,6 @@ CCallArgument	:	syIdentifier
 					|	IntExp
 					|	syStar CCallArgument
 					|	syAmper CCallArgument
-					|	syLParen CCallArgument syRParen
 					;
 
 UnionDef		:	syUnion syIdentifier syLCrack StructMembers syRCrack
