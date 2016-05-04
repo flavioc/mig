@@ -7,7 +7,7 @@
 %p 25000
 
 Ident		([A-Za-z_][A-Za-z_0-9]*)
-Number		([0-9]+)
+Number		(-?[0-9]+)
 HexaNumber (0x([0-9]|[a-f]|[A-F])+)
 String		([-/._$A-Za-z0-9]+)
 QString		(\"[^"\n]*\")
