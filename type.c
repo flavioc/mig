@@ -569,7 +569,10 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
 	it->itString = TRUE;
     }
     it->itFlags = flags;
-    it->itAlignment = size/8;
+    if (size/8 > word_size)
+       it->itAlignment = word_size;
+    else
+       it->itAlignment = size/8;
 
     itCalculateSizeInfo(it);
     return it;
