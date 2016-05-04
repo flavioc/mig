@@ -95,6 +95,7 @@
 %token   syUnion
 
 %token   syInline
+%token   syInline2
 %token   syHard
 %token	syModType
 %token   sySizeof
@@ -472,6 +473,7 @@ CVarTopQualifiers	:	CVarTopQualifier
 						;
 
 CVarTopQualifier	:	syExtern
+						|	syInline2
 						;
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
