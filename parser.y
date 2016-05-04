@@ -966,6 +966,8 @@ IntExp			: 	IntExp	syPlus	IntExp
 				}
 			|	syNumber
 				{ $$ = $1;	}
+         |  syLParen syCTypeKeyword syRParen IntExp %prec syAmper
+            { $$ = $4; }
 			|	syLParen IntExp syRParen
 				{ $$ = $2;	}
 			|	IntExp syDoubleEqual IntExp
