@@ -97,6 +97,7 @@
 %token	syModType
 %token   sySizeof
 %token	syAttribute
+%token	syASM
 %token	syExtension
 %token	syNoReturn
 %token	syNoThrow
@@ -107,6 +108,7 @@
 %token	syEnum
 %token	syVoid
 %token	syConst
+%token	syCStringLiteral
 
 %token	syError			/* lex error */
 
@@ -741,6 +743,12 @@ ListOfAttributes	:	CAttribute
 
 CAttribute	:	syAttribute syLParen syLParen CAttributeList  syRParen syRParen
 					{ $$ = $4;; }
+				|	syASM syLParen StringList syRParen
+					{ $$ = CAttributesDefault(); }
+				;
+
+StringList	:	syCStringLiteral
+				|	StringList syCStringLiteral
 				;
 
 CAttributeList	:	CAttributeMember

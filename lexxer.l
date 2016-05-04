@@ -193,6 +193,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:modtype)		RETURN(syModType);
 <Normal>(?i:sizeof)		RETURN(sySizeof);
 <Normal>"__attribute__"	RETURN(syAttribute);
+<Normal>"__asm__"			RETURN(syASM);
 <Normal>"__extension__"	RETURN(syExtension);
 <Normal>"__noreturn__"	RETURN(syNoReturn);
 <Normal>"__nothrow__"	RETURN(syNoThrow);
@@ -252,6 +253,8 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"{"		RETURN(syLCrack);
 <Normal>"}"		RETURN(syRCrack);
 <Normal>"|"		RETURN(syBar);
+
+<Normal>{QString}		{ RETURN(syCStringLiteral); }
 
 <Normal>{Ident}		{ yylval.identifier = strmake(yytext);
 			  RETURN(syIdentifier); }
