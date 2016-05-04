@@ -103,6 +103,7 @@
 %token	syNoThrow
 %token	syNonNull
 %token	syAttrLeaf
+%token	syRestrict
 %token	syAligned
 %token	syExtern
 %token	syEnum
@@ -666,11 +667,15 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 							error("union %s is not defined", $2);
 						$$ = itCopyType(uni);
 					}
-				|	CTypeSpec syStar
+				|	CTypeSpec syStar PointerOptions
 					{
 						$$ = itCPtrDecl($1);
 					}
 				;
+
+PointerOptions	:	%empty
+					|	syRestrict
+					;
 
 StructMembers  :  StructMember
 						{ $$ = $1; assert($$->itNext == itNULL); }
