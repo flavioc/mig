@@ -103,6 +103,7 @@
 %token	syNoThrow
 %token	syNonNull
 %token	syAttrLeaf
+%token	syAttrConst
 %token	syRestrict
 %token	syAligned
 %token	syExtern
@@ -771,6 +772,8 @@ CAttributeMember	:	syAligned syLParen IntExp syRParen
 						|	syNoThrow
 							{ $$ = CAttributesDefault(); }
 						|	syAttrLeaf
+							{ $$ = CAttributesDefault(); }
+						|	syAttrConst
 							{ $$ = CAttributesDefault(); }
 						;
 

@@ -199,6 +199,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"__nothrow__"	RETURN(syNoThrow);
 <Normal>"__nonnull__"	RETURN(syNonNull);
 <Normal>"__leaf__"		RETURN(syAttrLeaf);
+<Normal>"__const__"		RETURN(syAttrConst);
 <Normal>"__restrict"		RETURN(syRestrict);
 <Normal>"aligned"			RETURN(syAligned);
 <Normal>"extern"			RETURN(syExtern);
