@@ -714,6 +714,7 @@ EnumMembers	:	EnumMember
 
 EnumMember	:	syIdentifier
 			  	|	syIdentifier syEqual IntExp
+				|	syIdentifier syEqual syIdentifier
 				;
 
 CVarDecl	:	syConst CVarDeclNameAndType
