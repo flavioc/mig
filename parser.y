@@ -78,6 +78,7 @@
 %token	syLParen
 %token	syRParen
 %token	syEqual
+%token	syDoubleEqual
 %token	syCaret
 %token	syTilde
 %token	syLAngle
@@ -87,6 +88,7 @@
 %token	syLCrack
 %token	syRCrack
 %token	syBar
+%token	syQuestion
 %token	syRShift
 
 %token	syTypedef
@@ -124,6 +126,8 @@
 
 %token	syInTranPayload
 
+%right syQuestion syColon
+%left	syDoubleEqual
 %left	syPlus syMinus
 %left syRShift
 %left	syStar syDiv
@@ -934,6 +938,15 @@ IntExp			: 	IntExp	syPlus	IntExp
 				{ $$ = $1;	}
 			|	syLParen IntExp syRParen
 				{ $$ = $2;	}
+			|	IntExp syDoubleEqual IntExp
+				{ $$ = $1 == $3; }
+			|	IntExp syQuestion IntExp syColon IntExp
+				{
+					if ($1)
+						$$ = $3;
+					else
+						$$ = $5;
+				}
 			;
 
  

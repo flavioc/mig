@@ -245,6 +245,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"/"		RETURN(syDiv);
 <Normal>"("		RETURN(syLParen);
 <Normal>")"		RETURN(syRParen);
+<Normal>"=="	RETURN(syDoubleEqual);
 <Normal>"="		RETURN(syEqual);
 <Normal>"^"		RETURN(syCaret);
 <Normal>"~"		RETURN(syTilde);
@@ -256,6 +257,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"{"		RETURN(syLCrack);
 <Normal>"}"		RETURN(syRCrack);
 <Normal>"|"		RETURN(syBar);
+<Normal>"?"		RETURN(syQuestion);
 
 <Normal>{QString}		{ RETURN(syCStringLiteral); }
 
