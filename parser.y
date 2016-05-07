@@ -764,7 +764,7 @@ EnumMember	:	syIdentifier
 
 EnumAssignment	:	IntExp
 					|	syIdentifier
-					|	syLParen syIdentifier syBar syIdentifier syLParen /* Fix hack. */
+					|	syLParen syIdentifier syBar syIdentifier syRParen /* Fix hack. */
 					;
 
 CVarDecl	:	CVarQualifiers CVarDeclNameAndType
