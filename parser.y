@@ -759,9 +759,13 @@ EnumMembers	:	EnumMember
 				;
 
 EnumMember	:	syIdentifier
-			  	|	syIdentifier syEqual IntExp
-				|	syIdentifier syEqual syIdentifier
+				|	syIdentifier syEqual EnumAssignment
 				;
+
+EnumAssignment	:	IntExp
+					|	syIdentifier
+					|	syLParen syIdentifier syBar syIdentifier syLParen /* Fix hack. */
+					;
 
 CVarDecl	:	CVarQualifiers CVarDeclNameAndType
 				{ $$ = $2; }
