@@ -751,7 +751,7 @@ itSetAsVarArray(ipc_type_t *it, const size_t inlined_elements,
 {
     ipc_type_t *element = it->itElement;
     if (!element->itInLine || element->itVarArray)
-         error("IPC type decl is too complicated");
+         warn("IPC type decl is too complicated");
     it->itNumber = inlined_elements * element->itNumber;
     it->itSize = element->itSize;
     it->itIndefinite = indefinite;
@@ -805,7 +805,7 @@ itArrayDecl(u_int number, const ipc_type_t *old)
     ipc_type_t *it = itResetType(itCopyType(old));
 
     if (!it->itInLine || it->itVarArray)
-	error("IPC type decl is too complicated");
+	warn("IPC type decl is too complicated");
     it->itNumber *= number;
     it->itStruct = FALSE;
     it->itString = FALSE;
@@ -1115,6 +1115,8 @@ init_type(void)
     itInsertCType("unsigned long", sizeof_long);
     itInsertCType("long long", sizeof_long_long);
     itInsertCType("unsigned long long", sizeof_long_long);
+    itInsertCType("float", sizeof_float);
+    itInsertCType("double", sizeof_double);
 }
 
 /******************************************************
@@ -1278,7 +1280,7 @@ structCreateNew(identifier_t name, ipc_type_t *members, const CAttributes attrs)
 			 * just use bytes instead.  */
 			all_equal_names = FALSE;
 			all_equal_sizes = FALSE;
-			warn("using a pointer as a member of struct %s", name);
+			/* warn("using a pointer as a member of struct %s", name); */
 		}
       assert(it->itAlignment > 0);
       if (max_struct_alignment < it->itAlignment)
