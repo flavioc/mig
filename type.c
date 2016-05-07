@@ -942,11 +942,16 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
               "MACH_MSG_TYPE_INTEGER_64", MACH_MSG_TYPE_INTEGER_64,
               "MACH_MSG_TYPE_INTEGER_64", size * 8);
           break;
+      case 12:
+          it = itArrayDecl(12, itCIntTypeDecl("char", 1));
+          it->itAlignment = word_size;
+          break;
       default:
           fprintf(stderr, "Unrecognized size %zu for type %s\n", size, ctype);
           exit(EXIT_FAILURE);
     }
     it->itName = ctype;
+    it->itStruct = FALSE;
     return it;
 }
 
@@ -1117,6 +1122,7 @@ init_type(void)
     itInsertCType("unsigned long long", sizeof_long_long);
     itInsertCType("float", sizeof_float);
     itInsertCType("double", sizeof_double);
+    itInsertCType("long double", sizeof_long_double);
 }
 
 /******************************************************
