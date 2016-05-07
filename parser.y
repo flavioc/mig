@@ -432,20 +432,18 @@ InlineDef   :  syInline syIdentifier syDiv IntExp
                }
             ;
 
-Typedef		:	TypedefQualifier syTypedef TypedefConstruct Attributes
+Typedef		:	TypedefQualifier syTypedef CVarQualifierList TypedefConstruct Attributes
 			{
-				identifier_t name = $3->itName;
+				identifier_t name = $4->itName;
 				if (itLookUp(name) != itNULL)
 					warn("overriding previous definition of %s", name);
-				$3 = itSetCAttributes($3, $4);
-				itInsert(name, $3);
+				$4 = itSetCAttributes($4, $5);
+				itInsert(name, $4);
 			}
 		;
 
 TypedefQualifier	:	%empty
 						|	syExtension
-						|	syConst
-						|	syVolatile
 						;
 
 TypedefConstruct	:	CTypeSpec syIdentifier
@@ -481,24 +479,12 @@ TypeDecl		:	syType NamedTypeSpec
 }
 			;
 
-TopLevelCDefinition	:	CVarTopQualifiers CFunctionDefinition
+TopLevelCDefinition	:	CVarQualifiers CFunctionDefinition
 							|	CFunctionDefinition
 							;
 
-TopLevelCVarDecl	:	CVarTopQualifiers CVarDecl
-							{ itFree($2); }
-						|	CVarDecl
+TopLevelCVarDecl	:	CVarDecl
 							{ itFree($1); }
-						;
-
-CVarTopQualifiers	:	CVarTopQualifier
-						|	CVarTopQualifiers CVarTopQualifier
-						;
-
-CVarTopQualifier	:	syExtern
-						|	syInline2
-						|  syStatic
-						|	syVolatile
 						;
 
 CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec syLCrack CFunctionBody syRCrack
@@ -754,11 +740,26 @@ EnumMember	:	syIdentifier
 				|	syIdentifier syEqual syIdentifier
 				;
 
-CVarDecl	:	syConst CVarDeclNameAndType
+CVarDecl	:	CVarQualifiers CVarDeclNameAndType
 				{ $$ = $2; }
-         |  CVarDeclNameAndType
-            { $$ = $1; }
+			|	CVarDeclNameAndType
+				{ $$ = $1; }
 			;
+
+CVarQualifierList	:	%empty
+						|	CVarQualifiers
+						;
+
+CVarQualifiers		:	CVarQualifier
+						|	CVarQualifiers CVarQualifier
+						;
+
+CVarQualifier	:	syExtern
+					|	syInline2
+					|  syStatic
+					|	syVolatile
+					|	syConst
+					;
 
 CVarDeclNameAndType	:	CTypeSpec syIdentifier
 								{ $$ = $1; }

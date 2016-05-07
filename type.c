@@ -976,6 +976,7 @@ itMakeVoidType(void)
     it->itOutNameStr = it->itInNameStr;
     it->itSize = word_size_in_bits;
     it->itTypeConstruct = CTYPE_VOID;
+    it->itAlignment = word_size;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
