@@ -788,7 +788,8 @@ itVarArrayDecl(u_int number, const ipc_type_t *old)
     {
         /* Compute the number of elements that can be sent using 2048 bytes. */
         const u_int bytes = (it->itNumber * it->itSize + 7) / 8;
-        number = (2048 / bytes) * it->itNumber;
+		  if (bytes > 0)
+            number = (2048 / bytes) * it->itNumber;
     }
     itSetAsVarArray(it, number, indefinite);
 
