@@ -153,7 +153,7 @@
 %left syBar
 
 %type	<c_type> CTypeKeyword
-%type	<identifier> IdentifierOrCTypeName TypeIdentifier
+%type	<identifier> IdentifierOrCTypeName TypeIdentifier VarName
 %type	<identifier> DefineCType DefineUserType DefineServerType
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp CArraySpec
@@ -488,8 +488,7 @@ TopLevelCVarDecl	:	CVarDecl
 							{ itFree($1.type); }
 						;
 
-CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionArgsBody
-							|	CTypeSpec syLParen syIdentifier syRParen CFunctionArgsBody
+CFunctionDefinition	:	CTypeSpec VarName CFunctionArgsBody
 							;
 
 CFunctionArgsBody	: CFunctionSpec Attributes syLCrack CFunctionBody syRCrack;
@@ -825,26 +824,30 @@ CVarDeclNameAndType	:	CVarNameAndType Attributes
 									$$ = $1;
 									itSetCAttributes($1.type, $2);
 								}
-							|	CTypeSpec syIdentifier CFunctionSpec Attributes
+							|	CTypeSpec VarName CFunctionSpec Attributes
 								{ $$.type = itNULL; $$.name = strNULL; }
 							;
 
-CVarNameAndType	:	CTypeSpec syIdentifier
+CVarNameAndType	:	CTypeSpec VarName
 								{
 									$$.type = $1;
 									$$.name = $2;
 								}
-							|	CTypeSpec syIdentifier CArraySpec
+							|	CTypeSpec VarName CArraySpec
 								{
 									$$.type = itCArrayDecl($3, $1);
 									$$.name = $2;
 								}
-							|	CTypeSpec syIdentifier syLBrack syRBrack
+							|	CTypeSpec VarName syLBrack syRBrack
 								{
 									$$.type = itCVarArrayDecl($1);
 									$$.name = $2;
 								}
 							;
+
+VarName	:	syIdentifier { $$ = $1; }
+			|	syLParen VarName syRParen { $$ = $2; }
+			;
 
 EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
 		  		{
@@ -961,7 +964,7 @@ CFunctionArgument	:	CTypeSpec { itFree($1); }
 						|	syThreeDots
 						;
 
-CFunctionBody	: syReturn syIdentifier syLParen CCallArguments syRParen sySemi
+CFunctionBody	: syReturn VarName syLParen CCallArguments syRParen sySemi
 					;
 
 CCallArguments	:	%empty
@@ -972,7 +975,7 @@ CCallArgumentList	:	CCallArgument
 						|	CCallArgumentList syComma CCallArgument
 						;
 
-CCallArgument	:	syIdentifier
+CCallArgument	:	VarName
 					|	IntExp
 					|	syStar CCallArgument
 					|	syAmper CCallArgument
@@ -1056,7 +1059,7 @@ IPCType			:	PrimIPCType
 }
 			;
 
-PrevTypeSpec		:	syIdentifier
+PrevTypeSpec		:	VarName
 						{ $$ = itCopyIdentifier($1); }
 						;
 
