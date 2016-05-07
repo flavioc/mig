@@ -462,12 +462,6 @@ TypedefConstruct	:	CTypeSpec syIdentifier
 					$$ = itCVarArrayDecl($1);
 					itTypeDecl($2, $$);
 				}
-			/* TODO: Refactor these two rules once the old MIG language
-			 * is gone from the parser.  */
-			|	UnionDef syIdentifier
-				{ itTypeDecl($2, $$ = $1); }
-			|	SimpleUnion syIdentifier
-				{ itTypeDecl($2, $$ = $1); }
 			;
 
 TypeDecl		:	syType NamedTypeSpec
@@ -704,6 +698,10 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 							error("union %s is not defined", $2);
 						$$ = itCopyType(uni);
 					}
+				|	UnionDef
+					{ $$ = itCopyType($1); }
+				|	SimpleUnion
+					{	$$ = $1; }
 				|	syEnum syIdentifier
 					{
 						ipc_type_t *en = enumLookUp($2);
@@ -721,9 +719,9 @@ PointerOptions	:	%empty
 					|	syRestrict
 					;
 
-StructMembers  :  StructMember
+StructMembers  :  StructMember sySemi
 						{ $$ = $1; }
-					|	StructMembers StructMember
+					|	StructMembers StructMember sySemi
 						{
 							ipc_type_t *it = $2;
 							while (it->itNext) {
@@ -734,17 +732,27 @@ StructMembers  :  StructMember
 						}
 					;
 
-StructMember	:	CVarQualifierList CVarDeclNameAndType MoreVariableNames sySemi
+StructMember	:	CVarDecl MoreVariableNames
 						{
 							int i;
-							$$ = $2;
-							$2->itNext = itNULL;
-							for (i = 0; i < $3; ++i) {
-								ipc_type_t *new = itCloneType($2);
+							$$ = $1;
+							$1->itNext = itNULL;
+							for (i = 0; i < $2; ++i) {
+								ipc_type_t *new = itCloneType($1);
 								new->itNext = $$;
 								$$ = new;
 							}
 						}
+					| SimpleUnion
+						{ $$ = $1;
+							$$->itNext = itNULL; }
+					;
+
+/* Unnamed union such as union { ... }.  */
+SimpleUnion		:	syUnion syLCrack StructMembers syRCrack
+					{
+						$$ = unionCreateNew("(unnamed)", $3);
+					}
 					;
 
 MoreVariableNames	:	%empty { $$ = 0; }
@@ -799,8 +807,6 @@ CVarDeclNameAndType	:	CTypeSpec syIdentifier
 								{ $$ = itNULL; }
 							|	CTypeSpec syIdentifier syLBrack syRBrack
 								{ $$ = itCVarArrayDecl($1); }
-							|	SimpleUnion
-								{ $$ = $1; }
 							;
 
 EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
@@ -935,13 +941,6 @@ UnionDef		:	syUnion syIdentifier syLCrack StructMembers syRCrack
 						unionRegister($2, $$);
 					}
 				;
-
-/* Unnamed union such as union { ... }.  */
-SimpleUnion		:	syUnion syLCrack StructMembers syRCrack
-					{
-						$$ = unionCreateNew("(unnamed)", $3);
-					}
-					;
 
 BasicTypeSpec		:	IPCType
 {
