@@ -1248,9 +1248,9 @@ itSetCAttributes(ipc_type_t *it, const CAttributes attrs)
 {
     if (attrs.min_alignment > it->itAlignment)
     {
-        fprintf(stderr, "Cannot handle new alignment of %d\n", attrs.min_alignment);
-        abort();
-        return itNULL;
+        assert(it->itTypeConstruct != CTYPE_STRUCT);
+	it->itAlignment = attrs.min_alignment;
+        return it;
     }
 
     if (attrs.force_int_size > 0) {
