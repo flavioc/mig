@@ -849,7 +849,7 @@ VarName	:	syIdentifier { $$ = $1; }
 			|	syLParen VarName syRParen { $$ = $2; }
 			;
 
-EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
+EnumDef	:	syEnum syIdentifier syLCrack EnumMembers OptionalComma syRCrack
 		  		{
 					if (enumLookUp($2) != itNULL)
 						error("enum %s is already defined", $2);
@@ -857,6 +857,9 @@ EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
 					enumRegister($2, $$);
 				}
 			;
+
+OptionalComma	:	%empty
+				  	|	syComma;
 
 SimpleEnum	:	syEnum syLCrack EnumMembers syRCrack
 					{ $$ = enumCreateNew("(unnamed)"); }
