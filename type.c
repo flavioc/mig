@@ -592,6 +592,17 @@ itCopyType(const ipc_type_t *old)
 }
 
 ipc_type_t *
+itCloneType(const ipc_type_t *old)
+{
+    ipc_type_t *new = itAlloc();
+
+	 *new = *old;
+
+    /* size info still valid */
+	 return new;
+}
+
+ipc_type_t *
 itCopyBuiltinType(const ipc_type_t *old)
 {
     ipc_type_t *copy = itCopyType(old);

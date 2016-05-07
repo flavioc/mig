@@ -151,7 +151,7 @@
 %type	<identifier> DefineCType DefineUserType DefineServerType
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp CArraySpec
-%type	<number> CIntModeSize
+%type	<number> CIntModeSize MoreVariableNames MoreVariableList
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
@@ -719,17 +719,39 @@ PointerOptions	:	%empty
 					;
 
 StructMembers  :  StructMember
-						{ $$ = $1; assert($$->itNext == itNULL); }
+						{ $$ = $1; }
 					|	StructMembers StructMember
 						{
-							$2->itNext = $1;
+							ipc_type_t *it = $2;
+							while (it->itNext) {
+								it = it->itNext;
+							}
+							it->itNext = $1;
 							$$ = $2;
 						}
 					;
 
-StructMember	:	CVarDecl sySemi
-						{ $$ = $1; }
+StructMember	:	CVarQualifierList CVarDeclNameAndType MoreVariableNames sySemi
+						{
+							int i;
+							$$ = $2;
+							$2->itNext = itNULL;
+							for (i = 0; i < $3; ++i) {
+								ipc_type_t *new = itCloneType($2);
+								new->itNext = $$;
+								$$ = new;
+							}
+						}
 					;
+
+MoreVariableNames	:	%empty { $$ = 0; }
+						|	MoreVariableList { $$ = $1; }
+						;
+
+MoreVariableList	:	syComma syIdentifier { $$ = 1; }
+					  	|	MoreVariableList syComma syIdentifier
+							{ $$ = $1 + 1; }
+						;
 
 EnumMembers	:	EnumMember
 				|	EnumMembers syComma EnumMember

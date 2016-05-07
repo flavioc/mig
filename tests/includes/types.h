@@ -40,7 +40,7 @@ typedef struct padding_struct {
 } padding_struct_t;
 
 typedef struct small_struct {
-  char c1;
+  char c1, c2;
 } small_struct_t;
 
 typedef char* string_t;
