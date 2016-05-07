@@ -213,6 +213,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"__word__"		RETURN(syModeWord);
 <Normal>"__byte__"		RETURN(syModeByte);
 <Normal>"__pointer__"	RETURN(syModePointer);
+<Normal>"__typeof"		RETURN(syTypeof);
 <Normal>"aligned"			RETURN(syAligned);
 <Normal>"extern"			RETURN(syExtern);
 <Normal>"static"			RETURN(syStatic);

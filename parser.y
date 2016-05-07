@@ -121,6 +121,7 @@
 %token	syModeWord
 %token	syModePointer
 %token	syExtern
+%token	syTypeof
 %token	syStatic
 %token	syVolatile
 %token	syReturn
@@ -250,6 +251,7 @@ Statement		:	Subsystem sySemi
 			|	Typedef sySemi
 			|	TopLevelStructDef sySemi
 			|	TopLevelEnumDef sySemi
+			|	TopLevelTypeOf sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
 			|	TopLevelCVarDecl sySemi
@@ -433,6 +435,8 @@ InlineDef   :  syInline syIdentifier syDiv IntExp
                   itSetAsVarArray(it, $5, FALSE);
                }
             ;
+
+TopLevelTypeOf	:	syExtern syTypeof syLParen syIdentifier syRParen syIdentifier;
 
 Typedef		:	TypedefQualifier syTypedef CVarQualifierList TypedefConstruct Attributes
 			{
