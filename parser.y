@@ -488,8 +488,11 @@ TopLevelCVarDecl	:	CVarDecl
 							{ itFree($1.type); }
 						;
 
-CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec Attributes syLCrack CFunctionBody syRCrack
+CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionArgsBody
+							|	CTypeSpec syLParen syIdentifier syRParen CFunctionArgsBody
 							;
+
+CFunctionArgsBody	: CFunctionSpec Attributes syLCrack CFunctionBody syRCrack;
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
