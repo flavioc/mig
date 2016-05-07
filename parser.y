@@ -753,6 +753,8 @@ StructMember	:	CVarDecl MoreVariableNames
 								$$ = new;
 							}
 						}
+					|	CVarDecl syColon syNumber syComma BitfieldNumbers
+						{ $$ = $1.type; }
 					| SimpleUnion
 						{ $$ = $1;
 							$$->itNext = itNULL; }
@@ -773,6 +775,12 @@ MoreVariableList	:	syComma syIdentifier { $$ = 1; }
 					  	|	MoreVariableList syComma syIdentifier
 							{ $$ = $1 + 1; }
 						;
+
+BitfieldNumbers	:	BitfieldNumber
+						|	BitfieldNumbers syComma BitfieldNumber
+						;
+
+BitfieldNumber	:	syIdentifier syColon syNumber;
 
 EnumMembers	:	EnumMember
 				|	EnumMembers syComma EnumMember
