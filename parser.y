@@ -248,7 +248,7 @@ Statement		:	Subsystem sySemi
 			|	ServerDemux sySemi
 			|	TypeDecl sySemi
 			|	Typedef sySemi
-			|	StructDef sySemi
+			|	TopLevelStructDef sySemi
 			|	TopLevelEnumDef sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
@@ -489,6 +489,10 @@ CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec syLCrack CFunctionBod
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
 				;
+
+TopLevelStructDef	:	StructDef
+						|	syStruct syIdentifier
+						;
 
 TopLevelEnumDef	:	EnumDef
 						|	SimpleEnum
