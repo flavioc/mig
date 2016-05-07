@@ -100,6 +100,7 @@
 %token   syHard
 %token	syModType
 %token   sySizeof
+%token   syThreeDots
 %token	syAttribute
 %token	syASM
 %token	syExtension
@@ -895,6 +896,7 @@ CFunctionList	:	CFunctionArgument
 
 CFunctionArgument	:	CTypeSpec { itFree($1); }
 						|	CVarDecl { itFree($1); }
+						|	syThreeDots
 						;
 
 CFunctionBody	: syReturn syIdentifier syLParen CCallArguments syRParen sySemi

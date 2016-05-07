@@ -192,6 +192,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:hard)       RETURN(syHard);
 <Normal>(?i:modtype)		RETURN(syModType);
 <Normal>(?i:sizeof)		RETURN(sySizeof);
+<Normal>"..."				RETURN(syThreeDots);
 <Normal>"__attribute__"	RETURN(syAttribute);
 <Normal>"__asm__"			RETURN(syASM);
 <Normal>"__extension__"	RETURN(syExtension);
