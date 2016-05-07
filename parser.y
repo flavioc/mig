@@ -110,7 +110,17 @@
 %token	syAttrConst
 %token	syRestrict
 %token	syAligned
+%token	syMode
+%token	syModeQI
+%token	syModeHI
+%token	syModeSI
+%token	syModeDI
+%token	syModeByte
+%token	syModeWord
+%token	syModePointer
 %token	syExtern
+%token	syStatic
+%token	syVolatile
 %token	syReturn
 %token	syEnum
 %token	syVoid
@@ -141,6 +151,7 @@
 %type	<identifier> DefineCType DefineUserType DefineServerType
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp CArraySpec
+%type	<number> CIntModeSize
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
@@ -162,6 +173,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "cpu.h"
 #include "error.h"
 #include "lexxer.h"
 #include "global.h"
@@ -235,7 +247,7 @@ Statement		:	Subsystem sySemi
 			|	TypeDecl sySemi
 			|	Typedef sySemi
 			|	StructDef sySemi
-			|	EnumDef sySemi
+			|	TopLevelEnumDef sySemi
 			|	UnionDef sySemi
 			|  InlineDef sySemi
 			|	TopLevelCVarDecl sySemi
@@ -420,17 +432,20 @@ InlineDef   :  syInline syIdentifier syDiv IntExp
                }
             ;
 
-Typedef		:	TypedefQualifier syTypedef TypedefConstruct
+Typedef		:	TypedefQualifier syTypedef TypedefConstruct Attributes
 			{
 				identifier_t name = $3->itName;
 				if (itLookUp(name) != itNULL)
 					warn("overriding previous definition of %s", name);
+				$3 = itSetCAttributes($3, $4);
 				itInsert(name, $3);
 			}
 		;
 
 TypedefQualifier	:	%empty
 						|	syExtension
+						|	syConst
+						|	syVolatile
 						;
 
 TypedefConstruct	:	CTypeSpec syIdentifier
@@ -482,6 +497,8 @@ CVarTopQualifiers	:	CVarTopQualifier
 
 CVarTopQualifier	:	syExtern
 						|	syInline2
+						|  syStatic
+						|	syVolatile
 						;
 
 CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec syLCrack CFunctionBody syRCrack
@@ -490,6 +507,16 @@ CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec syLCrack CFunctionBod
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				{ itTypeDecl($1, $$ = $3); }
 				;
+
+TopLevelEnumDef	:	EnumDef
+						|	syEnum syIdentifier
+							{
+								if (enumLookUp($2) == itNULL) {
+									ipc_type_t *en = enumCreateNew($2);
+									enumRegister($2, en);
+								}
+							}
+						;
 
 TypeIdentifier		:	syIdentifier
 				{ $$ = $1; }
@@ -666,9 +693,12 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 				|	syStruct syIdentifier
 					{
 						ipc_type_t *str = structLookUp($2);
-						if (str == itNULL)
-							error("struct %s is not defined", $2);
-						$$ = itCopyType(str);
+						if (str == itNULL) {
+							/* This may be used as a pointer. */
+							$$ = itMakeVoidType();
+						} else {
+							$$ = itCopyType(str);
+						}
 					}
 				|  StructDef
 					{ $$ = itCopyType($1); }
@@ -789,7 +819,10 @@ CAttributeList	:	CAttributeMember
 					;
 
 CAttributeMember	:	syAligned syLParen IntExp syRParen
-							{ $$.min_alignment = $3; }
+							{
+								$$ = CAttributesDefault();
+								$$.min_alignment = $3;
+							}
 						|	syNonNull syLParen ListIntExp syRParen
 							{ $$ = CAttributesDefault(); }
 						|	syNoReturn
@@ -800,7 +833,21 @@ CAttributeMember	:	syAligned syLParen IntExp syRParen
 							{ $$ = CAttributesDefault(); }
 						|	syAttrConst
 							{ $$ = CAttributesDefault(); }
+						|	syMode syLParen CIntModeSize syRParen
+							{
+								$$ = CAttributesDefault();
+								$$.force_int_size = 1;
+							}
 						;
+
+CIntModeSize	:	syModeQI { $$ = 1; }
+					|	syModeHI { $$ = 2; }
+					|	syModeSI { $$ = 4; }
+					|	syModeDI { $$ = 8; }
+					|	syModeByte { $$ = 1; }
+					|	syModeWord { $$ = word_size; }
+					|	syModePointer { $$ = sizeof_pointer; }
+					;
 
 ListIntExp	:	IntExp
 				|	ListIntExp syComma IntExp

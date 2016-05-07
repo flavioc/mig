@@ -54,6 +54,7 @@ typedef enum dealloc {
 
 typedef enum {
    CTYPE_NONE, /* Not a C Type at all. */
+   CTYPE_VOID, /* The void type. */
    CTYPE_BASIC, /* Includes basic types such as int. */
    CTYPE_STRUCT, /* Structures passed by value. */
    CTYPE_UNION, /* Unions passed by value. */
@@ -66,13 +67,15 @@ typedef enum {
 
 typedef struct {
     int min_alignment; /* Minimum alignment. */
+    int force_int_size; /* Forces int to be of a certain size. */
 } CAttributes;
 
 inline CAttributes CAttributesDefault()
 {
     CAttributes def;
-	 def.min_alignment = 0;
-	 return def;
+    def.min_alignment = 0;
+    def.force_int_size = 0;
+    return def;
 }
 
 inline CAttributes CAttributesMerge(const CAttributes a, const CAttributes b)
@@ -272,6 +275,8 @@ extern dealloc_t itCheckDeallocate(const ipc_type_t *it, ipc_flags_t flags,
 				   dealloc_t dfault, identifier_t name);
 extern boolean_t itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags,
 			       boolean_t dfault, identifier_t name);
+
+extern ipc_type_t* itSetCAttributes(ipc_type_t *it, const CAttributes attrs);
 
 /* C structs related functions.  */
 

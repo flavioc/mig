@@ -974,7 +974,8 @@ itMakeVoidType(void)
     it->itInNameStr = "MACH_MSG_TYPE_UNSTRUCTURED";
     it->itOutName = it->itInName;
     it->itOutNameStr = it->itInNameStr;
-    it->itSize = 0;
+    it->itSize = word_size_in_bits;
+    it->itTypeConstruct = CTYPE_VOID;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
@@ -1221,6 +1222,25 @@ reverseTypeList(ipc_type_t *ls)
       ls = next;
    }
    return res;
+}
+
+ipc_type_t*
+itSetCAttributes(ipc_type_t *it, const CAttributes attrs)
+{
+    if (attrs.min_alignment > it->itAlignment)
+    {
+        fprintf(stderr, "Cannot handle new alignment of %d\n", attrs.min_alignment);
+        abort();
+        return itNULL;
+    }
+
+    if (attrs.force_int_size > 0) {
+        identifier_t name = it->itName;
+        itFree(it);
+        return itCIntTypeDecl(name, attrs.force_int_size);
+    }
+
+    return it;
 }
 
 ipc_type_t *
