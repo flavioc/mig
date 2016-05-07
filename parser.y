@@ -167,7 +167,6 @@
 %type <type> InlineDef TransModType ModTypeDecl
 %type	<type> EnumDef SimpleEnum
 %type	<nametype> CVarNameAndType CVarDeclNameAndType CVarDecl
-%type	<identifier> EnumMember EnumMembers
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
 %type	<direction> Direction
@@ -784,8 +783,11 @@ BitfieldNumbers	:	BitfieldNumber
 
 BitfieldNumber	:	syIdentifier syColon syNumber;
 
-EnumMembers	:	EnumMember
-				|	EnumMembers syComma EnumMember
+EnumList	:	EnumMember
+			|	EnumList syComma EnumMember
+			;
+
+EnumMembers	:	EnumList OptionalComma
 				;
 
 EnumMember	:	syIdentifier
@@ -849,7 +851,7 @@ VarName	:	syIdentifier { $$ = $1; }
 			|	syLParen VarName syRParen { $$ = $2; }
 			;
 
-EnumDef	:	syEnum syIdentifier syLCrack EnumMembers OptionalComma syRCrack
+EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
 		  		{
 					if (enumLookUp($2) != itNULL)
 						error("enum %s is already defined", $2);

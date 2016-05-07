@@ -29,4 +29,8 @@ typedef enum {
 	ENUM
 } enum_type2_t;
 
+enum {
+	UNNAMED_ENUM,
+};
+
 routine use(port : mach_port_t; x1 : enum_type_t; x2 : enum_type2_t);
