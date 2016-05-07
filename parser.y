@@ -159,7 +159,7 @@
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
 %type <type> InlineDef TransModType ModTypeDecl
-%type	<type> CVarDecl CVarDeclNameAndType EnumDef
+%type	<type> CVarDecl CVarDeclNameAndType EnumDef SimpleEnum
 %type	<identifier> EnumMember EnumMembers
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
@@ -496,6 +496,8 @@ NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
 				;
 
 TopLevelEnumDef	:	EnumDef
+						|	SimpleEnum
+							{ itFree($1); }
 						|	syEnum syIdentifier
 							{
 								if (enumLookUp($2) == itNULL) {
@@ -691,7 +693,7 @@ CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
 					{ $$ = itCopyType($1); }
 				|	EnumDef
 					{ $$ = itCopyType($1); }
-				|	syEnum syLCrack EnumMembers syRCrack
+				|	SimpleEnum
 					{ $$ = enumCreateNew("(unnamed)"); }
 				|	syStruct syLCrack StructMembers syRCrack
 					{ $$ = structCreateNew("(unnamed)", $3, CAttributesDefault()); }
@@ -786,6 +788,7 @@ CVarQualifier	:	syExtern
 					|  syStatic
 					|	syVolatile
 					|	syConst
+					|	syExtension
 					;
 
 CVarDeclNameAndType	:	CTypeSpec syIdentifier
@@ -808,6 +811,10 @@ EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
 					enumRegister($2, $$);
 				}
 			;
+
+SimpleEnum	:	syEnum syLCrack EnumMembers syRCrack
+					{ $$ = enumCreateNew("(unnamed)"); }
+				;
 
 StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack Attributes
 					{
