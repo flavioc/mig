@@ -112,6 +112,7 @@
 %token	syRestrict
 %token	syAligned
 %token	syMode
+%token	syTransUnion
 %token	syModeQI
 %token	syModeHI
 %token	syModeSI
@@ -873,6 +874,8 @@ CAttributeMember	:	syAligned syLParen IntExp syRParen
 						|	syAttrLeaf
 							{ $$ = CAttributesDefault(); }
 						|	syAttrConst
+							{ $$ = CAttributesDefault(); }
+						|	syTransUnion
 							{ $$ = CAttributesDefault(); }
 						|	syMode syLParen CIntModeSize syRParen
 							{

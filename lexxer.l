@@ -205,6 +205,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"__inline"		RETURN(syInline2);
 <Normal>"__inline__"		RETURN(syInline2);
 <Normal>"__mode__"		RETURN(syMode);
+<Normal>"__transparent_union__"	RETURN(syTransUnion);
 <Normal>"__QI__"			RETURN(syModeQI);
 <Normal>"__HI__"			RETURN(syModeHI);
 <Normal>"__SI__"			RETURN(syModeSI);
