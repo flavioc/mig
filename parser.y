@@ -111,6 +111,7 @@
 %token	syAttrConst
 %token	syRestrict
 %token	syAligned
+%token	syAlignOf
 %token	syMode
 %token	syTransUnion
 %token	syModeQI
@@ -155,13 +156,15 @@
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp CArraySpec
 %type	<number> CIntModeSize MoreVariableNames MoreVariableList
+%type	<number> AlignParameter
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec BuiltinType TypedefConstruct
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
 %type	<type> CTypeSpec StructMember StructMembers
 %type	<type> StructDef UnionDef SimpleUnion
 %type <type> InlineDef TransModType ModTypeDecl
-%type	<type> CVarDecl CVarDeclNameAndType EnumDef SimpleEnum
+%type	<type> EnumDef SimpleEnum
+%type	<nametype> CVarNameAndType CVarDeclNameAndType CVarDecl
 %type	<identifier> EnumMember EnumMembers
 %type	<symtype> PrimIPCType IPCType
 %type	<routine> RoutineDecl Routine SimpleRoutine
@@ -213,6 +216,11 @@ yyerror(const char *s)
     statement_kind_t statement_kind;
     ipc_type_t *type;
     CAttributes cattr;
+    struct
+    {
+        identifier_t name;
+        ipc_type_t *type;
+    } nametype;
     struct
     {
 	c_type_t basic_type;
@@ -438,12 +446,11 @@ InlineDef   :  syInline syIdentifier syDiv IntExp
 
 TopLevelTypeOf	:	syExtern syTypeof syLParen syIdentifier syRParen syIdentifier;
 
-Typedef		:	TypedefQualifier syTypedef CVarQualifierList TypedefConstruct Attributes
+Typedef		:	TypedefQualifier syTypedef CVarQualifierList TypedefConstruct
 			{
 				identifier_t name = $4->itName;
 				if (itLookUp(name) != itNULL)
 					warn("overriding previous definition of %s", name);
-				$4 = itSetCAttributes($4, $5);
 				itInsert(name, $4);
 			}
 		;
@@ -452,22 +459,14 @@ TypedefQualifier	:	%empty
 						|	syExtension
 						;
 
-TypedefConstruct	:	CTypeSpec syIdentifier
-				{
-					$$ = itResetType($1);
-					itTypeDecl($2, $$);
-				}
-			|	CTypeSpec syIdentifier CArraySpec
-				{
-					$$ = itCArrayDecl($3, $1);
-					itTypeDecl($2, $$);
-				}
-			|	CTypeSpec syIdentifier syLBrack syRBrack
-				{
-					$$ = itCVarArrayDecl($1);
-					itTypeDecl($2, $$);
-				}
-			;
+TypedefConstruct	:	CVarDeclNameAndType
+							{
+								if ($1.type) {
+									$$ = itResetType($1.type);
+									itTypeDecl($1.name, $$);
+								}
+							}
+						;
 
 TypeDecl		:	syType NamedTypeSpec
 {
@@ -484,10 +483,10 @@ TopLevelCDefinition	:	CVarQualifiers CFunctionDefinition
 							;
 
 TopLevelCVarDecl	:	CVarDecl
-							{ itFree($1); }
+							{ itFree($1.type); }
 						;
 
-CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec syLCrack CFunctionBody syRCrack
+CFunctionDefinition	:	CTypeSpec syIdentifier CFunctionSpec Attributes syLCrack CFunctionBody syRCrack
 							;
 
 NamedTypeSpec		:	TypeIdentifier syEqual TransTypeSpec
@@ -675,7 +674,7 @@ TypeSpec		:	BasicTypeSpec
 			;
 
 /* This includes type definitions that are found in the C language.  */
-CTypeSpec	:	PrevTypeSpec  /* Type reuse.  */
+CTypeSpec	:	PrevTypeSpec /* Type reuse.  */
 					{ $$ = $1; }
 				/* A builtin type based on unsigned/signed int/char/float.  */
 				|	BuiltinType
@@ -744,10 +743,10 @@ StructMembers  :  StructMember sySemi
 StructMember	:	CVarDecl MoreVariableNames
 						{
 							int i;
-							$$ = $1;
-							$1->itNext = itNULL;
+							$$ = $1.type;
+							$1.type->itNext = itNULL;
 							for (i = 0; i < $2; ++i) {
-								ipc_type_t *new = itCloneType($1);
+								ipc_type_t *new = itCloneType($1.type);
 								new->itNext = $$;
 								$$ = new;
 							}
@@ -808,14 +807,30 @@ CVarQualifier	:	syExtern
 					|	syExtension
 					;
 
-CVarDeclNameAndType	:	CTypeSpec syIdentifier
-								{ $$ = $1; }
+CVarDeclNameAndType	:	CVarNameAndType Attributes
+								{
+									$$ = $1;
+									itSetCAttributes($1.type, $2);
+								}
+							|	CTypeSpec syIdentifier CFunctionSpec Attributes
+								{ $$.type = itNULL; $$.name = strNULL; }
+							;
+
+CVarNameAndType	:	CTypeSpec syIdentifier
+								{
+									$$.type = $1;
+									$$.name = $2;
+								}
 							|	CTypeSpec syIdentifier CArraySpec
-								{ $$ = itCArrayDecl($3, $1); }
-							|	CTypeSpec syIdentifier CFunctionSpec
-								{ $$ = itNULL; }
+								{
+									$$.type = itCArrayDecl($3, $1);
+									$$.name = $2;
+								}
 							|	CTypeSpec syIdentifier syLBrack syRBrack
-								{ $$ = itCVarArrayDecl($1); }
+								{
+									$$.type = itCVarArrayDecl($1);
+									$$.name = $2;
+								}
 							;
 
 EnumDef	:	syEnum syIdentifier syLCrack EnumMembers syRCrack
@@ -840,15 +855,15 @@ StructDef	:	syStruct syIdentifier syLCrack StructMembers syRCrack Attributes
 					}
 				;
 
-Attributes	:	%empty
-					{ $$ = CAttributesDefault(); }
-				|	ListOfAttributes
+Attributes	: ListOfAttributes
 					{ $$ = $1; }
+				 |  %empty
+					{ $$ = CAttributesDefault(); }
 				;
 
 ListOfAttributes	:	CAttribute
 							{ $$ = $1; }
-						|	ListOfAttributes CAttribute
+						|	CAttribute ListOfAttributes
 							{ $$ = CAttributesMerge($1, $2); }
 						;
 
@@ -868,7 +883,7 @@ CAttributeList	:	CAttributeMember
 						{ $$ = CAttributesMerge($1, $3); }
 					;
 
-CAttributeMember	:	syAligned syLParen IntExp syRParen
+CAttributeMember	:	syAligned syLParen AlignParameter syRParen
 							{
 								$$ = CAttributesDefault();
 								$$.min_alignment = $3;
@@ -892,6 +907,12 @@ CAttributeMember	:	syAligned syLParen IntExp syRParen
 							}
 						;
 
+AlignParameter	:	IntExp
+						{ $$ = $1; }
+					|	syAlignOf syLParen BuiltinType syRParen
+						{ $$ = $3->itTypeSize; }
+					;
+
 CIntModeSize	:	syModeQI { $$ = 1; }
 					|	syModeHI { $$ = 2; }
 					|	syModeSI { $$ = 4; }
@@ -911,7 +932,7 @@ CArraySpec	:	syLBrack IntExp syRBrack
 					{ $$ = $1 * $3; }
 				;
 
-CFunctionSpec	:	syLParen CFunctionArguments syRParen Attributes
+CFunctionSpec	:	syLParen CFunctionArguments syRParen
 					;
 
 CFunctionArguments	:	%empty
@@ -923,7 +944,7 @@ CFunctionList	:	CFunctionArgument
 					;
 
 CFunctionArgument	:	CTypeSpec { itFree($1); }
-						|	CVarDecl { itFree($1); }
+						|	CVarDecl { itFree($1.type); }
 						|	syThreeDots
 						;
 
@@ -1023,8 +1044,8 @@ IPCType			:	PrimIPCType
 			;
 
 PrevTypeSpec		:	syIdentifier
-				{ $$ = itCopyIdentifier($1); }
-			;
+						{ $$ = itCopyIdentifier($1); }
+						;
 
 VarArrayHead		:	syArray syLBrack syRBrack syOf
 				{ $$ = 0; }

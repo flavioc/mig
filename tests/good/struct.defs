@@ -27,8 +27,9 @@ import "types.h";
 typedef int integer_t;
 typedef unsigned int natural_t;
 typedef natural_t mach_port_seqno_t;
+
 struct time_value {
-	const integer_t	seconds;
+	const integer_t	seconds __attribute__ ((__aligned__(__alignof__(int))));
 	const integer_t	microseconds;
 };
 typedef	struct time_value time_value_t;

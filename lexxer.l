@@ -215,6 +215,8 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"__pointer__"	RETURN(syModePointer);
 <Normal>"__typeof"		RETURN(syTypeof);
 <Normal>"aligned"			RETURN(syAligned);
+<Normal>"__aligned__"	RETURN(syAligned);
+<Normal>"__alignof__"	RETURN(syAlignOf);
 <Normal>"extern"			RETURN(syExtern);
 <Normal>"static"			RETURN(syStatic);
 <Normal>"volatile"		RETURN(syVolatile);

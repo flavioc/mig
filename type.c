@@ -951,7 +951,6 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
           exit(EXIT_FAILURE);
     }
     it->itName = ctype;
-    it->itStruct = FALSE;
     return it;
 }
 
