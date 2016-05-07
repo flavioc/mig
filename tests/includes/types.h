@@ -37,6 +37,7 @@ typedef struct padding_struct {
    int c;
    int *d;
    char pad[sizeof(int) == 4 ? 1 : 0];
+   unsigned int s1 : 8, s2 : 22;
 } padding_struct_t;
 
 typedef struct small_struct {
