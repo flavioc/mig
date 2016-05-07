@@ -90,6 +90,7 @@
 %token	syBar
 %token	syQuestion
 %token	syRShift
+%token	syLShift
 %token	syAmper
 
 %token	syTypedef
@@ -146,9 +147,10 @@
 %right syQuestion syColon
 %left	syDoubleEqual
 %left	syPlus syMinus
-%left syRShift
+%left syRShift syLShift
 %left	syStar syDiv
 %right syAmper
+%left syBar
 
 %type	<c_type> CTypeKeyword
 %type	<identifier> IdentifierOrCTypeName TypeIdentifier
@@ -1081,6 +1083,12 @@ IntExp			: 	IntExp	syPlus	IntExp
 				{ $$ = $1 / $3;	}
 			|	IntExp syRShift IntExp
 				{ $$ = $1 >> $3;	}
+			|	IntExp syLShift IntExp
+				{ $$ = $1 << $3;	}
+			|	IntExp syAmper IntExp
+				{ $$ = $1 & $3;	}
+			|	IntExp syBar IntExp
+				{ $$ = $1 | $3;	}
 			|	sySizeof syLParen CTypeSpec syRParen
 				{
 					$$ = $3->itTypeSize;

@@ -269,6 +269,7 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>"^"		RETURN(syCaret);
 <Normal>"~"		RETURN(syTilde);
 <Normal>">>"	RETURN(syRShift);
+<Normal>"<<"	RETURN(syLShift);
 <Normal>"<"		RETURN(syLAngle);
 <Normal>">"		RETURN(syRAngle);
 <Normal>"["		RETURN(syLBrack);
