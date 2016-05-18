@@ -1,11 +1,11 @@
-Version 1.7 (2016-04-XX)
+Version 1.7 (2016-05-18)
 
 * MIG now has a test suite.  It includes a set of valid and invalid
   definition files that MIG will try to process.  For valid
   definitions, GCC will compile the stubs to check if valid C code was
   generated.
 
-* The generated code uses integer types from 'stdint.h' now instead of
+* The generated code uses integer types from <stdint.h> now instead of
   the old Mach types.
 
 * Code that was hard-coding the word size has been identified and
