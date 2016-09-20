@@ -48,7 +48,7 @@
  *		-iheader <name>
  *			Name the user-side internal header file <name>
  *		-sheader <name>
- *			NAme the server-side header file <name>
+ *			Name the server-side header file <name>
  *
  *  DESIGN:
  *	Mig uses a lexxer module created by lex from lexxer.l and
