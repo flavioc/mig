@@ -188,7 +188,7 @@ WriteCheckDecl(FILE *file, const argument_t *arg)
 
     fprintf(file, "\tconst mach_msg_type_t %sCheck = {\n",
 	    arg->argVarName);
-    fprintf(file, "\t\t/* msgt_name = */\t\t%s,\n", it->itOutNameStr);
+    fprintf(file, "\t\t/* msgt_name = */\t\t(unsigned char) %s,\n", it->itOutNameStr);
     fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
     fprintf(file, "\t\t/* msgt_number = */\t\t%d,\n", it->itNumber);
     fprintf(file, "\t\t/* msgt_inline = */\t\t%s,\n",
@@ -296,7 +296,7 @@ WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
 		     dealloc_t dealloc, boolean_t inname, identifier_t name)
 {
     fprintf(file, "\tconst mach_msg_type_t %s = {\n", name);
-    fprintf(file, "\t\t/* msgt_name = */\t\t%s,\n",
+    fprintf(file, "\t\t/* msgt_name = */\t\t(unsigned char) %s,\n",
 	    inname ? it->itInNameStr : it->itOutNameStr);
     fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
     fprintf(file, "\t\t/* msgt_number = */\t\t%d,\n", it->itNumber);
