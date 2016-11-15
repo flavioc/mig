@@ -1,3 +1,8 @@
+Version 1.8 (2016-12-XX)
+
+* A spurious warning in the generated code has been fixed.
+
+
 Version 1.7 (2016-05-18)
 
 * MIG now has a test suite.  It includes a set of valid and invalid
