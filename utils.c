@@ -284,7 +284,7 @@ WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 	    strdealloc(dealloc));
     fprintf(file, "\t\t/* msgt_unused = */\t\t0\n");
     fprintf(file, "\t},\n");
-    fprintf(file, "\t\t/* msgtl_name = */\t%s,\n",
+    fprintf(file, "\t\t/* msgtl_name = */\t(unsigned short) %s,\n",
 	    inname ? it->itInNameStr : it->itOutNameStr);
     fprintf(file, "\t\t/* msgtl_size = */\t%d,\n", it->itSize);
     fprintf(file, "\t\t/* msgtl_number = */\t%d,\n", it->itNumber);
