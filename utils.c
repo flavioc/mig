@@ -408,12 +408,11 @@ WriteCopyType(FILE *file, const ipc_type_t *it, const char *left,
     }
     else
     {
-	fprintf(file, "\t{ typedef struct { char data[%d]; } *sp; * (sp) ",
-		it->itTypeSize);
+	fprintf(file, "\tmemcpy(");
 	do_skip_vfprintf(file, left, right);
-	fprintf(file, " = * (sp) ");
+	fprintf(file, ", ");
 	do_skip_vfprintf(file, right, right);
-	fprintf(file, "; }\n");
+	fprintf(file, ", %d);\n", it->itTypeSize);
     }
 }
 
