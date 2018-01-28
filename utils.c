@@ -144,12 +144,36 @@ WriteNameDecl(FILE *file, const argument_t *arg)
     fprintf(file, "%s", arg->argVarName);
 }
 
+/* Returns whether parameter should be qualified with const because we will only
+   send the pointed data, not receive it. */
+static boolean_t
+UserVarConst(const argument_t *arg)
+{
+    return (arg->argKind & (akbSend|akbReturn)) == akbSend
+	    && !arg->argType->itStruct;
+}
+
+static const char *
+UserVarQualifier(const argument_t *arg)
+{
+    if (!UserVarConst(arg))
+	return "";
+
+    if (arg->argType->itIndefinite)
+        /* This is a pointer type, so we have to use the const_foo type to
+	   make const qualify the data, not the pointer.  */
+	return "const_";
+    else
+	return "const ";
+}
+
 void
 WriteUserVarDecl(FILE *file, const argument_t *arg)
 {
+    const char *qualif = UserVarQualifier(arg);
     const char *ref = arg->argByReferenceUser ? "*" : "";
 
-    fprintf(file, "\t%s %s%s", arg->argType->itUserType, ref, arg->argVarName);
+    fprintf(file, "\t%s%s %s%s", qualif, arg->argType->itUserType, ref, arg->argVarName);
 }
 
 void
@@ -244,7 +268,9 @@ WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 			(*tfunc)(btype),
 			arg->argMsgField,
 			it->itNumber/btype->itNumber);
-	fprintf(file, "\t\t\t%s *%s%s;\n",
+	fprintf(file, "\t\t\t%s%s *%s%s;\n",
+			tfunc == FetchUserType && UserVarConst(arg)
+				? "const " : "",
 			(*tfunc)(btype),
 			arg->argMsgField,
 			OOLPostfix);
