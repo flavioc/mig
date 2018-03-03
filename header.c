@@ -178,7 +178,7 @@ WriteServerHeader(FILE *file, const statement_t *stats)
      * Include the x_server_routine function so it can be inlined.
      */
     fprintf(file, "extern mig_routine_t %s_routines[];\n", ServerDemux);
-    WriteSubsystemServerRoutine(file, "static inline");
+    WriteSubsystemServerRoutine(file, "static __inline");
 
     WriteEpilog(file, protect);
 }
