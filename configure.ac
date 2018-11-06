@@ -13,7 +13,7 @@ AC_ARG_PROGRAM
 
 AM_INIT_AUTOMAKE(
   [gnu]
-  [dist-bzip2]
+  [dist-xz]
 dnl Don't define `PACKAGE' and `VERSION'.
   [no-define]
 )
