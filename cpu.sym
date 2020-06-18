@@ -1,61 +1,105 @@
-/* 
- * Copyright (c) 1994 The University of Utah and
- * the Computer Systems Laboratory at the University of Utah (CSL).
- * All rights reserved.
+/*
+ * Copyright (c) 1992-1987 Carnegie Mellon University
+ * All Rights Reserved.
  *
- * Permission to use, copy, modify and distribute this software is hereby
- * granted provided that (1) source code retains these copyright, permission,
- * and disclaimer notices, and (2) redistributions including binaries
- * reproduce the notices in supporting documentation, and (3) all advertising
- * materials mentioning features or use of this software display the following
- * acknowledgement: ``This product includes software developed by the
- * Computer Systems Laboratory at the University of Utah.''
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
  *
- * THE UNIVERSITY OF UTAH AND CSL ALLOW FREE USE OF THIS SOFTWARE IN ITS "AS
- * IS" CONDITION.  THE UNIVERSITY OF UTAH AND CSL DISCLAIM ANY LIABILITY OF
- * ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
  *
- * CSL requests users of this software to return to csl-dist@cs.utah.edu any
- * improvements that they make and grant CSL redistribution rights.
+ * Carnegie Mellon requests users of this software to return to
  *
- *      Author: Bryan Ford, University of Utah CSL
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ *
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+/*
+ *	Mach IPC message and primitive function definitions.
  */
 
+/*
+ * Fetch values from the Mach header.
+ */
 #include <mach/message.h>
 
-expr	sizeof(integer_t)		word_size
-expr	sizeof(integer_t)*8		word_size_in_bits
-expr	sizeof(int)			sizeof_int
-expr	sizeof(char)			sizeof_char
-expr	sizeof(short)			sizeof_short
-expr	sizeof(void*)			sizeof_pointer
-expr	sizeof(mach_msg_header_t)	sizeof_mach_msg_header_t
-expr	sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t
-expr	sizeof(mach_msg_type_long_t)	sizeof_mach_msg_type_long_t
+/*
+ *	Known values for the msgt_name field.
+ *
+ *	The only types known to the Mach kernel are
+ *	the port types, and those types used in the
+ *	kernel RPC interface.
+ */
 
-expr	MACH_MSG_TYPE_UNSTRUCTURED
-expr	MACH_MSG_TYPE_POLYMORPHIC
-expr	MACH_MSG_TYPE_BIT
-expr	MACH_MSG_TYPE_BOOLEAN
-expr	MACH_MSG_TYPE_INTEGER_16
-expr	MACH_MSG_TYPE_INTEGER_32
-expr	MACH_MSG_TYPE_CHAR
-expr	MACH_MSG_TYPE_BYTE
-expr	MACH_MSG_TYPE_INTEGER_8
-expr	MACH_MSG_TYPE_REAL
-expr	MACH_MSG_TYPE_INTEGER_64
-expr	MACH_MSG_TYPE_STRING
-expr	MACH_MSG_TYPE_STRING_C
+expr MACH_MSG_TYPE_UNSTRUCTURED
+expr MACH_MSG_TYPE_BIT
+expr MACH_MSG_TYPE_BOOLEAN
+expr MACH_MSG_TYPE_INTEGER_16
+expr MACH_MSG_TYPE_INTEGER_32
+expr MACH_MSG_TYPE_CHAR
+expr MACH_MSG_TYPE_BYTE
+expr MACH_MSG_TYPE_INTEGER_8
+expr MACH_MSG_TYPE_REAL
+expr MACH_MSG_TYPE_INTEGER_64
+expr MACH_MSG_TYPE_STRING
+expr MACH_MSG_TYPE_STRING_C
 
-expr	MACH_MSG_TYPE_MOVE_RECEIVE
-expr	MACH_MSG_TYPE_MOVE_SEND
-expr	MACH_MSG_TYPE_MOVE_SEND_ONCE
-expr	MACH_MSG_TYPE_COPY_SEND
-expr	MACH_MSG_TYPE_MAKE_SEND
-expr	MACH_MSG_TYPE_MAKE_SEND_ONCE
+/*
+ *  Values used when sending a port right.
+ */
 
-expr	MACH_MSG_TYPE_PORT_NAME
-expr	MACH_MSG_TYPE_PORT_RECEIVE
-expr	MACH_MSG_TYPE_PORT_SEND
-expr	MACH_MSG_TYPE_PORT_SEND_ONCE
+/* Must hold receive rights */
+expr MACH_MSG_TYPE_MOVE_RECEIVE
+/* Must hold send rights */
+expr MACH_MSG_TYPE_MOVE_SEND
+/* Must hold sendonce rights */
+expr MACH_MSG_TYPE_MOVE_SEND_ONCE
+/* Must hold send rights */
+expr MACH_MSG_TYPE_COPY_SEND
+/* Must hold receive rights */
+expr MACH_MSG_TYPE_MAKE_SEND
+/* Must hold receive rights */
+expr MACH_MSG_TYPE_MAKE_SEND_ONCE
 
+/*
+ *  Values received/carried in messages.  Tells the receiver what
+ *  sort of port right he now has.
+ *
+ *  MACH_MSG_TYPE_PORT_NAME is used to transfer a port name
+ *  which should remain uninterpreted by the kernel.  (Port rights
+ *  are not transferred, just the port name.)
+ */
+
+expr MACH_MSG_TYPE_PORT_NAME
+expr MACH_MSG_TYPE_PORT_RECEIVE
+expr MACH_MSG_TYPE_PORT_SEND
+expr MACH_MSG_TYPE_PORT_SEND_ONCE
+
+expr MACH_MSG_TYPE_PROTECTED_PAYLOAD
+
+/*
+ *  A dummy value.  Mostly used to indicate that the actual value
+ *  will be filled in later, dynamically.
+ */
+
+expr MACH_MSG_TYPE_POLYMORPHIC
+
+
+/* Types used in interfaces */
+expr sizeof(integer_t)			word_size
+expr (sizeof(integer_t)*8)		word_size_in_bits
+expr sizeof(void*)			sizeof_pointer
+expr sizeof(char)			sizeof_char
+expr sizeof(short)			sizeof_short
+expr sizeof(int)			sizeof_int
+expr sizeof(mach_msg_header_t)		sizeof_mach_msg_header_t
+expr sizeof(mach_msg_type_long_t)	sizeof_mach_msg_type_long_t
+expr sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t

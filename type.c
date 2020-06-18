@@ -31,6 +31,7 @@
 #include "global.h"
 #include "type.h"
 #include "message.h"
+#include "cpu.h"
 
 #if word_size_in_bits == 32
 #define	word_size_name MACH_MSG_TYPE_INTEGER_32

@@ -46,6 +46,7 @@
 #include "global.h"
 #include "routine.h"
 #include "message.h"
+#include "cpu.h"
 
 u_int rtNumber = 0;
 
