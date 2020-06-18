@@ -1,38 +1,60 @@
-/* 
- * Copyright (c) 1994 The University of Utah and
- * the Computer Systems Laboratory at the University of Utah (CSL).
- * All rights reserved.
+/*
+ * Copyright (c) 1991,1990,1989,1988,1987 Carnegie Mellon University
+ * All Rights Reserved.
  *
- * Permission to use, copy, modify and distribute this software is hereby
- * granted provided that (1) source code retains these copyright, permission,
- * and disclaimer notices, and (2) redistributions including binaries
- * reproduce the notices in supporting documentation, and (3) all advertising
- * materials mentioning features or use of this software display the following
- * acknowledgement: ``This product includes software developed by the
- * Computer Systems Laboratory at the University of Utah.''
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
  *
- * THE UNIVERSITY OF UTAH AND CSL ALLOW FREE USE OF THIS SOFTWARE IN ITS "AS
- * IS" CONDITION.  THE UNIVERSITY OF UTAH AND CSL DISCLAIM ANY LIABILITY OF
- * ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
  *
- * CSL requests users of this software to return to csl-dist@cs.utah.edu any
- * improvements that they make and grant CSL redistribution rights.
+ * Carnegie Mellon requests users of this software to return to
  *
- *      Author: Bryan Ford, University of Utah CSL
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ *
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
  */
+/*
+ *	Boolean data type.
+ *
+ */
+
 #ifndef	_MIG_BOOLEAN_H_
 #define	_MIG_BOOLEAN_H_
 
-#ifndef boolean_t
-#define boolean_t int
-#endif
+/*
+ *	Pick up "boolean_t" type definition
+ */
+
+#ifndef	__ASSEMBLER__
+typedef int		boolean_t;
+#endif	/* __ASSEMBLER__ */
+
+#endif	/* _MIG_BOOLEAN_H_ */
+
+/*
+ *	Define TRUE and FALSE, only if they haven't been before,
+ *	and not if they're explicitly refused.  Note that we're
+ *	outside the BOOLEAN_H_ conditional, to avoid ordering
+ *	problems.
+ */
+
+#if	!defined(NOBOOL)
 
 #ifndef	TRUE
 #define TRUE	((boolean_t) 1)
-#endif
+#endif	/* TRUE */
 
 #ifndef	FALSE
 #define FALSE	((boolean_t) 0)
-#endif
+#endif	/* FALSE */
 
-#endif	/* _MIG_BOOLEAN_H_ */
+#endif	/* !defined(NOBOOL) */
