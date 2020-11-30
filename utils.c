@@ -159,9 +159,13 @@ UserVarQualifier(const argument_t *arg)
     if (!UserVarConst(arg))
 	return "";
 
-    if (arg->argType->itIndefinite)
-        /* This is a pointer type, so we have to use the const_foo type to
-	   make const qualify the data, not the pointer.  */
+    if (arg->argType->itIndefinite ||
+	!strcmp(arg->argType->itUserType, "string_t"))
+        /* This is a pointer, so we have to use the const_foo type to
+	   make const qualify the data, not the pointer.
+
+	   Or this is a string_t, which should use const_string_t to avoid
+	   forcing the caller to respect the definite string size */
 	return "const_";
     else
 	return "const ";

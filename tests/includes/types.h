@@ -29,6 +29,7 @@ typedef struct char_struct {
 } char_struct_t;
 
 typedef char* string_t;
+typedef const char* const_string_t;
 
 static inline int8_t int_to_int8(int n) {
   return (int8_t) n;
