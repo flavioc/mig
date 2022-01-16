@@ -29,6 +29,7 @@
 #include "write.h"
 #include "utils.h"
 #include "global.h"
+#include "cpu.h"
 
 void
 WriteImport(FILE *file, const_string_t filename)
@@ -160,6 +161,7 @@ UserVarQualifier(const argument_t *arg)
 	return "";
 
     if (arg->argType->itIndefinite ||
+	arg->argType->itInName == MACH_MSG_TYPE_STRING_C ||
 	!strcmp(arg->argType->itUserType, "string_t"))
         /* This is a pointer, so we have to use the const_foo type to
 	   make const qualify the data, not the pointer.
