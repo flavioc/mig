@@ -54,6 +54,8 @@ extern const char *ReturnTypeStr(const routine_t *rt);
 
 extern const char *FetchUserType(const ipc_type_t *it);
 extern const char *FetchServerType(const ipc_type_t *it);
+extern const char *ServerVarQualifier(const argument_t *arg);
+
 extern void WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 			       const char *(*tfunc)(const ipc_type_t *it));
 

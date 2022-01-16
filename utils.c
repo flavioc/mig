@@ -182,13 +182,42 @@ WriteUserVarDecl(FILE *file, const argument_t *arg)
     fprintf(file, "\t%s%s %s%s", qualif, arg->argType->itUserType, ref, arg->argVarName);
 }
 
+/* Returns whether parameter should be qualified with const because we will only
+   receive the pointed data, not modify it. */
+static boolean_t
+ServerVarConst(const argument_t *arg)
+{
+    return (arg->argKind & (akbSend|akbReturn)) == akbSend
+	    && !arg->argType->itStruct;
+}
+
+const char *
+ServerVarQualifier(const argument_t *arg)
+{
+    if (!ServerVarConst(arg))
+	return "";
+
+    if (arg->argType->itIndefinite ||
+	arg->argType->itInName == MACH_MSG_TYPE_STRING_C ||
+	!strcmp(arg->argType->itTransType, "string_t"))
+        /* This is a pointer, so we have to use the const_foo type to
+	   make const qualify the data, not the pointer.
+
+	   Or this is a string_t, which should use const_string_t to avoid
+	   forcing the caller to respect the definite string size */
+	return "const_";
+    else
+	return "const ";
+}
+
 void
 WriteServerVarDecl(FILE *file, const argument_t *arg)
 {
+    const char *qualif = ServerVarQualifier(arg);
     const char *ref = arg->argByReferenceServer ? "*" : "";
 
-    fprintf(file, "\t%s %s%s",
-	    arg->argType->itTransType, ref, arg->argVarName);
+    fprintf(file, "\t%s%s %s%s",
+	    qualif, arg->argType->itTransType, ref, arg->argVarName);
 }
 
 void

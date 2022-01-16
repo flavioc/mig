@@ -268,8 +268,9 @@ WriteLocalPtrDecl(FILE *file, const argument_t *arg)
 static void
 WriteServerArgDecl(FILE *file, const argument_t *arg)
 {
-    fprintf(file, "%s %s%s",
-	    arg->argType->itTransType,
+    const char *qualif = ServerVarQualifier(arg);
+    fprintf(file, "%s%s %s%s",
+	    qualif, arg->argType->itTransType,
 	    arg->argByReferenceServer ? "*" : "",
 	    arg->argVarName);
 }
