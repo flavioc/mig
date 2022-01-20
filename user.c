@@ -1164,7 +1164,7 @@ WriteRoutine(FILE *file, const routine_t *rt)
     /* declarations and initializations of the mach_msg_type_t variables
        for each argument */
 
-    WriteList(file, rt->rtArgs, WriteTypeDeclIn, akbRequest, "\n", "\n");
+    WriteList(file, rt->rtArgs, WriteTypeDeclInUser, akbRequest, "\n", "\n");
     if (!rt->rtOneWay)
 	WriteList(file, rt->rtArgs, WriteCheckDecl, akbReplyQC, "\n", "\n");
 

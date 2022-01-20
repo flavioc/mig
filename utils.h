@@ -46,8 +46,10 @@ extern void WriteReverseList(FILE *file, const argument_t *args,
 extern write_list_fn_t WriteNameDecl;
 extern write_list_fn_t WriteUserVarDecl;
 extern write_list_fn_t WriteServerVarDecl;
-extern write_list_fn_t WriteTypeDeclIn;
-extern write_list_fn_t WriteTypeDeclOut;
+extern write_list_fn_t WriteTypeDeclInServer;
+extern write_list_fn_t WriteTypeDeclOutServer;
+extern write_list_fn_t WriteTypeDeclInUser;
+extern write_list_fn_t WriteTypeDeclOutUser;
 extern write_list_fn_t WriteCheckDecl;
 
 extern const char *ReturnTypeStr(const routine_t *rt);
@@ -65,7 +67,8 @@ extern void WriteStructDecl(FILE *file, const argument_t *args,
 
 extern void WriteStaticDecl(FILE *file, const ipc_type_t *it,
 			    dealloc_t dealloc, boolean_t longform,
-			    boolean_t inname, identifier_t name);
+			    boolean_t is_server, boolean_t inname,
+			    identifier_t name);
 
 extern void WriteCopyType(FILE *file, const ipc_type_t *it,
 			  const char *left, const char *right, ...);

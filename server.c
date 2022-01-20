@@ -184,7 +184,7 @@ WriteEpilog(FILE *file, const statement_t *stats)
 
     WriteStaticDecl(file, itRetCodeType,
 		    itRetCodeType->itDeallocate, itRetCodeType->itLongForm,
-		    !IsKernelServer, "RetCodeType");
+		    /*is_server=*/ TRUE, !IsKernelServer, "RetCodeType");
     fprintf(file, "\n");
 
     fprintf(file, "\tmig_routine_t routine;\n");
@@ -1328,7 +1328,7 @@ WriteRoutine(FILE *file, const routine_t *rt)
 
     WriteList(file, rt->rtArgs, WriteCheckDecl, akbRequestQC, "\n", "\n");
     WriteList(file, rt->rtArgs,
-	      IsKernelServer ? WriteTypeDeclOut : WriteTypeDeclIn,
+	      IsKernelServer ? WriteTypeDeclOutServer : WriteTypeDeclInServer,
 	      akbReplyInit, "\n", "\n");
 
     WriteList(file, rt->rtArgs, WriteLocalVarDecl,

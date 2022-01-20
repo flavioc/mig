@@ -221,19 +221,35 @@ WriteServerVarDecl(FILE *file, const argument_t *arg)
 }
 
 void
-WriteTypeDeclIn(FILE *file, const argument_t *arg)
+WriteTypeDeclInServer(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		    arg->argLongForm, TRUE, arg->argTTName);
+		    arg->argLongForm, /*is_server=*/TRUE, TRUE, arg->argTTName);
 }
 
 void
-WriteTypeDeclOut(FILE *file, const argument_t *arg)
+WriteTypeDeclOutServer(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		    arg->argLongForm, FALSE, arg->argTTName);
+		    arg->argLongForm, /*is_server=*/TRUE, FALSE, arg->argTTName);
+}
+
+void
+WriteTypeDeclInUser(FILE *file, const argument_t *arg)
+{
+    WriteStaticDecl(file, arg->argType,
+		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
+		    arg->argLongForm, /*is_server=*/FALSE, TRUE, arg->argTTName);
+}
+
+void
+WriteTypeDeclOutUser(FILE *file, const argument_t *arg)
+{
+    WriteStaticDecl(file, arg->argType,
+		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
+		    arg->argLongForm, /*is_server=*/FALSE, FALSE, arg->argTTName);
 }
 
 void
@@ -354,7 +370,8 @@ WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 
 static void
 WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
-		     dealloc_t dealloc, boolean_t inname, identifier_t name)
+		     dealloc_t dealloc, boolean_t is_server, boolean_t inname,
+		     identifier_t name)
 {
     fprintf(file, "\tconst mach_msg_type_t %s = {\n", name);
     fprintf(file, "\t\t/* msgt_name = */\t\t(unsigned char) %s,\n",
@@ -368,16 +385,24 @@ WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
 	    strdealloc(dealloc));
     fprintf(file, "\t\t/* msgt_unused = */\t\t0\n");
     fprintf(file, "\t};\n");
+    if (it->itInLine && !it->itVarArray) {
+        identifier_t type = is_server ? FetchServerType(it) : FetchUserType(it);
+        const u_int size_bytes = it->itSize >> 3;
+        fprintf(file, "\t_Static_assert(sizeof(%s) == %d * %d, \"expected %s to be size %d * %d\");\n",
+                      type, size_bytes, it->itNumber,
+                      type, size_bytes, it->itNumber);
+    }
 }
 
 void
 WriteStaticDecl(FILE *file, const ipc_type_t *it, dealloc_t dealloc,
-		boolean_t longform, boolean_t inname, identifier_t name)
+		boolean_t longform, boolean_t is_server, boolean_t inname,
+		identifier_t name)
 {
     if (longform)
 	WriteStaticLongDecl(file, it, dealloc, inname, name);
     else
-	WriteStaticShortDecl(file, it, dealloc, inname, name);
+	WriteStaticShortDecl(file, it, dealloc, is_server, inname, name);
 }
 
 /*
