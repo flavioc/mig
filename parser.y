@@ -116,6 +116,7 @@
 
 #include <stdio.h>
 
+#include "cpu.h"
 #include "error.h"
 #include "lexxer.h"
 #include "global.h"
@@ -223,12 +224,18 @@ SubsystemMod		:	syKernelUser
     if (IsKernelUser)
 	warn("duplicate KernelUser keyword");
     IsKernelUser = TRUE;
+    port_size = vm_offset_size;
+    port_size_in_bits = vm_offset_size_in_bits;
+    init_type();
 }
 			|	syKernelServer
 {
     if (IsKernelServer)
 	warn("duplicate KernelServer keyword");
     IsKernelServer = TRUE;
+    port_size = vm_offset_size;
+    port_size_in_bits = vm_offset_size_in_bits;
+    init_type();
 }
 			;
 

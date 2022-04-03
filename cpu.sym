@@ -106,3 +106,7 @@ expr sizeof(double)			sizeof_double
 expr sizeof(mach_msg_header_t)		sizeof_mach_msg_header_t
 expr sizeof(mach_msg_type_long_t)	sizeof_mach_msg_type_long_t
 expr sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t
+expr sizeof(vm_offset_t)		vm_offset_size
+expr (sizeof(vm_offset_t)*8)		vm_offset_size_in_bits
+expr sizeof(mach_port_name_t)		port_name_size
+expr (sizeof(mach_port_name_t)*8)	port_name_size_in_bits

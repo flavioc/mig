@@ -67,6 +67,9 @@ extern string_t InternalHeaderFileName;
 extern string_t UserFileName;
 extern string_t ServerFileName;
 
+extern int port_size;
+extern int port_size_in_bits;
+
 extern void more_global(void);
 
 #ifndef NULL

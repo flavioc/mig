@@ -848,7 +848,7 @@ init_type(void)
     itRequestPortType->itInNameStr = "MACH_MSG_TYPE_COPY_SEND";
     itRequestPortType->itOutName = MACH_MSG_TYPE_PORT_SEND;
     itRequestPortType->itOutNameStr = "MACH_MSG_TYPE_PORT_SEND";
-    itRequestPortType->itSize = word_size_in_bits;
+    itRequestPortType->itSize = port_size_in_bits;
     itCalculateSizeInfo(itRequestPortType);
     itCalculateNameInfo(itRequestPortType);
 
@@ -858,7 +858,7 @@ init_type(void)
     itZeroReplyPortType->itInNameStr = "0";
     itZeroReplyPortType->itOutName = 0;
     itZeroReplyPortType->itOutNameStr = "0";
-    itZeroReplyPortType->itSize = word_size_in_bits;
+    itZeroReplyPortType->itSize = port_size_in_bits;
     itCalculateSizeInfo(itZeroReplyPortType);
     itCalculateNameInfo(itZeroReplyPortType);
 
@@ -868,7 +868,7 @@ init_type(void)
     itRealReplyPortType->itInNameStr = "MACH_MSG_TYPE_MAKE_SEND_ONCE";
     itRealReplyPortType->itOutName = MACH_MSG_TYPE_PORT_SEND_ONCE;
     itRealReplyPortType->itOutNameStr = "MACH_MSG_TYPE_PORT_SEND_ONCE";
-    itRealReplyPortType->itSize = word_size_in_bits;
+    itRealReplyPortType->itSize = port_size_in_bits;
     itCalculateSizeInfo(itRealReplyPortType);
     itCalculateNameInfo(itRealReplyPortType);
 
@@ -906,7 +906,7 @@ itCheckRequestPortType(identifier_t name, const ipc_type_t *it)
 	 (it->itOutName != MACH_MSG_TYPE_PORT_SEND_ONCE) &&
 	 (it->itOutName != MACH_MSG_TYPE_POLYMORPHIC)) ||
 	(it->itNumber != 1) ||
-	(it->itSize != word_size_in_bits) ||
+	(it->itSize != port_size_in_bits) ||
 	!it->itInLine ||
 	it->itDeallocate != d_NO ||
 	!it->itStruct ||
@@ -927,7 +927,7 @@ itCheckReplyPortType(identifier_t name, const ipc_type_t *it)
 	 (it->itOutName != MACH_MSG_TYPE_POLYMORPHIC) &&
 	 (it->itOutName != 0)) ||
 	(it->itNumber != 1) ||
-	(it->itSize != word_size_in_bits) ||
+	(it->itSize != port_size_in_bits) ||
 	!it->itInLine ||
 	it->itDeallocate != d_NO ||
 	!it->itStruct ||

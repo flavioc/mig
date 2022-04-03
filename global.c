@@ -24,6 +24,7 @@
  * rights to redistribute these changes.
  */
 
+#include "cpu.h"
 #include "error.h"
 #include "global.h"
 
@@ -64,6 +65,9 @@ string_t ServerHeaderFileName = strNULL;
 string_t InternalHeaderFileName = strNULL;
 string_t UserFileName = strNULL;
 string_t ServerFileName = strNULL;
+
+int port_size = port_name_size;
+int port_size_in_bits = port_name_size_in_bits;
 
 void
 more_global(void)
