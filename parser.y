@@ -526,8 +526,8 @@ IPCType			:	PrimIPCType
 	    $$.size = $1.size;
 	else
 	{
-	    error("sizes in IPCTypes (%d, %d) aren't equal",
-		  $1.size, $3.size);
+	    error("sizes in IPCTypes (%s %s %d, %s %s %d) aren't equal",
+		  $1.instr, $1.outstr, $1.size, $3.instr, $3.outstr, $3.size);
 	    $$.size = 0;
 	}
     }
