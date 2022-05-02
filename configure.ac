@@ -38,10 +38,6 @@ AC_PROG_INSTALL
 dnl Checks for header files.
 AC_HEADER_STDC
 
-dnl Checks for library functions.
-AC_FUNC_VPRINTF
-
-
 [if [ "$target" = "$host" ]; then
   TARGET_CC='${CC}'
 else]
