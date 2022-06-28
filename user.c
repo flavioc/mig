@@ -159,7 +159,7 @@ WriteRequestHead(FILE *file, const routine_t *rt)
 		WriteHeaderPortType(rt->rtUReplyPort));
     }
 
-    fprintf(file, "\t/* msgh_size passed as argument */\n");
+    fprintf(file, "\t/* msgh_size filled below */\n");
 
     /*
      *	KernelUser stubs need to cast the request and reply ports
@@ -282,6 +282,8 @@ WriteMsgSend(FILE *file, const routine_t *rt)
     else
 	strcpy(SendSize, "msgh_size");
 
+    fprintf(file, "\tInP->Head.msgh_size = %s;\n\n", SendSize);
+
     if (IsKernelUser)
     {
 	fprintf(file, "\t%s %smach_msg_send_from_kernel(",
@@ -347,6 +349,8 @@ WriteMsgRPC(FILE *file, const routine_t *rt)
         fprintf(file, "\t_Static_assert(sizeof(Request) == %s, \"Request expected to be %s bytes\");\n", SendSize, SendSize);
     } else
 	strcpy(SendSize, "msgh_size");
+
+    fprintf(file, "\tInP->Head.msgh_size = %s;\n\n", SendSize);
 
     if (IsKernelUser)
 	fprintf(file, "\tmsg_result = %smach_msg_rpc_from_kernel(&InP->Head, %s, sizeof(Reply));\n",
