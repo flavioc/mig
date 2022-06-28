@@ -321,9 +321,9 @@ rtFindSize(const argument_t *args, u_int mask)
 	{
 	    ipc_type_t *it = arg->argType;
 
+	    /* might need proper alignment on demanding 64bit archies */
+	    size = (size + word_size-1) & ~(word_size-1);
 	    if (arg->argLongForm) {
-		/* might need proper alignment on 64bit archies */
-		size = (size + word_size-1) & ~(word_size-1);
 		size += sizeof_mach_msg_type_long_t;
 	    } else {
 		size += sizeof_mach_msg_type_t;

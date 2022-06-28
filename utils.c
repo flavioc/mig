@@ -338,10 +338,12 @@ void
 WriteStructDecl(FILE *file, const argument_t *args, write_list_fn_t *func,
 		u_int mask, const char *name)
 {
+    fprintf(file, "#pragma pack(push,%d)\n", word_size);
     fprintf(file, "\ttypedef struct {\n");
     fprintf(file, "\t\tmach_msg_header_t Head;\n");
     WriteList(file, args, func, mask, "\n", "\n");
     fprintf(file, "\t} %s;\n", name);
+    fprintf(file, "#pragma pack(pop)\n");
     fprintf(file, "\n");
 }
 
