@@ -275,7 +275,10 @@ WriteMsgSend(FILE *file, const routine_t *rt)
     char SendSize[24];
 
     if (rt->rtNumRequestVar == 0)
+    {
         sprintf(SendSize, "%d", rt->rtRequestSize);
+        fprintf(file, "\t_Static_assert(sizeof(Request) == %s, \"Request expected to be %s bytes\");\n", SendSize, SendSize);
+    }
     else
 	strcpy(SendSize, "msgh_size");
 
@@ -339,8 +342,10 @@ WriteMsgRPC(FILE *file, const routine_t *rt)
     char SendSize[24];
 
     if (rt->rtNumRequestVar == 0)
+    {
         sprintf(SendSize, "%d", rt->rtRequestSize);
-    else
+        fprintf(file, "\t_Static_assert(sizeof(Request) == %s, \"Request expected to be %s bytes\");\n", SendSize, SendSize);
+    } else
 	strcpy(SendSize, "msgh_size");
 
     if (IsKernelUser)
