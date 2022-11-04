@@ -27,7 +27,18 @@
 #ifndef	_UTILS_H
 #define	_UTILS_H
 
+#include "routine.h"
+
 /* stuff used by more than one of header.c, user.c, server.c */
+
+#define MAX(a,b) \
+  ({ __typeof__ (a) _a = (a); \
+      __typeof__ (b) _b = (b); \
+    _a > _b ? _a : _b; })
+#define MIN(a,b) \
+  ({ __typeof__ (a) _a = (a); \
+      __typeof__ (b) _b = (b); \
+    _a > _b ? _b : _a; })
 
 typedef void	write_list_fn_t(FILE *file, const argument_t *arg);
 

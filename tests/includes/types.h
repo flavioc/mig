@@ -31,6 +31,26 @@ typedef struct char_struct {
 typedef char string_t[256];
 typedef const char* const_string_t;
 
+typedef struct simple_struct {
+  char a;
+} simple_struct_t;
+
+typedef struct complex_struct_x {
+  simple_struct_t a;
+  simple_struct_t b;
+  int c;
+} complex_struct_x_t;
+
+typedef struct complex_struct_y {
+  complex_struct_x_t a;
+  char b;
+} complex_struct_y_t;
+
+typedef struct complex_struct_z {
+  complex_struct_y_t a;
+  int d;
+} complex_struct_z_t;
+
 static inline int8_t int_to_int8(int n) {
   return (int8_t) n;
 }

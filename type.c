@@ -24,6 +24,7 @@
  * the rights to redistribute these changes.
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,6 +33,7 @@
 #include "type.h"
 #include "message.h"
 #include "cpu.h"
+#include "utils.h"
 
 #if word_size_in_bits == 32
 #define	word_size_name MACH_MSG_TYPE_INTEGER_32
@@ -45,6 +47,7 @@
 #endif
 #endif
 
+ipc_type_t *itByteType;         /* used for defining struct types */
 ipc_type_t *itRetCodeType;	/* used for return codes */
 ipc_type_t *itDummyType;	/* used for camelot dummy args */
 ipc_type_t *itRequestPortType;	/* used for default Request port arg */
@@ -52,6 +55,8 @@ ipc_type_t *itZeroReplyPortType;/* used for dummy Reply port arg */
 ipc_type_t *itRealReplyPortType;/* used for default Reply port arg */
 ipc_type_t *itWaitTimeType;	/* used for dummy WaitTime args */
 ipc_type_t *itMsgOptionType;	/* used for dummy MsgOption args */
+ipc_type_t *itShortType;        /* used for the short type */
+ipc_type_t *itIntType;          /* used for the int type */
 
 static ipc_type_t *list = itNULL;
 
@@ -100,6 +105,7 @@ itAlloc(void)
 	0,			/* u_int itTypeSize */
 	0,			/* u_int itPadSize */
 	0,			/* u_int itMinTypeSize */
+	0,			/* u_int itAlignment */
 	0,			/* u_int itInName */
 	0,			/* u_int itOutName */
 	0,			/* u_int itSize */
@@ -173,6 +179,7 @@ itCalculateSizeInfo(ipc_type_t *it)
 	it->itTypeSize = bytes;
 	it->itPadSize = 0;
 	it->itMinTypeSize = bytes;
+	it->itAlignment = bytes;
     }
 
     /* Unfortunately, these warning messages can't give a type name;
@@ -417,10 +424,10 @@ itCheckDecl(identifier_t name, ipc_type_t *it)
 static void
 itPrintTrans(const ipc_type_t *it)
 {
-    if (!streql(it->itName, it->itUserType))
+    if (it->itName != strNULL && it->itUserType != strNULL && !streql(it->itName, it->itUserType))
 	printf("\tCUserType:\t%s\n", it->itUserType);
 
-    if (!streql(it->itName, it->itServerType))
+    if (it->itName != strNULL && !streql(it->itName, it->itServerType))
 	printf("\tCServerType:\t%s\n", it->itServerType);
 
     if (it->itInTrans != strNULL)
@@ -525,6 +532,7 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
     it->itOutName = outname;
     it->itOutNameStr = outstr;
     it->itSize = size;
+    it->itAlignment = MIN(word_size, size / 8);
     if (inname == MACH_MSG_TYPE_STRING_C)
     {
 	it->itStruct = FALSE;
@@ -643,6 +651,7 @@ itArrayDecl(u_int number, const ipc_type_t *old)
     it->itNumber *= number;
     it->itStruct = FALSE;
     it->itString = FALSE;
+    it->itAlignment = old->itAlignment;
 
     itCalculateSizeInfo(it);
     return it;
@@ -673,7 +682,7 @@ itPtrDecl(ipc_type_t *it)
  *	type new = struct[number] of old;
  */
 ipc_type_t *
-itStructDecl(u_int number, const ipc_type_t *old)
+itStructArrayDecl(u_int number, const ipc_type_t *old)
 {
     ipc_type_t *it = itResetType(itCopyType(old));
 
@@ -682,6 +691,48 @@ itStructDecl(u_int number, const ipc_type_t *old)
     it->itNumber *= number;
     it->itStruct = TRUE;
     it->itString = FALSE;
+    it->itAlignment = old->itAlignment;
+
+    itCalculateSizeInfo(it);
+    return it;
+}
+
+/*
+ *  Handles the declaration
+ *	type new = struct { type1 a1; type2 a2; ... };
+ */
+ipc_type_t *
+itStructDecl(u_int min_type_size_in_bytes, u_int required_alignment_in_bytes)
+{
+    int final_struct_bytes = min_type_size_in_bytes;
+    if (final_struct_bytes % required_alignment_in_bytes) {
+         final_struct_bytes += required_alignment_in_bytes - (final_struct_bytes % required_alignment_in_bytes);
+    }
+    ipc_type_t *element_type = NULL;
+    int number_elements = 0;
+    // If the struct is short or int aligned, use that as the base type.
+    switch (required_alignment_in_bytes) {
+	case 2:
+	    element_type = itShortType;
+	    assert(final_struct_bytes % 2 == 0);
+	    number_elements = final_struct_bytes / 2;
+	    break;
+	case 4:
+	    element_type = itIntType;
+	    assert(final_struct_bytes % 4 == 0);
+	    number_elements = final_struct_bytes / 4;
+	    break;
+        case 1:
+	default:
+	    element_type = itByteType;
+	    number_elements = final_struct_bytes;
+	    break;
+    }
+    ipc_type_t *it = itResetType(itCopyType(element_type));
+    it->itNumber = number_elements;
+    it->itStruct = TRUE;
+    it->itString = FALSE;
+    it->itAlignment = required_alignment_in_bytes;
 
     itCalculateSizeInfo(it);
     return it;
@@ -709,6 +760,7 @@ itCStringDecl(u_int count, boolean_t varying)
     it->itVarArray = varying;
     it->itStruct = FALSE;
     it->itString = TRUE;
+    it->itAlignment = itElement->itAlignment;
 
     itCalculateSizeInfo(it);
     return it;
@@ -744,6 +796,7 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
           exit(EXIT_FAILURE);
     }
     it->itName = ctype;
+    it->itAlignment = size;
     itCalculateNameInfo(it);
     return it;
 }
@@ -822,6 +875,16 @@ itMakeDeallocType(void)
 void
 init_type(void)
 {
+    itByteType = itAlloc();
+    itByteType->itName = "unsigned char";
+    itByteType->itInName = MACH_MSG_TYPE_BYTE;
+    itByteType->itInNameStr = "MACH_MSG_TYPE_BYTE";
+    itByteType->itOutName = MACH_MSG_TYPE_BYTE;
+    itByteType->itOutNameStr = "MACH_MSG_TYPE_BYTE";
+    itByteType->itSize = 8;
+    itCalculateSizeInfo(itByteType);
+    itCalculateNameInfo(itByteType);
+
     itRetCodeType = itAlloc();
     itRetCodeType->itName = "kern_return_t";
     itRetCodeType->itInName = MACH_MSG_TYPE_INTEGER_32;
@@ -877,8 +940,10 @@ init_type(void)
 
     /* Define basic C integral types. */
     itInsert("char", itCIntTypeDecl("char", sizeof_char));
-    itInsert("short", itCIntTypeDecl("short", sizeof_short));
-    itInsert("int", itCIntTypeDecl("int", sizeof_int));
+    itShortType = itCIntTypeDecl("short", sizeof_short);
+    itInsert("short", itShortType);
+    itIntType = itCIntTypeDecl("int", sizeof_int);
+    itInsert("int", itIntType);
 }
 
 /******************************************************

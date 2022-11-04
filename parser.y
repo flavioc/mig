@@ -84,6 +84,8 @@
 %token	syRAngle
 %token	syLBrack
 %token	syRBrack
+%token	syLCBrack
+%token	syRCBrack
 %token	syBar
 
 %token	syError			/* lex error */
@@ -103,6 +105,7 @@
 
 %type	<statement_kind> ImportIndicant
 %type	<number> VarArrayHead ArrayHead StructHead IntExp
+%type   <structured_type> StructList
 %type	<type> NamedTypeSpec TransTypeSpec TypeSpec
 %type	<type> CStringSpec
 %type	<type> BasicTypeSpec PrevTypeSpec ArgumentType
@@ -124,6 +127,7 @@
 #include "type.h"
 #include "routine.h"
 #include "statement.h"
+#include "utils.h"
 
 static const char *import_name(statement_kind_t sk);
 
@@ -149,6 +153,14 @@ yyerror(const char *s)
 	const_string_t outstr;
 	u_int size;		/* 0 means there is no default size */
     } symtype;
+    /* Holds information about a structure while parsing. */
+    struct
+    {
+        /* The required alignment (in bytes) so far. */
+        u_int type_alignment_in_bytes;
+        /* The size of the struct in bytes so far. */
+        u_int size_in_bytes;
+    } structured_type;
     routine_t *routine;
     arg_kind_t direction;
     argument_t *argument;
@@ -466,10 +478,42 @@ TypeSpec		:	BasicTypeSpec
 			|	syCaret TypeSpec
 				{ $$ = itPtrDecl($2); }
 			|	StructHead TypeSpec
-				{ $$ = itStructDecl($1, $2); }
+				{ $$ = itStructArrayDecl($1, $2); }
+                        |       syStruct syLCBrack StructList syRCBrack
+				{ $$ = itStructDecl($3.size_in_bytes, $3.type_alignment_in_bytes); }
 			|	CStringSpec
 				{ $$ = $1; }
 			;
+
+StructList   		: 	syIdentifier syIdentifier sySemi
+{
+    ipc_type_t *t = itPrevDecl($1);
+    if (!t) {
+        error("Type %s not found\n", $1);
+    }
+    if (!t->itInLine) {
+        error("Type %s must be inline\n", $2);
+    }
+
+    $$.type_alignment_in_bytes = t->itAlignment;
+    $$.size_in_bytes = t->itTypeSize;
+}
+			|	StructList syIdentifier syIdentifier sySemi
+{
+    ipc_type_t *t = itPrevDecl($2);
+    if (!t) {
+        error("Type %s not found\n", $2);
+    }
+    if (!t->itInLine) {
+        error("Type %s must be inline\n", $2);
+    }
+    $$.type_alignment_in_bytes = MAX(t->itAlignment, $1.type_alignment_in_bytes);
+    int padding_bytes = 0;
+    if ($1.size_in_bytes % t->itAlignment)
+        padding_bytes = t->itAlignment - ($1.size_in_bytes % t->itAlignment);
+    $$.size_in_bytes = $1.size_in_bytes + padding_bytes + t->itTypeSize;
+}
+                        ;
 
 BasicTypeSpec		:	IPCType
 {

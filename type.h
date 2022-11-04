@@ -143,6 +143,7 @@ typedef struct ipc_type
     u_int itTypeSize;		/* size of the C type */
     u_int itPadSize;		/* amount of padding after data */
     u_int itMinTypeSize;	/* minimal amount of space occupied by data */
+    u_int itAlignment;         /* alignment required for this type */
 
     u_int itInName;		/* name supplied to kernel in sent msg */
     u_int itOutName;		/* name in received msg */
@@ -193,7 +194,8 @@ extern ipc_type_t *itResetType(ipc_type_t *it);
 extern ipc_type_t *itVarArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itPtrDecl(ipc_type_t *it);
-extern ipc_type_t *itStructDecl(u_int number, const ipc_type_t *it);
+extern ipc_type_t *itStructArrayDecl(u_int number, const ipc_type_t *it);
+extern ipc_type_t *itStructDecl(u_int min_type_size_in_bytes, u_int required_alignment_in_bytes);
 extern ipc_type_t *itCStringDecl(u_int number, boolean_t varying);
 
 extern ipc_type_t *itRetCodeType;
