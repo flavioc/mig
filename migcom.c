@@ -213,7 +213,6 @@ main(int argc, char **argv)
     set_program_name("mig");
     parseArgs(argc, argv);
     init_global();
-    init_type();
 
     LookNormal();
     (void) yyparse();

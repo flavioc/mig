@@ -57,6 +57,7 @@ ipc_type_t *itWaitTimeType;	/* used for dummy WaitTime args */
 ipc_type_t *itMsgOptionType;	/* used for dummy MsgOption args */
 ipc_type_t *itShortType;        /* used for the short type */
 ipc_type_t *itIntType;          /* used for the int type */
+static boolean_t types_initialized = FALSE;
 
 static ipc_type_t *list = itNULL;
 
@@ -67,6 +68,13 @@ static ipc_type_t *list = itNULL;
 ipc_type_t *
 itLookUp(identifier_t name)
 {
+    if (!types_initialized)
+    {
+        error("Basic types not initialized when looking up type %s. Did you "
+              "forget to define the subsystem?", name);
+        return NULL;
+    }
+
     ipc_type_t *it, **last;
 
     for (it = *(last = &list); it != itNULL; it = *(last = &it->itNext))
@@ -875,6 +883,14 @@ itMakeDeallocType(void)
 void
 init_type(void)
 {
+    if (types_initialized)
+    {
+        error("Basic types were already initialized");
+        exit(EXIT_FAILURE);
+    }
+    /* Mark initialization here since itInsert below will require it. */
+    types_initialized = TRUE;
+
     itByteType = itAlloc();
     itByteType->itName = "unsigned char";
     itByteType->itInName = MACH_MSG_TYPE_BYTE;

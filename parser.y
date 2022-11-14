@@ -212,6 +212,7 @@ Subsystem		:	SubsystemStart SubsystemMods
 	       IsKernelUser ? ", KernelUser" : "",
 	       IsKernelServer ? ", KernelServer" : "");
     }
+    init_type();
 }
 			;
 
@@ -238,7 +239,6 @@ SubsystemMod		:	syKernelUser
     IsKernelUser = TRUE;
     port_size = vm_offset_size;
     port_size_in_bits = vm_offset_size_in_bits;
-    init_type();
 }
 			|	syKernelServer
 {
@@ -247,7 +247,6 @@ SubsystemMod		:	syKernelUser
     IsKernelServer = TRUE;
     port_size = vm_offset_size;
     port_size_in_bits = vm_offset_size_in_bits;
-    init_type();
 }
 			;
 
@@ -351,7 +350,7 @@ TypeDecl		:	syType NamedTypeSpec
     identifier_t name = $2->itName;
 
     if (itLookUp(name) != itNULL)
-	warn("overriding previous definition of %s", name);
+		error("overriding previous definition of %s", name);
     itInsert(name, $2);
 }
 			;
