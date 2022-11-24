@@ -221,8 +221,8 @@ SubsystemStart		:	sySubsystem
     if (SubsystemName != strNULL)
     {
 	warn("previous Subsystem decl (of %s) will be ignored", SubsystemName);
-	IsKernelUser = FALSE;
-	IsKernelServer = FALSE;
+	IsKernelUser = false;
+	IsKernelServer = false;
 	strfree((string_t) SubsystemName);
     }
 }
@@ -236,7 +236,7 @@ SubsystemMod		:	syKernelUser
 {
     if (IsKernelUser)
 	warn("duplicate KernelUser keyword");
-    IsKernelUser = TRUE;
+    IsKernelUser = true;
     port_size = vm_offset_size;
     port_size_in_bits = vm_offset_size_in_bits;
 }
@@ -244,7 +244,7 @@ SubsystemMod		:	syKernelUser
 {
     if (IsKernelServer)
 	warn("duplicate KernelServer keyword");
-    IsKernelServer = TRUE;
+    IsKernelServer = true;
     port_size = vm_offset_size;
     port_size_in_bits = vm_offset_size_in_bits;
 }
@@ -605,10 +605,10 @@ StructHead		:	syStruct syLBrack IntExp syRBrack syOf
 			;
 
 CStringSpec		:	syCString syLBrack IntExp syRBrack
-				{ $$ = itCStringDecl($3, FALSE); }
+				{ $$ = itCStringDecl($3, false); }
 			|	syCString syLBrack syStar syColon
 				IntExp syRBrack
-				{ $$ = itCStringDecl($5, TRUE); }
+				{ $$ = itCStringDecl($5, true); }
 			;
 
 IntExp			: 	IntExp	syPlus	IntExp

@@ -91,19 +91,19 @@ parseArgs(int argc, char **argv)
 	    switch (argv[0][1])
 	    {
 	      case 'n':
-		DefaultFiles = FALSE;
+		DefaultFiles = false;
 		break;
 	      case 'q':
-		BeQuiet = TRUE;
+		BeQuiet = true;
 		break;
 	      case 'Q':
-		BeQuiet = FALSE;
+		BeQuiet = false;
 		break;
 	      case 'v':
-		BeVerbose = TRUE;
+		BeVerbose = true;
 		break;
 	      case 'V':
-		BeVerbose = FALSE;
+		BeVerbose = false;
 		break;
 	      case 'r':
 		/* This is the default and `-R' doesn't work anymore.  */
@@ -144,10 +144,10 @@ parseArgs(int argc, char **argv)
  		    SubrPrefix = strmake(argv[0]);
  		  }
 		else
-		    GenSymTab = TRUE;
+		    GenSymTab = true;
 		break;
 	      case 'S':
-	        GenSymTab = FALSE;
+	        GenSymTab = false;
 		break;
 	      case 'i':
 		if (streql(argv[0], "-iheader"))

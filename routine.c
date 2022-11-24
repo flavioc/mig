@@ -87,9 +87,9 @@ argAlloc(void)
 	strNULL,		/* string_t argPadName */
 	flNone,			/* ipc_flags_t argFlags */
 	d_NO,			/* dealloc_t argDeallocate */
-	FALSE,			/* boolean_t argLongForm */
-	FALSE,			/* boolean_t argServerCopy */
-	FALSE,			/* boolean_t argCountInOut */
+	false,			/* bool argLongForm */
+	false,			/* bool argServerCopy */
+	false,			/* bool argCountInOut */
 	rtNULL,			/* routine_t *argRoutine */
 	argNULL,		/* argument_t *argCount */
 	argNULL,		/* argument_t *argCInOut */
@@ -100,8 +100,8 @@ argAlloc(void)
 	1,			/* int argMultiplier */
 	0,			/* int argRequestPos */
 	0,			/* int argReplyPos */
-	FALSE,			/* boolean_t argByReferenceUser */
-	FALSE			/* boolean_t argByReferenceServer */
+	false,			/* bool argByReferenceUser */
+	false			/* bool argByReferenceServer */
     };
     argument_t *new;
 
@@ -242,17 +242,17 @@ rtPrintRoutine(const routine_t *rt)
 /*
  * Determines appropriate value of msg-simple for the message,
  * and whether this value can vary at runtime.  (If it can vary,
- * then the simple value is optimistically returned as TRUE.)
+ * then the simple value is optimistically returned as true.)
  * Uses itInName values, so useful when sending messages.
  */
 
 static void
-rtCheckSimpleIn(const argument_t *args, u_int mask, boolean_t *fixed,
-		boolean_t *simple)
+rtCheckSimpleIn(const argument_t *args, u_int mask, bool *fixed,
+		bool *simple)
 {
     const argument_t *arg;
-    boolean_t MayBeComplex = FALSE;
-    boolean_t MustBeComplex = FALSE;
+    bool MayBeComplex = false;
+    bool MustBeComplex = false;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheck(arg->argKind, mask))
@@ -260,14 +260,14 @@ rtCheckSimpleIn(const argument_t *args, u_int mask, boolean_t *fixed,
 	    const ipc_type_t *it = arg->argType;
 
 	    if (it->itInName == MACH_MSG_TYPE_POLYMORPHIC)
-		MayBeComplex = TRUE;
+		MayBeComplex = true;
 
 	    if (it->itIndefinite)
-		MayBeComplex = TRUE;
+		MayBeComplex = true;
 
 	    if (MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
 		!it->itInLine)
-		MustBeComplex = TRUE;
+		MustBeComplex = true;
 	}
 
     *fixed = MustBeComplex || !MayBeComplex;
@@ -277,18 +277,18 @@ rtCheckSimpleIn(const argument_t *args, u_int mask, boolean_t *fixed,
 /*
  * Determines appropriate value of msg-simple for the message,
  * and whether this value can vary at runtime.  (If it can vary,
- * then the simple value is optimistically returned as TRUE.)
+ * then the simple value is optimistically returned as true.)
  * Uses itOutName values, so useful when receiving messages
  * (and sending reply messages in KernelServer interfaces).
  */
 
 static void
-rtCheckSimpleOut(const argument_t *args, u_int mask, boolean_t *fixed,
-		 boolean_t *simple)
+rtCheckSimpleOut(const argument_t *args, u_int mask, bool *fixed,
+		 bool *simple)
 {
     const argument_t *arg;
-    boolean_t MayBeComplex = FALSE;
-    boolean_t MustBeComplex = FALSE;
+    bool MayBeComplex = false;
+    bool MustBeComplex = false;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheck(arg->argKind, mask))
@@ -296,14 +296,14 @@ rtCheckSimpleOut(const argument_t *args, u_int mask, boolean_t *fixed,
 	    const ipc_type_t *it = arg->argType;
 
 	    if (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)
-		MayBeComplex = TRUE;
+		MayBeComplex = true;
 
 	    if (it->itIndefinite)
-		MayBeComplex = TRUE;
+		MayBeComplex = true;
 
 	    if (MACH_MSG_TYPE_PORT_ANY(it->itOutName) ||
 		!it->itInLine)
-		MustBeComplex = TRUE;
+		MustBeComplex = true;
 	}
 
     *fixed = MustBeComplex || !MayBeComplex;
@@ -335,28 +335,28 @@ rtFindSize(const argument_t *args, u_int mask)
     return size;
 }
 
-boolean_t
+bool
 rtCheckMask(const argument_t *args, u_int mask)
 {
     const argument_t *arg;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheckAll(arg->argKind, mask))
-	    return TRUE;
-    return FALSE;
+	    return true;
+    return false;
 }
 
-boolean_t
+bool
 rtCheckMaskFunction(const argument_t *args, u_int mask,
-		    boolean_t (*func)(const argument_t *))
+		    bool (*func)(const argument_t *))
 {
     const argument_t *arg;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheckAll(arg->argKind, mask))
 	    if ((*func)(arg))
-		return TRUE;
-    return FALSE;
+		return true;
+    return false;
 }
 
 /* arg->argType may be NULL in this function */
@@ -406,7 +406,7 @@ rtProcessArgFlags(argument_t *arg)
 
     if (arg->argFlags & flServerCopy) {
 	if (it->itIndefinite && akCheck(arg->argKind, akbSend))
-	    arg->argServerCopy = TRUE;
+	    arg->argServerCopy = true;
 	else
 	    warn("%s: ServerCopy on argument is meaningless", arg->argName);
     }
@@ -414,7 +414,7 @@ rtProcessArgFlags(argument_t *arg)
     if (arg->argFlags & flCountInOut) {
 	if (it->itVarArray && it->itInLine &&
 	    akCheck(arg->argKind, akbReply))
-	    arg->argCountInOut = TRUE;
+	    arg->argCountInOut = true;
 	else
 	    warn("%s: CountInOut on argument is meaningless", arg->argName);
     }
@@ -790,7 +790,7 @@ rtAddDeallocArg(argument_t *arg)
 
 	if (arg->argType->itIndefinite) {
 	    dealloc->argKind = akAddFeature(dealloc->argKind, akbVarNeeded);
-	    dealloc->argByReferenceServer = TRUE;
+	    dealloc->argByReferenceServer = true;
 	}
     }
 
@@ -1164,7 +1164,7 @@ rtAddByReference(routine_t *rt)
 
 	if (akCheck(arg->argKind, akbReturnRcv) &&
 	    (it->itStruct || it->itIndefinite)) {
-	    arg->argByReferenceUser = TRUE;
+	    arg->argByReferenceUser = true;
 
 	    /*
 	     *	A CountInOut arg itself is not akbReturnRcv,
@@ -1172,12 +1172,12 @@ rtAddByReference(routine_t *rt)
 	     */
 
 	    if (arg->argCInOut != argNULL)
-		arg->argCInOut->argByReferenceUser = TRUE;
+		arg->argCInOut->argByReferenceUser = true;
 	}
 
 	if (akCheck(arg->argKind, akbReturnSnd) &&
 	    (it->itStruct || it->itIndefinite))
-	    arg->argByReferenceServer = TRUE;
+	    arg->argByReferenceServer = true;
     }
 }
 

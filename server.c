@@ -184,7 +184,7 @@ WriteEpilog(FILE *file, const statement_t *stats)
 
     WriteStaticDecl(file, itRetCodeType,
 		    itRetCodeType->itDeallocate, itRetCodeType->itLongForm,
-		    /*is_server=*/ TRUE, !IsKernelServer, "RetCodeType");
+		    /*is_server=*/ true, !IsKernelServer, "RetCodeType");
     fprintf(file, "\n");
 
     fprintf(file, "\tmig_routine_t routine;\n");
@@ -283,8 +283,8 @@ static void
 WriteVarDecls(FILE *file, const routine_t *rt)
 {
     int i;
-    boolean_t NeedMsghSize = FALSE;
-    boolean_t NeedMsghSizeDelta = FALSE;
+    bool NeedMsghSize = false;
+    bool NeedMsghSizeDelta = false;
 
     fprintf(file, "\tRequest *In0P = (Request *) InHeadP;\n");
     for (i = 1; i <= rt->rtMaxRequestPos; i++)
@@ -312,14 +312,14 @@ WriteVarDecls(FILE *file, const routine_t *rt)
        msgh_size_delta and msgh_size */
 
     if (rt->rtNumRequestVar > 0)
-	NeedMsghSize = TRUE;
+	NeedMsghSize = true;
     if (rt->rtMaxRequestPos > 0)
-	NeedMsghSizeDelta = TRUE;
+	NeedMsghSizeDelta = true;
 
     if (rt->rtNumReplyVar > 1)
-	NeedMsghSize = TRUE;
+	NeedMsghSize = true;
     if (rt->rtMaxReplyPos > 0)
-	NeedMsghSizeDelta = TRUE;
+	NeedMsghSizeDelta = true;
 
     if (NeedMsghSize)
 	fprintf(file, "\tunsigned int msgh_size;\n");
@@ -339,13 +339,13 @@ WriteMsgError(FILE *file, const char *error_msg)
 static void
 WriteReplyInit(FILE *file, const routine_t *rt)
 {
-    boolean_t printed_nl = FALSE;
+    bool printed_nl = false;
 
     if (rt->rtSimpleFixedReply)
     {
 	if (!rt->rtSimpleSendReply) /* complex reply message */
 	{
-	    printed_nl = TRUE;
+	    printed_nl = true;
 	    fprintf(file, "\n");
 	    fprintf(file,
 		"\tOutP->Head.msgh_bits |= MACH_MSGH_BITS_COMPLEX;\n");
@@ -353,7 +353,7 @@ WriteReplyInit(FILE *file, const routine_t *rt)
     }
     else
     {
-	printed_nl = TRUE;
+	printed_nl = true;
 	fprintf(file, "\n");
 	fprintf(file, "\tmsgh_simple = %s;\n",
 			  strbool(rt->rtSimpleSendReply));
@@ -525,7 +525,7 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	   then we must check for exact msg-size and we don't need to
 	   update msgh_size. */
 
-	boolean_t LastVarArg = arg->argRequestPos+1 == rt->rtNumRequestVar;
+	bool LastVarArg = arg->argRequestPos+1 == rt->rtNumRequestVar;
 
 	/* calculate the actual size in bytes of the data field.  note
 	   that this quantity must be a multiple of word_size.  hence, if
@@ -586,7 +586,7 @@ static void
 WriteExtractArgValue(FILE *file, const argument_t *arg)
 {
     const ipc_type_t *it = arg->argType;
-    boolean_t have_payload;
+    bool have_payload;
 
     if (arg->argMultiplier > 1)
 	WriteCopyType(file, it, "%s", "/* %s */ %s / %d",
@@ -749,7 +749,7 @@ static void
 WriteServerCallArg(FILE *file, const argument_t *arg)
 {
     const ipc_type_t *it = arg->argType;
-    boolean_t NeedClose = FALSE;
+    bool NeedClose = false;
 
     if (IsKernelServer) {
         /* If the type (incl. array) is handled differently, then we need to
@@ -771,7 +771,7 @@ WriteServerCallArg(FILE *file, const argument_t *arg)
 	!akCheck(arg->argKind, akbVarNeeded))
     {
 	fprintf(file, "%s(", it->itInTrans);
-	NeedClose = TRUE;
+	NeedClose = true;
     }
 
     if (akCheck(arg->argKind, akbPointer))
@@ -864,7 +864,7 @@ WriteDestroyPortArg(FILE *file, const argument_t *arg)
 /*
  * Check whether WriteDestroyPortArg would generate any code for arg.
  */
-static boolean_t
+static bool
 CheckDestroyPortArg(const argument_t *arg)
 {
     const ipc_type_t *it = arg->argType;
@@ -872,15 +872,15 @@ CheckDestroyPortArg(const argument_t *arg)
     if ((it->itInTrans != strNULL) &&
 	(it->itOutName == MACH_MSG_TYPE_PORT_SEND))
     {
-	return TRUE;
+	return true;
     }
-    return FALSE;
+    return false;
 }
 
 static void
 WriteServerCall(FILE *file, const routine_t *rt)
 {
-    boolean_t NeedClose = FALSE;
+    bool NeedClose = false;
 
     fprintf(file, "\t");
     if (rt->rtServerReturn != argNULL)
@@ -892,7 +892,7 @@ WriteServerCall(FILE *file, const routine_t *rt)
 	if (it->itOutTrans != strNULL)
 	{
 	    fprintf(file, "%s(", it->itOutTrans);
-	    NeedClose = TRUE;
+	    NeedClose = true;
 	}
     }
     fprintf(file, "%s(", rt->rtServerName);

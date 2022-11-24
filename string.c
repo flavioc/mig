@@ -25,9 +25,9 @@
  */
 
 #include <sys/types.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
-#include "boolean.h"
 #include "error.h"
 #include "mig_string.h"
 
@@ -61,9 +61,9 @@ strfree(string_t string)
 }
 
 const char *
-strbool(boolean_t bool)
+strbool(bool v)
 {
-    if (bool)
+    if (v)
 	return "TRUE";
     else
 	return "FALSE";

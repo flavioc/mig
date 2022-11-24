@@ -28,13 +28,13 @@
 #include "error.h"
 #include "global.h"
 
-boolean_t DefaultFiles = TRUE;
-boolean_t BeQuiet = FALSE;
-boolean_t BeVerbose = FALSE;
-boolean_t GenSymTab = FALSE;
+bool DefaultFiles = true;
+bool BeQuiet = false;
+bool BeVerbose = false;
+bool GenSymTab = false;
 
-boolean_t IsKernelUser = FALSE;
-boolean_t IsKernelServer = FALSE;
+bool IsKernelUser = false;
+bool IsKernelServer = false;
 
 const_string_t RCSId = strNULL;
 

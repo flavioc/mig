@@ -88,14 +88,14 @@ WriteList(FILE *file, const argument_t *args, write_list_fn_t *func, u_int mask,
 	  const char *between, const char *after)
 {
     const argument_t *arg;
-    boolean_t sawone = FALSE;
+    bool sawone = false;
 
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheckAll(arg->argKind, mask))
 	{
 	    if (sawone)
 		fprintf(file, "%s", between);
-	    sawone = TRUE;
+	    sawone = true;
 
 	    (*func)(file, arg);
 	}
@@ -104,11 +104,11 @@ WriteList(FILE *file, const argument_t *args, write_list_fn_t *func, u_int mask,
 	fprintf(file, "%s", after);
 }
 
-static boolean_t
+static bool
 WriteReverseListPrim(FILE *file, const argument_t *arg,
 		     write_list_fn_t *func, u_int mask, const char *between)
 {
-    boolean_t sawone = FALSE;
+    bool sawone = false;
 
     if (arg != argNULL)
     {
@@ -118,7 +118,7 @@ WriteReverseListPrim(FILE *file, const argument_t *arg,
 	{
 	    if (sawone)
 		fprintf(file, "%s", between);
-	    sawone = TRUE;
+	    sawone = true;
 
 	    (*func)(file, arg);
 	}
@@ -131,7 +131,7 @@ void
 WriteReverseList(FILE *file, const argument_t *args, write_list_fn_t *func,
 		 u_int mask, const char *between, const char *after)
 {
-    boolean_t sawone;
+    bool sawone;
 
     sawone = WriteReverseListPrim(file, args, func, mask, between);
 
@@ -147,7 +147,7 @@ WriteNameDecl(FILE *file, const argument_t *arg)
 
 /* Returns whether parameter should be qualified with const because we will only
    send the pointed data, not receive it. */
-static boolean_t
+static bool
 UserVarConst(const argument_t *arg)
 {
     return (arg->argKind & (akbSend|akbReturn)) == akbSend
@@ -184,7 +184,7 @@ WriteUserVarDecl(FILE *file, const argument_t *arg)
 
 /* Returns whether parameter should be qualified with const because we will only
    receive the pointed data, not modify it. */
-static boolean_t
+static bool
 ServerVarConst(const argument_t *arg)
 {
     return (arg->argKind & (akbSend|akbReturn)) == akbSend
@@ -225,7 +225,7 @@ WriteTypeDeclInServer(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		    arg->argLongForm, /*is_server=*/TRUE, TRUE, arg->argTTName);
+		    arg->argLongForm, /*is_server=*/true, true, arg->argTTName);
 }
 
 void
@@ -233,7 +233,7 @@ WriteTypeDeclOutServer(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		    arg->argLongForm, /*is_server=*/TRUE, FALSE, arg->argTTName);
+		    arg->argLongForm, /*is_server=*/true, false, arg->argTTName);
 }
 
 void
@@ -241,7 +241,7 @@ WriteTypeDeclInUser(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		    arg->argLongForm, /*is_server=*/FALSE, TRUE, arg->argTTName);
+		    arg->argLongForm, /*is_server=*/false, true, arg->argTTName);
 }
 
 void
@@ -249,7 +249,7 @@ WriteTypeDeclOutUser(FILE *file, const argument_t *arg)
 {
     WriteStaticDecl(file, arg->argType,
 		    arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		    arg->argLongForm, /*is_server=*/FALSE, FALSE, arg->argTTName);
+		    arg->argLongForm, /*is_server=*/false, false, arg->argTTName);
 }
 
 void
@@ -349,7 +349,7 @@ WriteStructDecl(FILE *file, const argument_t *args, write_list_fn_t *func,
 
 static void
 WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
-		    dealloc_t dealloc, boolean_t inname, identifier_t name)
+		    dealloc_t dealloc, bool inname, identifier_t name)
 {
     fprintf(file, "\tconst mach_msg_type_long_t %s = {\n", name);
     fprintf(file, "\t{\n");
@@ -372,7 +372,7 @@ WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 
 static void
 WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
-		     dealloc_t dealloc, boolean_t is_server, boolean_t inname,
+		     dealloc_t dealloc, bool is_server, bool inname,
 		     identifier_t name)
 {
     fprintf(file, "\tconst mach_msg_type_t %s = {\n", name);
@@ -398,7 +398,7 @@ WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
 
 void
 WriteStaticDecl(FILE *file, const ipc_type_t *it, dealloc_t dealloc,
-		boolean_t longform, boolean_t is_server, boolean_t inname,
+		bool longform, bool is_server, bool inname,
 		identifier_t name)
 {
     if (longform)
@@ -506,7 +506,7 @@ WriteCopyType(FILE *file, const ipc_type_t *it, const char *left,
 
 void
 WritePackMsgType(FILE *file, const ipc_type_t *it, dealloc_t dealloc,
-		 boolean_t longform, boolean_t inname, const char *left,
+		 bool longform, bool inname, const char *left,
 		 const char *right, ...)
 {
     fprintf(file, "\t");

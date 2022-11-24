@@ -378,7 +378,7 @@ WritePackArgType(FILE *file, const argument_t *arg)
 {
     WritePackMsgType(file, arg->argType,
 		     arg->argType->itIndefinite ? d_NO : arg->argDeallocate,
-		     arg->argLongForm, TRUE,
+		     arg->argLongForm, true,
 		     "InP->%s", "%s", arg->argTTName);
     fprintf(file, "\n");
 }
@@ -874,7 +874,7 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	   then we must check for exact msg-size and we don't need
 	   to update msgh_size. */
 
-	boolean_t LastVarArg = arg->argReplyPos+1 == rt->rtNumReplyVar;
+	bool LastVarArg = arg->argReplyPos+1 == rt->rtNumReplyVar;
 
 	/* calculate the actual size in bytes of the data field.  note
 	   that this quantity must be a multiple of word_size.  hence, if

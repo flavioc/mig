@@ -27,9 +27,8 @@
 #ifndef	_MIG_STRING_H
 #define	_MIG_STRING_H
 
+#include <stdbool.h>
 #include <string.h>
-
-#include "boolean.h"
 
 typedef char *string_t;
 typedef const char *const_string_t;
@@ -43,7 +42,7 @@ extern void strfree(string_t string);
 
 #define	streql(a, b)	(strcmp((a), (b)) == 0)
 
-extern const char *strbool(boolean_t bool);
+extern const char *strbool(bool v);
 extern const char *strstring(const_string_t string);
 
 #endif	/* _MIG_STRING_H */

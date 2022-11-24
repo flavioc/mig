@@ -27,9 +27,9 @@
 #ifndef	_TYPE_H
 #define	_TYPE_H
 
+#include <stdbool.h>
 #include <sys/types.h>
 
-#include "boolean.h"
 #include "mig_string.h"
 
 typedef u_int ipc_flags_t;
@@ -111,17 +111,17 @@ typedef enum dealloc {
  *		outtran: itServerType itOutTrans(itTransType)
  *		destructor: itDestructor(itTransType);
  *
- * At most one of itStruct and itString should be TRUE.  If both are
+ * At most one of itStruct and itString should be true.  If both are
  * false, then this is assumed to be an array type (msg data is passed
- * by reference).  If itStruct is TRUE, then msg data is passed by value
- * and can be assigned with =.  If itString is TRUE, then the msg_data
+ * by reference).  If itStruct is true, then msg data is passed by value
+ * and can be assigned with =.  If itString is true, then the msg_data
  * is a null-terminated string, assigned with strncpy.  The itNumber
  * value is a maximum length for the string; the msg field always
  * takes up this much space.
  *
  * itVarArray means this is a variable-sized array.  If it is inline,
- * then itStruct and itString are FALSE.  If it is out-of-line, then
- * itStruct is TRUE (because pointers can be assigned).
+ * then itStruct and itString are false.  If it is out-of-line, then
+ * itStruct is true (because pointers can be assigned).
  *
  * itIndefinite means this is an indefinite-length array - it may be sent
  * either inline or out-of-line.  itNumber is assigned so that at most
@@ -130,7 +130,7 @@ typedef enum dealloc {
  * itElement points to any substructure that the type may have.
  * It is only used with variable-sized array types.
  *
- * itKernelPort is used only on kernel interfaces and is set to TRUE when
+ * itKernelPort is used only on kernel interfaces and is set to true when
  * the initial type is mach_port_t, which in turn is actually translated to
  * internal port pointers (ipc_port_t).
  */
@@ -149,8 +149,8 @@ typedef struct ipc_type
     u_int itOutName;		/* name in received msg */
     u_int itSize;
     u_int itNumber;
-    boolean_t itInLine;
-    boolean_t itLongForm;
+    bool itInLine;
+    bool itLongForm;
     dealloc_t itDeallocate;
 
     const_string_t itInNameStr;	/* string form of itInName */
@@ -159,11 +159,11 @@ typedef struct ipc_type
     /* what the user wants, not necessarily what he gets */
     ipc_flags_t itFlags;
 
-    boolean_t itStruct;
-    boolean_t itString;
-    boolean_t itVarArray;
-    boolean_t itIndefinite;
-    boolean_t itKernelPort;
+    bool itStruct;
+    bool itString;
+    bool itVarArray;
+    bool itIndefinite;
+    bool itKernelPort;
 
     struct ipc_type *itElement;	/* may be NULL */
 
@@ -196,7 +196,7 @@ extern ipc_type_t *itArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itPtrDecl(ipc_type_t *it);
 extern ipc_type_t *itStructArrayDecl(u_int number, const ipc_type_t *it);
 extern ipc_type_t *itStructDecl(u_int min_type_size_in_bytes, u_int required_alignment_in_bytes);
-extern ipc_type_t *itCStringDecl(u_int number, boolean_t varying);
+extern ipc_type_t *itCStringDecl(u_int number, bool varying);
 
 extern ipc_type_t *itRetCodeType;
 extern ipc_type_t *itDummyType;
@@ -221,7 +221,7 @@ extern void itCheckNaturalType(identifier_t name, ipc_type_t *it);
 extern ipc_flags_t itCheckFlags(ipc_flags_t flags, identifier_t name);
 extern dealloc_t itCheckDeallocate(const ipc_type_t *it, ipc_flags_t flags,
 				   dealloc_t dfault, identifier_t name);
-extern boolean_t itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags,
-			       boolean_t dfault, identifier_t name);
+extern bool itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags,
+			       bool dfault, identifier_t name);
 
 #endif	/* _TYPE_H */

@@ -57,7 +57,7 @@ ipc_type_t *itWaitTimeType;	/* used for dummy WaitTime args */
 ipc_type_t *itMsgOptionType;	/* used for dummy MsgOption args */
 ipc_type_t *itShortType;        /* used for the short type */
 ipc_type_t *itIntType;          /* used for the int type */
-static boolean_t types_initialized = FALSE;
+static bool types_initialized = false;
 
 static ipc_type_t *list = itNULL;
 
@@ -118,17 +118,17 @@ itAlloc(void)
 	0,			/* u_int itOutName */
 	0,			/* u_int itSize */
 	1,			/* u_int itNumber */
-	TRUE,			/* boolean_t itInLine */
-	FALSE,			/* boolean_t itLongForm */
+	true,			/* bool itInLine */
+	false,			/* bool itLongForm */
 	d_NO,			/* dealloc_t itDeallocate */
 	strNULL,		/* string_t itInNameStr */
 	strNULL,		/* string_t itOutNameStr */
 	flNone,			/* ipc_flags_t itFlags */
-	TRUE,			/* boolean_t itStruct */
-	FALSE,			/* boolean_t itString */
-	FALSE,			/* boolean_t itVarArray */
-	FALSE,			/* boolean_t itIndefinite */
-	FALSE,			/* boolean_t itKernelPort */
+	true,			/* bool itStruct */
+	false,			/* bool itString */
+	false,			/* bool itVarArray */
+	false,			/* bool itIndefinite */
+	false,			/* bool itKernelPort */
 	itNULL,			/* ipc_type_t *itElement */
 	strNULL,		/* identifier_t itUserType */
 	strNULL,		/* identifier_t itServerType */
@@ -238,7 +238,7 @@ itCalculateNameInfo(ipc_type_t *it)
 	 MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
 	 MACH_MSG_TYPE_PORT_ANY(it->itOutName))) {
 	it->itServerType = "ipc_port_t";
-        it->itKernelPort = TRUE;
+        it->itKernelPort = true;
     } else if (IsKernelUser &&
 	streql(it->itUserType, "mach_port_t") &&
 	(((it->itInName == MACH_MSG_TYPE_POLYMORPHIC) &&
@@ -246,9 +246,9 @@ itCalculateNameInfo(ipc_type_t *it)
 	 MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
 	 MACH_MSG_TYPE_PORT_ANY(it->itOutName))) {
 	it->itUserType = "ipc_port_t";
-        it->itKernelPort = TRUE;
+        it->itKernelPort = true;
     } else
-        it->itKernelPort = FALSE;
+        it->itKernelPort = false;
 
     if (it->itTransType == strNULL)
 	it->itTransType = it->itServerType;
@@ -346,16 +346,16 @@ itUseLong(const ipc_type_t *it)
     return uselong;
 }
 
-boolean_t
-itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags, boolean_t dfault,
+bool
+itCheckIsLong(const ipc_type_t *it, ipc_flags_t flags, bool dfault,
 	      identifier_t name)
 {
-    boolean_t islong = dfault;
+    bool islong = dfault;
 
     if (flags & flLong)
-	islong = TRUE;
+	islong = true;
     if (flags & flNotLong)
-	islong = FALSE;
+	islong = false;
 
     if (islong == dfault) {
 	if (flags & flLong)
@@ -543,8 +543,8 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
     it->itAlignment = MIN(word_size, size / 8);
     if (inname == MACH_MSG_TYPE_STRING_C)
     {
-	it->itStruct = FALSE;
-	it->itString = TRUE;
+	it->itStruct = false;
+	it->itString = true;
     }
     it->itFlags = flags;
 
@@ -635,11 +635,11 @@ itVarArrayDecl(u_int number, const ipc_type_t *old)
 
 	bytes = (it->itNumber * it->itSize + 7) / 8;
 	it->itNumber = (2048 / bytes) * it->itNumber;
-	it->itIndefinite = TRUE;
+	it->itIndefinite = true;
     }
-    it->itVarArray = TRUE;
-    it->itStruct = FALSE;
-    it->itString = FALSE;
+    it->itVarArray = true;
+    it->itStruct = false;
+    it->itString = false;
 
     itCalculateSizeInfo(it);
     return it;
@@ -657,8 +657,8 @@ itArrayDecl(u_int number, const ipc_type_t *old)
     if (!it->itInLine || it->itVarArray)
 	error("IPC type decl is too complicated");
     it->itNumber *= number;
-    it->itStruct = FALSE;
-    it->itString = FALSE;
+    it->itStruct = false;
+    it->itString = false;
     it->itAlignment = old->itAlignment;
 
     itCalculateSizeInfo(it);
@@ -676,10 +676,10 @@ itPtrDecl(ipc_type_t *it)
 	(it->itVarArray && !it->itIndefinite && (it->itNumber > 0)))
 	error("IPC type decl is too complicated");
     it->itNumber = 0;
-    it->itIndefinite = FALSE;
-    it->itInLine = FALSE;
-    it->itStruct = TRUE;
-    it->itString = FALSE;
+    it->itIndefinite = false;
+    it->itInLine = false;
+    it->itStruct = true;
+    it->itString = false;
 
     itCalculateSizeInfo(it);
     return it;
@@ -697,8 +697,8 @@ itStructArrayDecl(u_int number, const ipc_type_t *old)
     if (!it->itInLine || it->itVarArray)
 	error("IPC type decl is too complicated");
     it->itNumber *= number;
-    it->itStruct = TRUE;
-    it->itString = FALSE;
+    it->itStruct = true;
+    it->itString = false;
     it->itAlignment = old->itAlignment;
 
     itCalculateSizeInfo(it);
@@ -738,8 +738,8 @@ itStructDecl(u_int min_type_size_in_bytes, u_int required_alignment_in_bytes)
     }
     ipc_type_t *it = itResetType(itCopyType(element_type));
     it->itNumber = number_elements;
-    it->itStruct = TRUE;
-    it->itString = FALSE;
+    it->itStruct = true;
+    it->itString = false;
     it->itAlignment = required_alignment_in_bytes;
 
     itCalculateSizeInfo(it);
@@ -751,7 +751,7 @@ itStructDecl(u_int min_type_size_in_bytes, u_int required_alignment_in_bytes)
  * 'array[n] of (MSG_TYPE_STRING_C, 8)'
  */
 ipc_type_t *
-itCStringDecl(u_int count, boolean_t varying)
+itCStringDecl(u_int count, bool varying)
 {
     ipc_type_t *it;
     ipc_type_t *itElement;
@@ -766,8 +766,8 @@ itCStringDecl(u_int count, boolean_t varying)
     it = itResetType(itCopyType(itElement));
     it->itNumber = count;
     it->itVarArray = varying;
-    it->itStruct = FALSE;
-    it->itString = TRUE;
+    it->itStruct = false;
+    it->itString = true;
     it->itAlignment = itElement->itAlignment;
 
     itCalculateSizeInfo(it);
@@ -889,7 +889,7 @@ init_type(void)
         exit(EXIT_FAILURE);
     }
     /* Mark initialization here since itInsert below will require it. */
-    types_initialized = TRUE;
+    types_initialized = true;
 
     itByteType = itAlloc();
     itByteType->itName = "unsigned char";

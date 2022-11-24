@@ -27,9 +27,9 @@
 #ifndef	_ROUTINE_H
 #define	_ROUTINE_H
 
+#include <stdbool.h>
 #include <sys/types.h>
 
-#include "boolean.h"
 #include "type.h"
 
 /* base kind arg */
@@ -277,9 +277,9 @@ typedef struct argument
 
     ipc_flags_t argFlags;
     dealloc_t argDeallocate;	/* overrides argType->itDeallocate */
-    boolean_t argLongForm;	/* overrides argType->itLongForm */
-    boolean_t argServerCopy;
-    boolean_t argCountInOut;
+    bool argLongForm;	/* overrides argType->itLongForm */
+    bool argServerCopy;
+    bool argCountInOut;
 
     struct routine *argRoutine;	/* routine we are part of */
 
@@ -298,8 +298,8 @@ typedef struct argument
     int argRequestPos;
     int argReplyPos;
     /* whether argument is by reference, on user and server side */
-    boolean_t	argByReferenceUser;
-    boolean_t	argByReferenceServer;
+    bool	argByReferenceUser;
+    bool	argByReferenceServer;
 } argument_t;
 
 /*
@@ -324,17 +324,17 @@ typedef struct routine
     identifier_t rtUserName;	/* user-visible name (UserPrefix + Name) */
     identifier_t rtServerName;	/* server-side name (ServerPrefix + Name) */
 
-    boolean_t rtOneWay;		/* TRUE for SimpleRoutine */
+    bool rtOneWay;		/* true for SimpleRoutine */
 
-    boolean_t rtSimpleFixedRequest;	/* fixed msg-simple value in request */
-    boolean_t rtSimpleSendRequest;	/* in any case, initial value */
-    boolean_t rtSimpleCheckRequest;	/* check msg-simple in request */
-    boolean_t rtSimpleReceiveRequest;	/* if so, the expected value */
+    bool rtSimpleFixedRequest;	/* fixed msg-simple value in request */
+    bool rtSimpleSendRequest;	/* in any case, initial value */
+    bool rtSimpleCheckRequest;	/* check msg-simple in request */
+    bool rtSimpleReceiveRequest;	/* if so, the expected value */
 
-    boolean_t rtSimpleFixedReply;	/* fixed msg-simple value in reply */
-    boolean_t rtSimpleSendReply;	/* in any case, initial value */
-    boolean_t rtSimpleCheckReply;	/* check msg-simple in reply */
-    boolean_t rtSimpleReceiveReply;	/* if so, the expected value */
+    bool rtSimpleFixedReply;	/* fixed msg-simple value in reply */
+    bool rtSimpleSendReply;	/* in any case, initial value */
+    bool rtSimpleCheckReply;	/* check msg-simple in reply */
+    bool rtSimpleReceiveReply;	/* if so, the expected value */
 
     u_int rtRequestSize;	/* minimal size of a legal request msg */
     u_int rtReplySize;		/* minimal size of a legal reply msg */
@@ -345,7 +345,7 @@ typedef struct routine
     int rtMaxRequestPos;	/* maximum of argRequestPos */
     int rtMaxReplyPos;		/* maximum of argReplyPos */
 
-    boolean_t rtNoReplyArgs;	/* if so, no reply message arguments beyond
+    bool rtNoReplyArgs;	/* if so, no reply message arguments beyond
 				   what the server dispatch routine inserts */
 
     /* distinguished arguments */
@@ -371,10 +371,10 @@ extern void rtSkip(int);
 
 extern argument_t *argAlloc(void);
 
-extern boolean_t rtCheckMask(const argument_t *args, u_int mask);
+extern bool rtCheckMask(const argument_t *args, u_int mask);
 
-extern boolean_t rtCheckMaskFunction(const argument_t *args, u_int mask,
-				     boolean_t (*func)(const argument_t *arg));
+extern bool rtCheckMaskFunction(const argument_t *args, u_int mask,
+				     bool (*func)(const argument_t *arg));
 
 extern routine_t *rtMakeRoutine(identifier_t name, argument_t *args);
 extern routine_t *rtMakeSimpleRoutine(identifier_t name, argument_t *args);

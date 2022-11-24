@@ -27,18 +27,18 @@
 #ifndef	_GLOBAL_H
 #define	_GLOBAL_H
 
+#include <stdbool.h>
 #include <sys/types.h>
 
-#include "boolean.h"
 #include "mig_string.h"
 
-extern boolean_t DefaultFiles;	/* default output file names if no arguments */
-extern boolean_t BeQuiet;	/* no warning messages */
-extern boolean_t BeVerbose;	/* summarize types, routines */
-extern boolean_t GenSymTab;
+extern bool DefaultFiles;	/* default output file names if no arguments */
+extern bool BeQuiet;	/* no warning messages */
+extern bool BeVerbose;	/* summarize types, routines */
+extern bool GenSymTab;
 
-extern boolean_t IsKernelUser;
-extern boolean_t IsKernelServer;
+extern bool IsKernelUser;
+extern bool IsKernelServer;
 
 extern const_string_t RCSId;
 

@@ -77,16 +77,16 @@ extern void WriteStructDecl(FILE *file, const argument_t *args,
 			    const char *name);
 
 extern void WriteStaticDecl(FILE *file, const ipc_type_t *it,
-			    dealloc_t dealloc, boolean_t longform,
-			    boolean_t is_server, boolean_t inname,
+			    dealloc_t dealloc, bool longform,
+			    bool is_server, bool inname,
 			    identifier_t name);
 
 extern void WriteCopyType(FILE *file, const ipc_type_t *it,
 			  const char *left, const char *right, ...);
 
 extern void WritePackMsgType(FILE *file, const ipc_type_t *it,
-			     dealloc_t dealloc, boolean_t longform,
-			     boolean_t inname, const char *left,
+			     dealloc_t dealloc, bool longform,
+			     bool inname, const char *left,
 			     const char *right, ...);
 
 #endif	/* _UTILS_H */
