@@ -30,6 +30,7 @@
  * Fetch values from the Mach header.
  */
 #include <mach/message.h>
+#include <stdint.h>
 
 /*
  *	Known values for the msgt_name field.
@@ -103,6 +104,8 @@ expr sizeof(int)			sizeof_int
 expr sizeof(long)			sizeof_long
 expr sizeof(float)			sizeof_float
 expr sizeof(double)			sizeof_double
+expr sizeof(uintptr_t)			sizeof_uintptr_t
+expr sizeof(intptr_t)			sizeof_intptr_t
 expr sizeof(mach_msg_header_t)		sizeof_mach_msg_header_t
 expr sizeof(mach_msg_type_long_t)	sizeof_mach_msg_type_long_t
 expr sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t

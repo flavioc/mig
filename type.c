@@ -57,6 +57,8 @@ ipc_type_t *itWaitTimeType;	/* used for dummy WaitTime args */
 ipc_type_t *itMsgOptionType;	/* used for dummy MsgOption args */
 ipc_type_t *itShortType;        /* used for the short type */
 ipc_type_t *itIntType;          /* used for the int type */
+ipc_type_t *itUintPtrType;      /* used for the uintptr_t type */
+ipc_type_t *itIntPtrType;       /* used for the intptr_t type */
 static bool types_initialized = false;
 
 static ipc_type_t *list = itNULL;
@@ -960,6 +962,10 @@ init_type(void)
     itInsert("short", itShortType);
     itIntType = itCIntTypeDecl("int", sizeof_int);
     itInsert("int", itIntType);
+    itUintPtrType = itCIntTypeDecl("uintptr_t", sizeof_uintptr_t);
+    itInsert("uintptr_t", itUintPtrType);
+    itIntPtrType = itCIntTypeDecl("intptr_t", sizeof_intptr_t);
+    itInsert("intptr_t", itIntPtrType);
 }
 
 /******************************************************
