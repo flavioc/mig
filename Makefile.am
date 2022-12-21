@@ -15,7 +15,7 @@ AWK_V = $(AWK_V_$(V))
 AWK_V_ = $(AWK_V_$(AM_DEFAULT_VERBOSITY))
 AWK_V_0 = @echo "  AWK    $@";
 
-migcom_SOURCES = boolean.h error.c error.h global.c global.h		\
+migcom_SOURCES = error.c error.h global.c global.h			\
 		 header.c lexxer.h lexxer.l message.h mig_string.h	\
 		 migcom.c parser.h parser.y routine.c routine.h		\
 		 server.c statement.c statement.h string.c		\
