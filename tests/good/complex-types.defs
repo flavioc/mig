@@ -23,7 +23,6 @@ import <stdint.h>;
 import "types.h";
 
 type byte = MACH_MSG_TYPE_BYTE;
-type intptr_t = ^byte;
 type pointer_t = ^array[] of MACH_MSG_TYPE_BYTE
 	ctype: vm_offset_t;
 
