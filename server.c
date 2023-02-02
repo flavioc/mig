@@ -994,7 +994,10 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 		    fprintf(file, "\t\tmsgh_simple = FALSE;\n");
 		fprintf(file, "\t}\n\telse {\n\t");
 	    }
-	    fprintf(file, "\tmemcpy(OutP->%s, %s, ",
+	    fprintf(file, "\tif (%s)\n", count->argVarName);
+	    if (it->itIndefinite)
+		fprintf(file, "\t");
+	    fprintf(file, "\t\tmemcpy(OutP->%s, %s, ",
 		    arg->argMsgField, arg->argVarName);
 	    if (btype->itTypeSize > 1)
 		fprintf(file, "%d * ",

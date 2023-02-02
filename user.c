@@ -455,7 +455,7 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 	    else
 		WriteMsgError(file, arg->argRoutine, "MIG_ARRAY_TOO_LARGE");
 
-	    fprintf(file, "\t}\n\telse {\n");
+	    fprintf(file, "\t}\n\telse if (%s%s) {\n", countRef, count->argVarName);
 
 	    fprintf(file, "\t\tmemcpy(InP->%s, %s%s, ", arg->argMsgField,
 		ref, arg->argVarName);
@@ -968,7 +968,7 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 		fprintf(file, "%d * ", btype->itTypeSize/btype->itNumber);
 	    fprintf(file, "OutP->%s);\n", count->argMsgField);
 	    fprintf(file, "\t}\n");
-	    fprintf(file, "\telse {\n");
+	    fprintf(file, "\telse if (OutP->%s) {\n", count->argMsgField);
 
 	    fprintf(file, "\t    memcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
 		    arg->argMsgField);
@@ -1001,7 +1001,8 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 	     * fill user`s area as much as possible.  Return the correct
 	     * number of elements.
 	     */
-	    fprintf(file, "\t\tmemcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
+	    fprintf(file, "\t\tif (%s%s)\n", countRef, count->argVarName);
+	    fprintf(file, "\t\t\tmemcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
 		    arg->argMsgField);
 	    if (btype->itTypeSize > 1)
 		fprintf(file, "%d * ", btype->itTypeSize);
@@ -1015,7 +1016,7 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 	    fprintf(file, ";\n");
 	    WriteMsgError(file,arg->argRoutine, "MIG_ARRAY_TOO_LARGE");
 
-	    fprintf(file, "\t}\n\telse {\n");
+	    fprintf(file, "\t}\n\telse if (OutP->%s) {\n", count->argMsgField);
 
 	    fprintf(file, "\t\tmemcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
 		    arg->argMsgField);
