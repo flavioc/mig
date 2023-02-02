@@ -170,53 +170,55 @@ WriteEpilog(FILE *file, const statement_t *stats)
      fprintf(file, "\n");
 
      /*
-      * Then, the server routine
+      * Then, the server routine. Only write them if it's a user server since the kernel
+      * relies only on the routines above.
       */
-    fprintf(file, "mig_external boolean_t %s\n", ServerDemux);
-    fprintf(file, "\t(mach_msg_header_t *InHeadP, mach_msg_header_t *OutHeadP)\n");
+    if (!IsKernelServer) {
+        fprintf(file, "mig_external boolean_t %s\n", ServerDemux);
+        fprintf(file, "\t(mach_msg_header_t *InHeadP, mach_msg_header_t *OutHeadP)\n");
 
-    fprintf(file, "{\n");
-    fprintf(file, "\tmach_msg_header_t *InP =  InHeadP;\n");
+        fprintf(file, "{\n");
+        fprintf(file, "\tmach_msg_header_t *InP =  InHeadP;\n");
 
-    fprintf(file, "\tmig_reply_header_t *OutP = (mig_reply_header_t *) OutHeadP;\n");
+        fprintf(file, "\tmig_reply_header_t *OutP = (mig_reply_header_t *) OutHeadP;\n");
 
-    fprintf(file, "\n");
+        fprintf(file, "\n");
 
-    WriteStaticDecl(file, itRetCodeType,
-		    itRetCodeType->itDeallocate, itRetCodeType->itLongForm,
-		    /*is_server=*/ true, !IsKernelServer, "RetCodeType");
-    fprintf(file, "\n");
+        WriteStaticDecl(file, itRetCodeType,
+                itRetCodeType->itDeallocate, itRetCodeType->itLongForm,
+                /*is_server=*/ true, !IsKernelServer, "RetCodeType");
+        fprintf(file, "\n");
 
-    fprintf(file, "\tmig_routine_t routine;\n");
-    fprintf(file, "\n");
+        fprintf(file, "\tmig_routine_t routine;\n");
+        fprintf(file, "\n");
 
-    fprintf(file, "\tOutP->Head.msgh_bits = ");
-    fprintf(file, "MACH_MSGH_BITS(MACH_MSGH_BITS_REPLY(InP->msgh_bits), 0);\n");
-    fprintf(file, "\tOutP->Head.msgh_size = sizeof *OutP;\n");
-    fprintf(file, "\tOutP->Head.msgh_remote_port = InP->msgh_reply_port;\n");
-    fprintf(file, "\tOutP->Head.msgh_local_port = MACH_PORT_NULL;\n");
-    fprintf(file, "\tOutP->Head.msgh_seqno = 0;\n");
-    fprintf(file, "\tOutP->Head.msgh_id = InP->msgh_id + 100;\n");
-    fprintf(file, "\n");
-    WritePackMsgType(file, itRetCodeType,
-		     itRetCodeType->itDeallocate, itRetCodeType->itLongForm,
-		     !IsKernelServer, "OutP->RetCodeType", "RetCodeType");
-    fprintf(file, "\n");
+        fprintf(file, "\tOutP->Head.msgh_bits = ");
+        fprintf(file, "MACH_MSGH_BITS(MACH_MSGH_BITS_REPLY(InP->msgh_bits), 0);\n");
+        fprintf(file, "\tOutP->Head.msgh_size = sizeof *OutP;\n");
+        fprintf(file, "\tOutP->Head.msgh_remote_port = InP->msgh_reply_port;\n");
+        fprintf(file, "\tOutP->Head.msgh_local_port = MACH_PORT_NULL;\n");
+        fprintf(file, "\tOutP->Head.msgh_seqno = 0;\n");
+        fprintf(file, "\tOutP->Head.msgh_id = InP->msgh_id + 100;\n");
+        fprintf(file, "\n");
+        WritePackMsgType(file, itRetCodeType,
+                itRetCodeType->itDeallocate, itRetCodeType->itLongForm,
+                !IsKernelServer, "OutP->RetCodeType", "RetCodeType");
+        fprintf(file, "\n");
 
-    fprintf(file, "\tif ((InP->msgh_id > %d) || (InP->msgh_id < %d) ||\n",
-	    SubsystemBase + rtNumber - 1, SubsystemBase);
-    fprintf(file, "\t    ((routine = %s_routines[InP->msgh_id - %d]) == 0)) {\n",
-	    ServerDemux, SubsystemBase);
-    fprintf(file, "\t\tOutP->RetCode = MIG_BAD_ID;\n");
-    fprintf(file, "\t\treturn FALSE;\n");
-    fprintf(file, "\t}\n");
+        fprintf(file, "\tif ((InP->msgh_id > %d) || (InP->msgh_id < %d) ||\n",
+                SubsystemBase + rtNumber - 1, SubsystemBase);
+        fprintf(file, "\t    ((routine = %s_routines[InP->msgh_id - %d]) == 0)) {\n",
+                ServerDemux, SubsystemBase);
+        fprintf(file, "\t\tOutP->RetCode = MIG_BAD_ID;\n");
+        fprintf(file, "\t\treturn FALSE;\n");
+        fprintf(file, "\t}\n");
 
-    /* Call appropriate routine */
-    fprintf(file, "\t(*routine) (InP, &OutP->Head);\n");
-    fprintf(file, "\treturn TRUE;\n");
-    fprintf(file, "}\n");
-    fprintf(file, "\n");
-
+        /* Call appropriate routine */
+        fprintf(file, "\t(*routine) (InP, &OutP->Head);\n");
+        fprintf(file, "\treturn TRUE;\n");
+        fprintf(file, "}\n");
+        fprintf(file, "\n");
+	}
     /* symtab */
 
     if (GenSymTab) {
