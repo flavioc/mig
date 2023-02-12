@@ -304,6 +304,10 @@ WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 
     fprintf(file, "\t\tmach_msg_type_%st %s;\n",
 	    arg->argLongForm ? "long_" : "", arg->argTTName);
+    if (!arg->argLongForm && complex_alignof > sizeof_mach_msg_type_t) {
+        /* Pad mach_msg_type_t in case we need alignment by more than its size. */
+	fprintf(file, "\t\tchar %s_pad[%d];\n", arg->argTTName, complex_alignof - sizeof_mach_msg_type_t);
+    }
 
     if (it->itInLine && it->itVarArray)
     {
@@ -338,7 +342,7 @@ void
 WriteStructDecl(FILE *file, const argument_t *args, write_list_fn_t *func,
 		u_int mask, const char *name)
 {
-    fprintf(file, "#pragma pack(push,%d)\n", word_size);
+    fprintf(file, "#pragma pack(push,%d)\n", complex_alignof);
     fprintf(file, "\ttypedef struct {\n");
     fprintf(file, "\t\tmach_msg_header_t Head;\n");
     WriteList(file, args, func, mask, "\n", "\n");

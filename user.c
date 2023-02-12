@@ -507,7 +507,7 @@ WriteArgSize(FILE *file, const argument_t *arg)
 	fprintf(file, "(InP->%s%s.msgt_inline) ? ",
 		arg->argTTName, arg->argLongForm ? ".msgtl_header" : "");
     }
-    if (bsize % word_size != 0)
+    if (bsize % complex_alignof != 0)
 	fprintf(file, "(");
 
     if (bsize > 1)
@@ -523,11 +523,11 @@ WriteArgSize(FILE *file, const argument_t *arg)
 		count->argVarName);
 
     /*
-     * If the base type size is not a multiple of word_size,
+     * If the base type size is not a multiple of complex_alignof,
      * we have to round up.
      */
-    if (bsize % word_size != 0)
-	fprintf(file, " + %d) & ~%d", word_size - 1, word_size - 1);
+    if (bsize % complex_alignof != 0)
+	fprintf(file, " + %d) & ~%d", complex_alignof - 1, complex_alignof - 1);
 
     if (ptype->itIndefinite) {
 	fprintf(file, " : sizeof(%s *)",
@@ -831,7 +831,7 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
 		arg->argTTName, arg->argLongForm ? ".msgtl_header" : "");
     }
 
-    if (btype->itTypeSize % word_size != 0)
+    if (btype->itTypeSize % complex_alignof != 0)
 	fprintf(file, "(");
 
     if (multiplier > 1)
@@ -839,10 +839,10 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
 
     fprintf(file, "OutP->%s", count->argMsgField);
 
-    /* If the base type size of the data field isn`t a multiple of word_size,
+    /* If the base type size of the data field isn`t a multiple of complex_alignof,
        we have to round up. */
-    if (btype->itTypeSize % word_size != 0)
-	fprintf(file, " + %d) & ~%d", word_size - 1, word_size - 1);
+    if (btype->itTypeSize % complex_alignof != 0)
+	fprintf(file, " + %d) & ~%d", complex_alignof - 1, complex_alignof - 1);
 
     if (ptype->itIndefinite)
 	fprintf(file, " : sizeof(%s *)", FetchUserType(btype));
@@ -877,8 +877,8 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
 	bool LastVarArg = arg->argReplyPos+1 == rt->rtNumReplyVar;
 
 	/* calculate the actual size in bytes of the data field.  note
-	   that this quantity must be a multiple of word_size.  hence, if
-	   the base type size isn't a multiple of word_size, we have to
+	   that this quantity must be a multiple of complex_alignof.  hence, if
+	   the base type size isn't a multiple of complex_alignof, we have to
 	   round up.  note also that btype->itNumber must
 	   divide btype->itTypeSize (see itCalculateSizeInfo). */
 
@@ -1127,7 +1127,7 @@ WriteReturnValue(FILE *file, const routine_t *rt)
 /*************************************************************
  *  Writes the elements of the message type declaration: the
  *  msg_type structure, the argument itself and any padding
- *  that is required to make the argument a multiple of word_size bytes.
+ *  that is required to make the argument a multiple of complex_alignof bytes.
  *  Called by WriteRoutine for all the arguments in the request
  *  message first and then the reply message.
  *************************************************************/

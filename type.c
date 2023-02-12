@@ -35,17 +35,8 @@
 #include "cpu.h"
 #include "utils.h"
 
-#if word_size_in_bits == 32
-#define	word_size_name MACH_MSG_TYPE_INTEGER_32
-#define	word_size_name_string "MACH_MSG_TYPE_INTEGER_32"
-#else
-#if word_size_in_bits == 64
-#define	word_size_name MACH_MSG_TYPE_INTEGER_64
-#define	word_size_name_string "MACH_MSG_TYPE_INTEGER_64"
-#else
-#error Unsupported word size!
-#endif
-#endif
+#define int_name MACH_MSG_TYPE_INTEGER_32
+#define int_name_string "MACH_MSG_TYPE_INTEGER_32"
 
 ipc_type_t *itByteType;         /* used for defining struct types */
 ipc_type_t *itRetCodeType;	/* used for return codes */
@@ -169,10 +160,12 @@ itNameToString(u_int name)
 static void
 itCalculateSizeInfo(ipc_type_t *it)
 {
+    assert(it->itAlignment > 0);
+
     if (it->itInLine)
     {
 	u_int bytes = (it->itNumber * it->itSize + 7) / 8;
-	u_int padding = (word_size - bytes % word_size) % word_size;
+	u_int padding = (complex_alignof - bytes % complex_alignof) % complex_alignof;
 
 	it->itTypeSize = bytes;
 	it->itPadSize = padding;
@@ -189,7 +182,7 @@ itCalculateSizeInfo(ipc_type_t *it)
 	it->itTypeSize = bytes;
 	it->itPadSize = 0;
 	it->itMinTypeSize = bytes;
-	it->itAlignment = bytes;
+	assert(it->itAlignment == bytes);
     }
 
     /* Unfortunately, these warning messages can't give a type name;
@@ -542,7 +535,7 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
     it->itOutName = outname;
     it->itOutNameStr = outstr;
     it->itSize = size;
-    it->itAlignment = MIN(word_size, size / 8);
+    it->itAlignment = MIN(complex_alignof, size / 8);
     if (inname == MACH_MSG_TYPE_STRING_C)
     {
 	it->itStruct = false;
@@ -682,6 +675,7 @@ itPtrDecl(ipc_type_t *it)
     it->itInLine = false;
     it->itStruct = true;
     it->itString = false;
+    it->itAlignment = sizeof_pointer;
 
     itCalculateSizeInfo(it);
     return it;
@@ -806,7 +800,6 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
           exit(EXIT_FAILURE);
     }
     it->itName = ctype;
-    it->itAlignment = size;
     itCalculateNameInfo(it);
     return it;
 }
@@ -817,11 +810,12 @@ itMakeCountType(void)
     ipc_type_t *it = itAlloc();
 
     it->itName = "mach_msg_type_number_t";
-    it->itInName = word_size_name;
-    it->itInNameStr = word_size_name_string;
-    it->itOutName = word_size_name;
-    it->itOutNameStr = word_size_name_string;
-    it->itSize = word_size_in_bits;
+    it->itInName = int_name;
+    it->itInNameStr = int_name_string;
+    it->itOutName = int_name;
+    it->itOutNameStr = int_name_string;
+    it->itSize = sizeof_int * 8;
+    it->itAlignment = sizeof_int;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
@@ -834,11 +828,12 @@ itMakeNaturalType(const char *name)
     ipc_type_t *it = itAlloc();
 
     it->itName = name;
-    it->itInName = word_size_name;
-    it->itInNameStr = word_size_name_string;
-    it->itOutName = word_size_name;
-    it->itOutNameStr = word_size_name_string;
-    it->itSize = word_size_in_bits;
+    it->itInName = int_name;
+    it->itInNameStr = int_name_string;
+    it->itOutName = int_name;
+    it->itOutNameStr = int_name_string;
+    it->itSize = sizeof_int * 8;
+    it->itAlignment = sizeof_int;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
@@ -851,11 +846,12 @@ itMakePolyType(void)
     ipc_type_t *it = itAlloc();
 
     it->itName = "mach_msg_type_name_t";
-    it->itInName = word_size_name;
-    it->itInNameStr = word_size_name_string;
-    it->itOutName = word_size_name;
-    it->itOutNameStr = word_size_name_string;
-    it->itSize = word_size_in_bits;
+    it->itInName = int_name;
+    it->itInNameStr = int_name_string;
+    it->itOutName = int_name;
+    it->itOutNameStr = int_name_string;
+    it->itSize = sizeof_int * 8;
+    it->itAlignment = sizeof_int;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
@@ -872,7 +868,8 @@ itMakeDeallocType(void)
     it->itInNameStr = "MACH_MSG_TYPE_BOOLEAN";
     it->itOutName = MACH_MSG_TYPE_BOOLEAN;
     it->itOutNameStr = "MACH_MSG_TYPE_BOOLEAN";
-    it->itSize = 32;
+    it->itSize = sizeof_int * 8;
+    it->itAlignment = sizeof_int;
 
     itCalculateSizeInfo(it);
     itCalculateNameInfo(it);
@@ -899,17 +896,19 @@ init_type(void)
     itByteType->itInNameStr = "MACH_MSG_TYPE_BYTE";
     itByteType->itOutName = MACH_MSG_TYPE_BYTE;
     itByteType->itOutNameStr = "MACH_MSG_TYPE_BYTE";
-    itByteType->itSize = 8;
+    itByteType->itSize = sizeof_char * 8;
+    itByteType->itAlignment = sizeof_char;
     itCalculateSizeInfo(itByteType);
     itCalculateNameInfo(itByteType);
 
     itRetCodeType = itAlloc();
     itRetCodeType->itName = "kern_return_t";
-    itRetCodeType->itInName = MACH_MSG_TYPE_INTEGER_32;
-    itRetCodeType->itInNameStr = "MACH_MSG_TYPE_INTEGER_32";
-    itRetCodeType->itOutName = MACH_MSG_TYPE_INTEGER_32;
-    itRetCodeType->itOutNameStr = "MACH_MSG_TYPE_INTEGER_32";
-    itRetCodeType->itSize = 32;
+    itRetCodeType->itInName = int_name;
+    itRetCodeType->itInNameStr = int_name_string;
+    itRetCodeType->itOutName = int_name;
+    itRetCodeType->itOutNameStr = int_name_string;
+    itRetCodeType->itSize = sizeof_int * 8;
+    itRetCodeType->itAlignment = sizeof_int;
     itCalculateSizeInfo(itRetCodeType);
     itCalculateNameInfo(itRetCodeType);
 
@@ -919,7 +918,8 @@ init_type(void)
     itDummyType->itInNameStr = "MACH_MSG_TYPE_UNSTRUCTURED";
     itDummyType->itOutName = MACH_MSG_TYPE_UNSTRUCTURED;
     itDummyType->itOutNameStr = "MACH_MSG_TYPE_UNSTRUCTURED";
-    itDummyType->itSize = word_size_in_bits;
+    itDummyType->itSize = complex_alignof * 8;
+    itDummyType->itAlignment = complex_alignof;
     itCalculateSizeInfo(itDummyType);
     itCalculateNameInfo(itDummyType);
 
@@ -930,6 +930,7 @@ init_type(void)
     itRequestPortType->itOutName = MACH_MSG_TYPE_PORT_SEND;
     itRequestPortType->itOutNameStr = "MACH_MSG_TYPE_PORT_SEND";
     itRequestPortType->itSize = port_size_in_bits;
+    itRequestPortType->itAlignment = port_size;
     itCalculateSizeInfo(itRequestPortType);
     itCalculateNameInfo(itRequestPortType);
 
@@ -940,6 +941,7 @@ init_type(void)
     itZeroReplyPortType->itOutName = 0;
     itZeroReplyPortType->itOutNameStr = "0";
     itZeroReplyPortType->itSize = port_size_in_bits;
+    itZeroReplyPortType->itAlignment = port_size;
     itCalculateSizeInfo(itZeroReplyPortType);
     itCalculateNameInfo(itZeroReplyPortType);
 
@@ -950,6 +952,7 @@ init_type(void)
     itRealReplyPortType->itOutName = MACH_MSG_TYPE_PORT_SEND_ONCE;
     itRealReplyPortType->itOutNameStr = "MACH_MSG_TYPE_PORT_SEND_ONCE";
     itRealReplyPortType->itSize = port_size_in_bits;
+    itRealReplyPortType->itAlignment = port_size;
     itCalculateSizeInfo(itRealReplyPortType);
     itCalculateNameInfo(itRealReplyPortType);
 
@@ -1030,8 +1033,8 @@ itCheckReplyPortType(identifier_t name, const ipc_type_t *it)
 void
 itCheckIntType(identifier_t name, const ipc_type_t *it)
 {
-    if ((it->itInName != MACH_MSG_TYPE_INTEGER_32) ||
-	(it->itOutName != MACH_MSG_TYPE_INTEGER_32) ||
+    if ((it->itInName != int_name) ||
+	(it->itOutName != int_name) ||
 	(it->itNumber != 1) ||
 	(it->itSize != 32) ||
 	!it->itInLine ||
@@ -1041,17 +1044,15 @@ itCheckIntType(identifier_t name, const ipc_type_t *it)
 	error("argument %s isn't a proper integer", name);
 }
 void
-itCheckNaturalType(name, it)
-    identifier_t name;
-    ipc_type_t *it;
+itCheckNaturalType(identifier_t name, ipc_type_t *it)
 {
-    if ((it->itInName != word_size_name) ||
-	(it->itOutName != word_size_name) ||
+    if ((it->itInName != int_name) ||
+	(it->itOutName != int_name) ||
 	(it->itNumber != 1) ||
-	(it->itSize != word_size_in_bits) ||
+	(it->itSize != sizeof_int * 8) ||
 	!it->itInLine ||
 	it->itDeallocate != d_NO ||
 	!it->itStruct ||
 	it->itVarArray)
-	error("argument %s should have been a %s", name, word_size_name_string);
+	error("argument %s should have been a %s", name, int_name_string);
 }

@@ -39,6 +39,8 @@
   ({ __typeof__ (a) _a = (a); \
       __typeof__ (b) _b = (b); \
     _a > _b ? _b : _a; })
+#define ALIGN(x, alignment) \
+    ((x) + (alignment)-1) & ~((alignment)-1)
 
 typedef void	write_list_fn_t(FILE *file, const argument_t *arg);
 

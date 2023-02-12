@@ -212,6 +212,10 @@ Subsystem		:	SubsystemStart SubsystemMods
 	       IsKernelUser ? ", KernelUser" : "",
 	       IsKernelServer ? ", KernelServer" : "");
     }
+    if (IsKernelUser || IsKernelServer) {
+        port_size = vm_offset_size;
+        port_size_in_bits = vm_offset_size_in_bits;
+    }
     init_type();
 }
 			;
@@ -237,16 +241,12 @@ SubsystemMod		:	syKernelUser
     if (IsKernelUser)
 	warn("duplicate KernelUser keyword");
     IsKernelUser = true;
-    port_size = vm_offset_size;
-    port_size_in_bits = vm_offset_size_in_bits;
 }
 			|	syKernelServer
 {
     if (IsKernelServer)
 	warn("duplicate KernelServer keyword");
     IsKernelServer = true;
-    port_size = vm_offset_size;
-    port_size_in_bits = vm_offset_size_in_bits;
 }
 			;
 

@@ -47,6 +47,7 @@
 #include "routine.h"
 #include "message.h"
 #include "cpu.h"
+#include "utils.h"
 
 u_int rtNumber = 0;
 
@@ -316,19 +317,21 @@ rtFindSize(const argument_t *args, u_int mask)
     const argument_t *arg;
     u_int size = sizeof_mach_msg_header_t;
 
+    size = ALIGN(size, complex_alignof);
     for (arg = args; arg != argNULL; arg = arg->argNext)
 	if (akCheck(arg->argKind, mask))
 	{
 	    ipc_type_t *it = arg->argType;
 
 	    /* might need proper alignment on demanding 64bit archies */
-	    size = (size + word_size-1) & ~(word_size-1);
 	    if (arg->argLongForm) {
 		size += sizeof_mach_msg_type_long_t;
 	    } else {
 		size += sizeof_mach_msg_type_t;
 	    }
+	    size = ALIGN(size, complex_alignof);
 
+	    /* Note itMinTypeSize is already aligned to complex_alignof. */
 	    size += it->itMinTypeSize;
 	}
 

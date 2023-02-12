@@ -95,8 +95,7 @@ expr MACH_MSG_TYPE_POLYMORPHIC
 
 
 /* Types used in interfaces */
-expr sizeof(integer_t)			word_size
-expr (sizeof(integer_t)*8)		word_size_in_bits
+expr sizeof(natural_t)			desired_complex_alignof
 expr sizeof(void*)			sizeof_pointer
 expr sizeof(char)			sizeof_char
 expr sizeof(short)			sizeof_short
