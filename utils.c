@@ -263,15 +263,15 @@ WriteCheckDecl(FILE *file, const argument_t *arg)
 
     fprintf(file, "\tconst mach_msg_type_t %sCheck = {\n",
 	    arg->argVarName);
-    fprintf(file, "\t\t/* msgt_name = */\t\t(unsigned char) %s,\n", it->itOutNameStr);
-    fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
-    fprintf(file, "\t\t/* msgt_number = */\t\t%d,\n", it->itNumber);
-    fprintf(file, "\t\t/* msgt_inline = */\t\t%s,\n",
+    fprintf(file, "\t\t.msgt_name =\t\t(unsigned char) %s,\n", it->itOutNameStr);
+    fprintf(file, "\t\t.msgt_size =\t\t%d,\n", it->itSize);
+    fprintf(file, "\t\t.msgt_number =\t\t%d,\n", it->itNumber);
+    fprintf(file, "\t\t.msgt_inline =\t\t%s,\n",
 	    strbool(it->itInLine));
-    fprintf(file, "\t\t/* msgt_longform = */\t\tFALSE,\n");
-    fprintf(file, "\t\t/* msgt_deallocate = */\t\t%s,\n",
+    fprintf(file, "\t\t.msgt_longform =\t\tFALSE,\n");
+    fprintf(file, "\t\t.msgt_deallocate =\t\t%s,\n",
 	    strbool(!it->itInLine));
-    fprintf(file, "\t\t/* msgt_unused = */\t\t0\n");
+    fprintf(file, "\t\t.msgt_unused =\t\t0\n");
     fprintf(file, "\t};\n");
 }
 
@@ -359,21 +359,21 @@ WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 		    dealloc_t dealloc, bool inname, identifier_t name)
 {
     fprintf(file, "\tconst mach_msg_type_long_t %s = {\n", name);
-    fprintf(file, "\t{\n");
-    fprintf(file, "\t\t/* msgt_name = */\t\t0,\n");
-    fprintf(file, "\t\t/* msgt_size = */\t\t0,\n");
-    fprintf(file, "\t\t/* msgt_number = */\t\t0,\n");
-    fprintf(file, "\t\t/* msgt_inline = */\t\t%s,\n",
+    fprintf(file, "\t\t.msgtl_header = {\n");
+    fprintf(file, "\t\t\t.msgt_name =\t\t0,\n");
+    fprintf(file, "\t\t\t.msgt_size =\t\t0,\n");
+    fprintf(file, "\t\t\t.msgt_number =\t\t0,\n");
+    fprintf(file, "\t\t\t.msgt_inline =\t\t%s,\n",
 	    strbool(it->itInLine));
-    fprintf(file, "\t\t/* msgt_longform = */\t\tTRUE,\n");
-    fprintf(file, "\t\t/* msgt_deallocate = */\t\t%s,\n",
+    fprintf(file, "\t\t\t.msgt_longform =\t\tTRUE,\n");
+    fprintf(file, "\t\t\t.msgt_deallocate =\t\t%s,\n",
 	    strdealloc(dealloc));
-    fprintf(file, "\t\t/* msgt_unused = */\t\t0\n");
-    fprintf(file, "\t},\n");
-    fprintf(file, "\t\t/* msgtl_name = */\t(unsigned short) %s,\n",
+    fprintf(file, "\t\t\t.msgt_unused =\t\t0\n");
+    fprintf(file, "\t\t},\n");
+    fprintf(file, "\t\t.msgtl_name =\t(unsigned short) %s,\n",
 	    inname ? it->itInNameStr : it->itOutNameStr);
-    fprintf(file, "\t\t/* msgtl_size = */\t%d,\n", it->itSize);
-    fprintf(file, "\t\t/* msgtl_number = */\t%d,\n", it->itNumber);
+    fprintf(file, "\t\t.msgtl_size =\t%d,\n", it->itSize);
+    fprintf(file, "\t\t.msgtl_number =\t%d,\n", it->itNumber);
     fprintf(file, "\t};\n");
 }
 
@@ -383,16 +383,16 @@ WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
 		     identifier_t name)
 {
     fprintf(file, "\tconst mach_msg_type_t %s = {\n", name);
-    fprintf(file, "\t\t/* msgt_name = */\t\t(unsigned char) %s,\n",
+    fprintf(file, "\t\t.msgt_name =\t\t(unsigned char) %s,\n",
 	    inname ? it->itInNameStr : it->itOutNameStr);
-    fprintf(file, "\t\t/* msgt_size = */\t\t%d,\n", it->itSize);
-    fprintf(file, "\t\t/* msgt_number = */\t\t%d,\n", it->itNumber);
-    fprintf(file, "\t\t/* msgt_inline = */\t\t%s,\n",
+    fprintf(file, "\t\t.msgt_size =\t\t%d,\n", it->itSize);
+    fprintf(file, "\t\t.msgt_number =\t\t%d,\n", it->itNumber);
+    fprintf(file, "\t\t.msgt_inline =\t\t%s,\n",
 	    strbool(it->itInLine));
-    fprintf(file, "\t\t/* msgt_longform = */\t\tFALSE,\n");
-    fprintf(file, "\t\t/* msgt_deallocate = */\t\t%s,\n",
+    fprintf(file, "\t\t.msgt_longform =\t\tFALSE,\n");
+    fprintf(file, "\t\t.msgt_deallocate =\t\t%s,\n",
 	    strdealloc(dealloc));
-    fprintf(file, "\t\t/* msgt_unused = */\t\t0\n");
+    fprintf(file, "\t\t.msgt_unused =\t\t0\n");
     fprintf(file, "\t};\n");
     if (it->itInLine && !it->itVarArray) {
         identifier_t type = is_server ? FetchServerType(it) : FetchUserType(it);
