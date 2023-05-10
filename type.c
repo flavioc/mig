@@ -323,19 +323,21 @@ itUseLong(const ipc_type_t *it)
     if ((it->itVarArray && !it->itInLine) || it->itIndefinite)
 	uselong = ShouldBeLong;
 
+    /* Check that msgt_name fits into 1 byte as the x86_64 ABI requires it.
+       Note that MACH_MSG_TYPE_POLYMORPHIC is -1 hence it is ignored. */
     if (((it->itInName != MACH_MSG_TYPE_POLYMORPHIC) &&
 	 (it->itInName >= (1<<8))) ||
 	((it->itOutName != MACH_MSG_TYPE_POLYMORPHIC) &&
-	 (it->itOutName >= (1<<8))) ||
-	(it->itSize >= (1<<8)) ||
+	 (it->itOutName >= (1<<8)))) {
+        error("Cannot have msgt_name greater than 255");
+        uselong = TooLong;
+    }
+
+	if ((it->itSize >= (1<<8)) ||
 	(it->itNumber >= (1<<12)))
 	uselong = MustBeLong;
 
-    if (((it->itInName != MACH_MSG_TYPE_POLYMORPHIC) &&
-	 (it->itInName >= (1<<16))) ||
-	((it->itOutName != MACH_MSG_TYPE_POLYMORPHIC) &&
-	 (it->itOutName >= (1<<16))) ||
-	(it->itSize >= (1<<16)))
+    if (it->itSize >= (1<<16))
 	uselong = TooLong;
 
     return uselong;
@@ -416,7 +418,7 @@ itCheckDecl(identifier_t name, ipc_type_t *it)
 
     uselong = itUseLong(it);
     if (uselong == TooLong)
-	warn("%s: too big for mach_msg_type_long_t", name);
+	error("%s: too big for mach_msg_type_long_t", name);
     it->itLongForm = itCheckIsLong(it, it->itFlags,
 				   (int)uselong >= (int)ShouldBeLong, name);
 }
