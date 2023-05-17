@@ -78,7 +78,7 @@ WriteBogusDefines(FILE *file)
 
     fprintf(file, "#define BAD_TYPECHECK(type, check) mig_unlikely (({\\\n");
     fprintf(file,
-	    "  union { mach_msg_type_t t; uint32_t w; } _t, _c;\\\n");
+	    "  union { mach_msg_type_t t; uint%d_t w; } _t, _c;\\\n", desired_complex_alignof * 8);
     fprintf(file,
 	    "  _t.t = *(type); _c.t = *(check);_t.w != _c.w; }))\n");
 }
@@ -358,11 +358,21 @@ static void
 WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 		    dealloc_t dealloc, bool inname, identifier_t name)
 {
+    const_string_t msgt_name = inname ? it->itInNameStr : it->itOutNameStr;
     fprintf(file, "\tconst mach_msg_type_long_t %s = {\n", name);
     fprintf(file, "\t\t.msgtl_header = {\n");
-    fprintf(file, "\t\t\t.msgt_name =\t\t0,\n");
-    fprintf(file, "\t\t\t.msgt_size =\t\t0,\n");
-    fprintf(file, "\t\t\t.msgt_number =\t\t0,\n");
+    if (IS_64BIT_ABI) {
+	/* For the 64 bit ABI we don't really have mach_msg_type_long_t
+	 * so we fill mach_msg_type_long_t just like mach_msg_type_t.
+	 */
+	fprintf(file, "\t\t\t.msgt_name =\t\t(unsigned char) %s,\n", msgt_name);
+	fprintf(file, "\t\t\t.msgt_size =\t\t%d,\n", it->itSize);
+	fprintf(file, "\t\t\t.msgt_number =\t\t%d,\n", it->itNumber);
+    } else {
+	fprintf(file, "\t\t\t.msgt_name =\t\t0,\n");
+	fprintf(file, "\t\t\t.msgt_size =\t\t0,\n");
+	fprintf(file, "\t\t\t.msgt_number =\t\t0,\n");
+    }
     fprintf(file, "\t\t\t.msgt_inline =\t\t%s,\n",
 	    strbool(it->itInLine));
     fprintf(file, "\t\t\t.msgt_longform =\t\tTRUE,\n");
@@ -370,10 +380,11 @@ WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 	    strdealloc(dealloc));
     fprintf(file, "\t\t\t.msgt_unused =\t\t0\n");
     fprintf(file, "\t\t},\n");
-    fprintf(file, "\t\t.msgtl_name =\t(unsigned short) %s,\n",
-	    inname ? it->itInNameStr : it->itOutNameStr);
-    fprintf(file, "\t\t.msgtl_size =\t%d,\n", it->itSize);
-    fprintf(file, "\t\t.msgtl_number =\t%d,\n", it->itNumber);
+    if (!IS_64BIT_ABI) {
+	fprintf(file, "\t\t.msgtl_name =\t(unsigned short) %s,\n", msgt_name);
+	fprintf(file, "\t\t.msgtl_size =\t%d,\n", it->itSize);
+	fprintf(file, "\t\t.msgtl_number =\t%d,\n", it->itNumber);
+    }
     fprintf(file, "\t};\n");
 }
 
