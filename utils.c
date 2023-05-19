@@ -307,10 +307,10 @@ WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 
     /* Pad mach_msg_type_t/mach_msg_type_long_t in case we need alignment by more than its size. */
     if (!arg->argLongForm && sizeof_mach_msg_type_t % complex_alignof) {
-        fprintf(file, "\t\tchar %s_pad[%d];\n",
+        fprintf(file, "\t\tchar %s_pad[%zd];\n",
 		arg->argTTName, complex_alignof - sizeof_mach_msg_type_t % complex_alignof);
     } else if (arg->argLongForm && sizeof_mach_msg_type_long_t % complex_alignof) {
-	fprintf(file, "\t\tchar %s_pad[%d];\n", arg->argTTName,
+	fprintf(file, "\t\tchar %s_pad[%zd];\n", arg->argTTName,
 		complex_alignof - sizeof_mach_msg_type_long_t % complex_alignof);
     }
 
