@@ -130,7 +130,6 @@ static void doSharp(const char *body); /* process body of # directives */
 <Normal>(?i:sreplyport)		RETURN(sySReplyPort);
 <Normal>(?i:array)		RETURN(syArray);
 <Normal>(?i:of)			RETURN(syOf);
-<Normal>(?i:error)		RETURN(syErrorProc);
 <Normal>(?i:serverprefix)       RETURN(syServerPrefix);
 <Normal>(?i:userprefix)		RETURN(syUserPrefix);
 <Normal>(?i:serverdemux)	RETURN(syServerDemux);

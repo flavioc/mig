@@ -36,7 +36,6 @@
 %token	syMsgSeqno
 %token	syWaitTime
 %token	syNoWaitTime
-%token	syErrorProc
 %token	syServerPrefix
 %token	syUserPrefix
 %token	syServerDemux
@@ -176,7 +175,6 @@ Statements		:	/* empty */
 Statement		:	Subsystem sySemi
 			|	WaitTime sySemi
 			|	MsgOption sySemi
-			|	Error sySemi
 			|	ServerPrefix sySemi
 			|	UserPrefix sySemi
 			|	ServerDemux sySemi
@@ -284,14 +282,6 @@ WaitTime		:	LookString syWaitTime syString
     WaitTime = strNULL;
     if (BeVerbose)
 	printf("NoWaitTime\n\n");
-}
-			;
-
-Error			:	syErrorProc syIdentifier
-{
-    ErrorProc = $2;
-    if (BeVerbose)
-	printf("ErrorProc %s\n\n", ErrorProc);
 }
 			;
 

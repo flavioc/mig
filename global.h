@@ -47,7 +47,6 @@ extern u_int SubsystemBase;
 
 extern const_string_t MsgOption;
 extern const_string_t WaitTime;
-extern const_string_t ErrorProc;
 extern const_string_t ServerPrefix;
 extern const_string_t UserPrefix;
 extern const_string_t ServerDemux;

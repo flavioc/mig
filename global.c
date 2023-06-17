@@ -43,7 +43,6 @@ u_int SubsystemBase = 0;
 
 const_string_t MsgOption = strNULL;
 const_string_t WaitTime = strNULL;
-const_string_t ErrorProc = "MsgError";
 const_string_t ServerPrefix = "";
 const_string_t UserPrefix = "";
 const_string_t ServerDemux = strNULL;
