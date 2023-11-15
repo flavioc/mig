@@ -163,6 +163,7 @@ typedef struct ipc_type
     bool itString;
     bool itVarArray;
     bool itIndefinite;
+    bool itUserlandPort;
     bool itKernelPort;
 
     struct ipc_type *itElement;	/* may be NULL */
