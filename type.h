@@ -133,6 +133,10 @@ typedef enum dealloc {
  * itKernelPort is used only on kernel interfaces and is set to true when
  * the initial type is mach_port_t, which in turn is actually translated to
  * internal port pointers (ipc_port_t).
+ *
+ * itUserlandPort indicates that the field represents a port right (represented
+ * as a port name) and thus will only be true for userland stubs. This is
+ * used to change how inlined port names in messages are generated.
  */
 
 typedef struct ipc_type
@@ -163,6 +167,7 @@ typedef struct ipc_type
     bool itString;
     bool itVarArray;
     bool itIndefinite;
+    bool itUserlandPort;
     bool itKernelPort;
 
     struct ipc_type *itElement;	/* may be NULL */
