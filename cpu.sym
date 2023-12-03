@@ -105,7 +105,6 @@ expr sizeof(float)			sizeof_float
 expr sizeof(double)			sizeof_double
 expr sizeof(uintptr_t)			sizeof_uintptr_t
 expr sizeof(intptr_t)			sizeof_intptr_t
-expr (sizeof(uintptr_t)*8)		sizeof_uintptr_t_in_bits
 expr sizeof(mach_msg_header_t)		sizeof_mach_msg_header_t
 expr sizeof(mach_msg_type_long_t)	sizeof_mach_msg_type_long_t
 expr sizeof(mach_msg_type_t)		sizeof_mach_msg_type_t

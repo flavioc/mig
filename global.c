@@ -65,8 +65,8 @@ string_t InternalHeaderFileName = strNULL;
 string_t UserFileName = strNULL;
 string_t ServerFileName = strNULL;
 
-size_t port_size = sizeof_uintptr_t;
-size_t port_size_in_bits = sizeof_uintptr_t_in_bits;
+size_t port_size = port_name_size;
+size_t port_size_in_bits = port_name_size_in_bits;
 size_t complex_alignof = desired_complex_alignof;
 
 void

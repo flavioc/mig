@@ -424,7 +424,6 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 	    const argument_t *count = arg->argCount;
 	    const char *countRef = count->argByReferenceUser ? "*" :"";
 	    const ipc_type_t *btype = it->itElement;
-	    const bool is_64bit_port = IS_64BIT_ABI && btype->itUserlandPort;
 
 	    /* Note btype->itNumber == count->argMultiplier */
 
@@ -435,15 +434,6 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 		fprintf(file, "\t\tInP->%s%s.msgt_inline = FALSE;\n",
 			arg->argTTName,
 			arg->argLongForm ? ".msgtl_header" : "");
-		if (is_64bit_port) {
-			/* Update size of the type to be the same as a port name since
-			 * we are passing port names out of line. */
-			fprintf(file, "\t\t/* We are passing mach_port_name_t out of line. */\n");
-			fprintf(file, "\t\tInP->%s%s.msgt_size = %d;\n",
-				arg->argTTName,
-				arg->argLongForm ? ".msgtl_header" : "",
-				port_name_size_in_bits);
-		}
 		if (arg->argDeallocate == d_YES)
 		    fprintf(file, "\t\tInP->%s%s.msgt_deallocate = TRUE;\n",
 			    arg->argTTName,
@@ -466,38 +456,22 @@ WritePackArgValue(FILE *file, const argument_t *arg)
 
 	    fprintf(file, "\t}\n\telse if (%s%s) {\n", countRef, count->argVarName);
 
-	    if (is_64bit_port) {
-		    /* When copying inlined ports, the 64bit ABI uses 8 bytes to store port names,
-		     * hence we cannot use memcpy directly.
-		     */
-		    fprintf(file, "\t\t/* Transform mach_port_name_t into mach_port_name_inlined_t. */\n");
-		    fprintf(file, "\t\tmach_port_name_inlined_t *inlined_%s = (mach_port_name_inlined_t *)InP->%s;\n",
-				    arg->argMsgField, arg->argMsgField);
-		    fprintf(file, "\t\tmach_msg_type_number_t i;\n");
-		    fprintf(file, "\t\tfor (i = 0; i < %s%s; i++) {\n", countRef, count->argVarName);
-		    fprintf(file, "\t\t\t/* Clear the whole message with zeros. */\n");
-		    fprintf(file, "\t\t\tinlined_%s[i].kernel_port_do_not_use = 0;\n",
-				    arg->argMsgField);
-		    fprintf(file, "\t\t\tinlined_%s[i].name = (%s%s)[i];\n", arg->argMsgField, ref, arg->argMsgField);
-		    fprintf(file, "\t\t}\n");
-	    } else {
-		    fprintf(file, "\t\tmemcpy(InP->%s, %s%s, ", arg->argMsgField, ref, arg->argVarName);
-		    if (btype->itTypeSize > 1)
-			    fprintf(file, "%d * ", btype->itTypeSize);
-		    fprintf(file, "%s%s);\n", countRef, count->argVarName);
-	    }
+	    fprintf(file, "\t\tmemcpy(InP->%s, %s%s, ", arg->argMsgField,
+		ref, arg->argVarName);
+	    if (btype->itTypeSize > 1)
+		fprintf(file, "%d * ", btype->itTypeSize);
+	    fprintf(file, "%s%s);\n",
+		countRef, count->argVarName);
 	    fprintf(file, "\t}\n");
 	}
     }
-    else if (arg->argMultiplier > 1) {
+    else if (arg->argMultiplier > 1)
 	WriteCopyType(file, it, "InP->%s", "/* %s */ %d * %s%s",
 		      arg->argMsgField, arg->argMultiplier,
 		      ref, arg->argVarName);
-    } else {
-	bool is_inlined_port = it->itUserlandPort && it->itInLine;
-	WriteCopyType(file, it, "InP->%s%s", "/* %s%s */ %s%s",
-		      arg->argMsgField, is_inlined_port ? ".name" : "", ref, arg->argVarName);
-    }
+    else
+	WriteCopyType(file, it, "InP->%s", "/* %s */ %s%s",
+		      arg->argMsgField, ref, arg->argVarName);
     fprintf(file, "\n");
 }
 
@@ -830,23 +804,10 @@ WriteTypeCheck(FILE *file, const argument_t *arg)
 		    arg->argTTName,
 		    arg->argLongForm ? "l" : "",
 		    it->itNumber);
-	if (IS_64BIT_ABI && it->itUserlandPort && arg->argLongForm) {
-	    /* 64 bit inlined ports are 8 bytes long but we use mach_port_name_t when passing them out of line. */
-	    fprintf(file, "\t    (OutP->%s.msgtl_size != %d && OutP->%s.msgtl_header.msgt_inline == TRUE) || \n",
-		    arg->argTTName,
-		    it->itSize,
-		    arg->argTTName);
-	    fprintf(file, "\t    (OutP->%s.msgtl_size != %d && OutP->%s.msgtl_header.msgt_inline == FALSE)",
-		    arg->argTTName,
-		    port_name_size_in_bits,
-		    arg->argTTName);
-	} else {
-	    fprintf(file, "\t    (OutP->%s.msgt%s_size != %d)",
-		    arg->argTTName,
-		    arg->argLongForm ? "l" : "",
-		    it->itSize);
-	}
-	fprintf(file, "))\n");
+	fprintf(file, "\t    (OutP->%s.msgt%s_size != %d)))\n",
+		arg->argTTName,
+		arg->argLongForm ? "l" : "",
+		it->itSize);
     }
     WriteMsgError(file, rt, "MIG_TYPE_ERROR");
     fprintf(file, "#endif\t/* TypeCheck */\n");
@@ -946,31 +907,6 @@ WriteCheckMsgSize(FILE *file, const argument_t *arg)
     fprintf(file, "\n");
 }
 
-static void
-WriteExtractArgValueThroughCopy(FILE *file, const argument_t *arg, const argument_t *count,
-	const ipc_type_t *btype, const char *ref, const bool is_64bit_port)
-{
-    if (is_64bit_port) {
-	/* When copying inlined ports, the 64bit ABI uses 8 bytes to store port names,
-	 * hence we cannot use memcpy.
-	 */
-	fprintf(file, "\t\t/* Transform mach_port_name_inlined_t into mach_port_name_t. */\n");
-	fprintf(file, "\t\tmach_port_name_inlined_t *inlined_%s = (mach_port_name_inlined_t *)OutP->%s;\n",
-		arg->argMsgField, arg->argMsgField);
-	fprintf(file, "\t\tmach_msg_type_number_t i;\n");
-	fprintf(file, "\t\tfor (i = 0; i < OutP->%s; i++) {\n", count->argMsgField);
-	fprintf(file, "\t\t\t(%s%s)[i] = inlined_%s[i].name;\n",
-		ref, arg->argVarName, arg->argMsgField);
-	fprintf(file, "\t\t}\n");
-    } else {
-	fprintf(file, "\t\tmemcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
-		arg->argMsgField);
-	if (btype->itTypeSize != btype->itNumber)
-	    fprintf(file, "%d * ", btype->itTypeSize/btype->itNumber);
-	fprintf(file, "OutP->%s);\n", count->argMsgField);
-    }
-}
-
 /*************************************************************
  *  Write code to copy an argument from the reply message
  *  to the parameter. Called by WriteRoutine for each argument
@@ -1008,12 +944,11 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 	    const argument_t *count = arg->argCount;
 	    const char *countRef = count->argByReferenceUser ? "*" : "";
 	    const ipc_type_t *btype = argType->itElement;
-	    const bool is_64bit_port = IS_64BIT_ABI && btype->itUserlandPort;
 
 	    fprintf(file, "\tif (!OutP->%s%s.msgt_inline)\n",
 		    arg->argTTName,
 		    arg->argLongForm ? ".msgtl_header" : "");
-	    fprintf(file, "\t\t%s%s = OutP->%s%s;\n",
+	    fprintf(file, "\t    %s%s = OutP->%s%s;\n",
 		    ref, arg->argVarName,
 		    arg->argMsgField,
 		    OOLPostfix);
@@ -1021,18 +956,24 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 	    if (btype->itNumber > 1)
 		fprintf(file, " / %d", btype->itNumber);
 	    fprintf(file, " > %s%s) {\n", countRef, count->argVarName);
-	    fprintf(file, "\t\t%smig_allocate((vm_offset_t *)%s, ",
+	    fprintf(file, "\t    %smig_allocate((vm_offset_t *)%s,\n\t\t",
 		    SubrPrefix, arg->argVarName);	/* no ref! */
-	    if (is_64bit_port)
-		fprintf(file, "%d * ", port_name_size);
-	    else if (btype->itTypeSize != btype->itNumber)
+	    if (btype->itTypeSize != btype->itNumber)
 		fprintf(file, "%d * ", btype->itTypeSize/btype->itNumber);
 	    fprintf(file, "OutP->%s);\n", count->argMsgField);
-	    WriteExtractArgValueThroughCopy(file, arg, count, btype, ref, is_64bit_port);
+	    fprintf(file, "\t    memcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
+		    arg->argMsgField);
+	    if (btype->itTypeSize != btype->itNumber)
+		fprintf(file, "%d * ", btype->itTypeSize/btype->itNumber);
+	    fprintf(file, "OutP->%s);\n", count->argMsgField);
 	    fprintf(file, "\t}\n");
 	    fprintf(file, "\telse if (OutP->%s) {\n", count->argMsgField);
 
-	    WriteExtractArgValueThroughCopy(file, arg, count, btype, ref, is_64bit_port);
+	    fprintf(file, "\t    memcpy(%s%s, OutP->%s, ", ref, arg->argVarName,
+		    arg->argMsgField);
+	    if (btype->itTypeSize != btype->itNumber)
+		fprintf(file, "%d * ", btype->itTypeSize/btype->itNumber);
+	    fprintf(file, "OutP->%s);\n", count->argMsgField);
 	    fprintf(file, "\t}\n");
 	}
 	else {
@@ -1084,17 +1025,15 @@ WriteExtractArgValue(FILE *file, const argument_t *arg)
 	    fprintf(file, "\t}\n");
 	}
     }
-    else if (arg->argMultiplier > 1) {
+    else if (arg->argMultiplier > 1)
 	WriteCopyType(file, argType,
 		      "%s%s", "/* %s%s */ OutP->%s / %d",
 		      ref, arg->argVarName, arg->argMsgField,
 		      arg->argMultiplier);
-    } else {
-	bool is_inlined_port = argType->itUserlandPort && argType->itInLine;
+    else
 	WriteCopyType(file, argType,
-		      "%s%s", "/* %s%s */ OutP->%s%s",
-		      ref, arg->argVarName, arg->argMsgField, is_inlined_port ? ".name" : "");
-    }
+		      "%s%s", "/* %s%s */ OutP->%s",
+		      ref, arg->argVarName, arg->argMsgField);
     fprintf(file, "\n");
 }
 

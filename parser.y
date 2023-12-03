@@ -210,6 +210,10 @@ Subsystem		:	SubsystemStart SubsystemMods
 	       IsKernelUser ? ", KernelUser" : "",
 	       IsKernelServer ? ", KernelServer" : "");
     }
+    if (IsKernelUser || IsKernelServer) {
+        port_size = vm_offset_size;
+        port_size_in_bits = vm_offset_size_in_bits;
+    }
     init_type();
 }
 			;

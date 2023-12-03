@@ -121,7 +121,6 @@ itAlloc(void)
 	false,			/* bool itString */
 	false,			/* bool itVarArray */
 	false,			/* bool itIndefinite */
-	false,			/* bool itUserlandPort */
 	false,			/* bool itKernelPort */
 	itNULL,			/* ipc_type_t *itElement */
 	strNULL,		/* identifier_t itUserType */
@@ -196,15 +195,6 @@ itCalculateSizeInfo(ipc_type_t *it)
 	warn("sizeof(%s) == 0", it->itName);
 }
 
-static bool
-itIsPortType(ipc_type_t *it)
-{
-    return ((it->itInName == MACH_MSG_TYPE_POLYMORPHIC) &&
-	    (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)) ||
-	MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
-	MACH_MSG_TYPE_PORT_ANY(it->itOutName);
-}
-
 /*
  * Fill in default values for some fields used in code generation:
  *	itInNameStr, itOutNameStr, itUserType, itServerType, itTransType
@@ -223,10 +213,6 @@ itCalculateNameInfo(ipc_type_t *it)
     if (it->itServerType == strNULL)
 	it->itServerType = it->itName;
 
-    bool isPortType = itIsPortType(it);
-    bool isServerPort = isPortType && streql(it->itServerType, "mach_port_t");
-    bool isUserPort = isPortType && streql(it->itUserType, "mach_port_t");
-
     /*
      *	KernelServer and KernelUser interfaces get special treatment here.
      *	On the kernel side of the interface, ports are really internal
@@ -240,22 +226,24 @@ itCalculateNameInfo(ipc_type_t *it)
      *	hand-conditionalizing on KERNEL_SERVER and KERNEL_USER.
      */
 
-    if (IsKernelServer && isServerPort) {
+    if (IsKernelServer &&
+	streql(it->itServerType, "mach_port_t") &&
+	(((it->itInName == MACH_MSG_TYPE_POLYMORPHIC) &&
+	  (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)) ||
+	 MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
+	 MACH_MSG_TYPE_PORT_ANY(it->itOutName))) {
 	it->itServerType = "ipc_port_t";
         it->itKernelPort = true;
-    } else if (IsKernelUser && isUserPort) {
+    } else if (IsKernelUser &&
+	streql(it->itUserType, "mach_port_t") &&
+	(((it->itInName == MACH_MSG_TYPE_POLYMORPHIC) &&
+	  (it->itOutName == MACH_MSG_TYPE_POLYMORPHIC)) ||
+	 MACH_MSG_TYPE_PORT_ANY(it->itInName) ||
+	 MACH_MSG_TYPE_PORT_ANY(it->itOutName))) {
 	it->itUserType = "ipc_port_t";
         it->itKernelPort = true;
     } else
         it->itKernelPort = false;
-
-    /*
-     * In 64 bits, ports are inlined as 8 bytes even though mach_port_t or
-     * mach_port_name_t are always 4 bytes. We do this to avoid slow message
-     * resizing inside the gnumach by ensuring inlined port names in messages
-     * are always 8 bytes long.
-     */
-    it->itUserlandPort = isPortType && !IsKernelUser && !IsKernelServer;
 
     if (it->itTransType == strNULL)
 	it->itTransType = it->itServerType;
