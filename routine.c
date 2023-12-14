@@ -517,6 +517,12 @@ rtAugmentArgKind(argument_t *arg)
     {
 	arg->argKind = akAddFeature(arg->argKind, akbPointer);
     }
+    if (akCheck(arg->argKind, akbSendRcv) &&
+	 IS_64BIT_ABI &&
+	 it->itUserlandPort &&
+	akCheck(arg->argKind, akbIndefinite)) {
+	arg->argKind = akAddFeature(arg->argKind, akbPointer);
+    }
 }
 
 /* arg->argType may be NULL in this function */

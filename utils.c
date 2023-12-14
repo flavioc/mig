@@ -317,6 +317,9 @@ WriteFieldDeclPrim(FILE *file, const argument_t *arg,
     if (it->itInLine && it->itVarArray)
     {
 	ipc_type_t *btype = it->itElement;
+	identifier_t original_type_name = (*tfunc)(btype);
+	identifier_t inlined_type_name = btype->itUserlandPort ?
+	    "mach_port_name_inlined_t" : original_type_name;
 
 	/*
 	 *	Build our own declaration for a varying array:
@@ -325,19 +328,27 @@ WriteFieldDeclPrim(FILE *file, const argument_t *arg,
 	 */
 	fprintf(file, "\t\tunion {\n");
 	fprintf(file, "\t\t\t%s %s[%d];\n",
-			(*tfunc)(btype),
+			inlined_type_name,
 			arg->argMsgField,
 			it->itNumber/btype->itNumber);
 	fprintf(file, "\t\t\t%s%s *%s%s;\n",
 			tfunc == FetchUserType && UserVarConst(arg)
 				? "const " : "",
-			(*tfunc)(btype),
+			original_type_name,
 			arg->argMsgField,
 			OOLPostfix);
 	fprintf(file, "\t\t};");
     }
     else
-	fprintf(file, "\t\t%s %s;", (*tfunc)(it), arg->argMsgField);
+    {
+        identifier_t original_type_name = (*tfunc)(it);
+        identifier_t final_type_name = it->itUserlandPort && it->itInLine ?
+	    "mach_port_name_inlined_t" : original_type_name;
+
+        fprintf(file, "\t\t%s %s;",
+		final_type_name,
+                arg->argMsgField);
+    }
 
     if (it->itPadSize != 0)
 	fprintf(file, "\n\t\tchar %s[%d];", arg->argPadName, it->itPadSize);
@@ -366,7 +377,11 @@ WriteStaticLongDecl(FILE *file, const ipc_type_t *it,
 	 * so we fill mach_msg_type_long_t just like mach_msg_type_t.
 	 */
 	fprintf(file, "\t\t\t.msgt_name =\t\t(unsigned char) %s,\n", msgt_name);
-	fprintf(file, "\t\t\t.msgt_size =\t\t%d,\n", it->itSize);
+	/* In case we are passing out of line ports, we always send as a contiguous array of port names
+	 * rather than mach_port_name_inlined_t. */
+	const u_int true_size = (it->itUserlandPort && !it->itInLine && it->itNumber == 0) ?
+	    port_name_size_in_bits : it->itSize;
+	fprintf(file, "\t\t\t.msgt_size =\t\t%d,\n", true_size);
 	fprintf(file, "\t\t\t.msgt_number =\t\t%d,\n", it->itNumber);
     } else {
 	fprintf(file, "\t\t\t.msgt_name =\t\t0,\n");
@@ -407,10 +422,11 @@ WriteStaticShortDecl(FILE *file, const ipc_type_t *it,
     fprintf(file, "\t};\n");
     if (it->itInLine && !it->itVarArray) {
         identifier_t type = is_server ? FetchServerType(it) : FetchUserType(it);
+        identifier_t actual_type = it->itUserlandPort ? "mach_port_name_inlined_t" : type;
         const u_int size_bytes = it->itSize >> 3;
         fprintf(file, "\t_Static_assert(sizeof(%s) == %d * %d, \"expected %s to be size %d * %d\");\n",
-                      type, size_bytes, it->itNumber,
-                      type, size_bytes, it->itNumber);
+                      actual_type, size_bytes, it->itNumber,
+                      actual_type, size_bytes, it->itNumber);
     }
 }
 
