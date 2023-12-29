@@ -160,11 +160,18 @@ UserVarQualifier(const argument_t *arg)
     if (!UserVarConst(arg))
 	return "";
 
-    if (arg->argType->itIndefinite ||
-	arg->argType->itInName == MACH_MSG_TYPE_STRING_C ||
-	!strcmp(arg->argType->itUserType, "string_t"))
+    const ipc_type_t *it = arg->argType;
+
+    if (it->itIndefinite ||
+	it->itInName == MACH_MSG_TYPE_STRING_C ||
+	(it->itVarArray && !strcmp(it->itElement->itUserType, "char")) ||
+	!strcmp(it->itUserType, "string_t"))
         /* This is a pointer, so we have to use the const_foo type to
 	   make const qualify the data, not the pointer.
+
+	   Or this is a pointer to a variable array. For now we only support arrays of char
+	   but we can remove that condition if we define const typedefs for all types that
+	   require it.
 
 	   Or this is a string_t, which should use const_string_t to avoid
 	   forcing the caller to respect the definite string size */
@@ -176,10 +183,21 @@ UserVarQualifier(const argument_t *arg)
 void
 WriteUserVarDecl(FILE *file, const argument_t *arg)
 {
-    const char *qualif = UserVarQualifier(arg);
-    const char *ref = arg->argByReferenceUser ? "*" : "";
+    const ipc_type_t *it = arg->argType;
 
-    fprintf(file, "\t%s%s %s%s", qualif, arg->argType->itUserType, ref, arg->argVarName);
+    if (it->itInLine && it->itVarArray && !it->itIndefinite &&
+	!UserVarConst(arg) &&
+	!strcmp(it->itElement->itUserType, "char"))
+    {
+	/* For variable arrays like "array[*:128] of char" we prefer to use "char *param"
+	 * as the argument since it is more standard than using "char param[128]".
+	 */
+	fprintf(file, "\tchar *%s /* max of %d elements */", arg->argVarName, it->itNumber);
+    } else {
+	const char *qualif = UserVarQualifier(arg);
+	const char *ref = arg->argByReferenceUser ? "*" : "";
+	fprintf(file, "\t%s%s %s%s", qualif, it->itUserType, ref, arg->argVarName);
+    }
 }
 
 /* Returns whether parameter should be qualified with const because we will only
