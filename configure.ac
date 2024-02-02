@@ -42,7 +42,7 @@ AC_HEADER_STDC
   TARGET_CC='${CC}'
 else]
   AC_CHECK_PROG([TARGET_CC], [$target_alias-gcc], [$target_alias-gcc], [none])
-  [if [ x"$TARGET_CC" != x"$target_alias"-gcc ]; then]
+  [if [ x"$TARGET_CC" = xnone ]; then]
     AC_MSG_ERROR([could not find a compiler for the target you requested])
   [fi
 fi]
