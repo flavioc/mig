@@ -19,6 +19,6 @@
 TESTS = case.defs complex-types.defs directions.defs import.defs \
         routine.defs types.defs waittime.defs
 EXTRA_DIST = $(TESTS) run_good_test.sh
-DEFS_LOG_COMPILER = sh ./$(srcdir)/run_good_test.sh
+DEFS_LOG_COMPILER = sh $(srcdir)/run_good_test.sh
 
 include $(srcdir)/../Makeconf.am
