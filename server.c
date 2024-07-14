@@ -582,7 +582,6 @@ static const char *
 InArgMsgField(const argument_t *arg)
 {
     static char buffer[100];
-    const ipc_type_t *it = arg->argType;
 
     /*
      *	Inside the kernel, the request and reply port fields
@@ -1306,7 +1305,7 @@ WritePackArg(FILE *file, const argument_t *arg)
 		fprintf(file, "\t\t\tmach_port_name_t tmp_port_name = %sP[i - 1];\n", arg->argVarName);
 		fprintf(file, "\t\t\t/* Clear the whole message with zeros. */\n");
 		fprintf(file, "\t\t\tOutP->%s[i - 1].kernel_port_do_not_use = 0;\n", arg->argMsgField);
-		fprintf(file, "\t\t\tOutP->%s[i - 1].name = tmp_port_name;\n", arg->argMsgField, arg->argVarName);
+		fprintf(file, "\t\t\tOutP->%s[i - 1].name = tmp_port_name;\n", arg->argMsgField);
 		fprintf(file, "\t\t}\n");
 	    }
 	    fprintf(file, "\t}\n");
