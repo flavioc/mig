@@ -789,6 +789,27 @@ WriteExtractArg(FILE *file, const argument_t *arg)
 }
 
 static void
+WriteRestoreArg(FILE *file, const argument_t *arg)
+{
+    if (akCheckAll(arg->argKind, akbSendRcv|akbPointer)) {
+	if (akCheck(arg->argKind, akbIndefinite)) {
+	    fprintf(file, "\tif (OutP->%s != KERN_SUCCESS && In%dP->%s%s.msgt_inline) {\n",
+		    arg->argRoutine->rtRetCode->argMsgField,
+		    arg->argRequestPos, arg->argTTName, arg->argLongForm ? ".msgtl_header" : "");
+	    fprintf(file, "\t\tmach_msg_type_number_t i;\n");
+	    fprintf(file, "\t\t/* Restore the mach_port_name_inlined_t input array for message destruction. */\n");
+	    fprintf(file, "\t\tfor (i = In%dP->%s.msgt%s_number; i > 1; i--) {\n",
+		    arg->argRequestPos, arg->argTTName, arg->argLongForm ? "l" : "");
+	    fprintf(file, "\t\t\t%s[i-1].name = %sP[i-1];\n", InArgMsgField(arg), arg->argVarName);
+	    fprintf(file, "\t\t}\n");
+	    fprintf(file, "\t}\n");
+	}
+	else
+	    assert(false);
+    }
+}
+
+static void
 WriteServerCallArg(FILE *file, const argument_t *arg)
 {
     const ipc_type_t *it = arg->argType;
@@ -1434,6 +1455,8 @@ WriteRoutine(FILE *file, const routine_t *rt)
 
     WriteServerCall(file, rt);
     WriteGetReturnValue(file, rt);
+
+    WriteReverseList(file, rt->rtArgs, WriteRestoreArg, akbNone, "", "");
 
     WriteReverseList(file, rt->rtArgs, WriteDestroyArg, akbDestroy, "", "");
 
