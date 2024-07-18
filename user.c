@@ -552,7 +552,7 @@ WriteArgSize(FILE *file, const argument_t *arg)
      * we have to round up.
      */
     if (bsize % complex_alignof != 0)
-	fprintf(file, " + %zd) & ~%zd", complex_alignof - 1, complex_alignof - 1);
+	fprintf(file, " + %zd) & ~%zdU", complex_alignof - 1, complex_alignof - 1);
 
     if (ptype->itIndefinite) {
 	fprintf(file, " : sizeof(%s *)",
@@ -880,7 +880,7 @@ WriteCheckArgSize(FILE *file, const argument_t *arg)
     /* If the base type size of the data field isn`t a multiple of complex_alignof,
        we have to round up. */
     if (btype->itTypeSize % complex_alignof != 0)
-	fprintf(file, " + %zd) & ~%zd", complex_alignof - 1, complex_alignof - 1);
+	fprintf(file, " + %zd) & ~%zdU", complex_alignof - 1, complex_alignof - 1);
 
     if (ptype->itIndefinite)
 	fprintf(file, " : sizeof(%s *)", FetchUserType(btype));
