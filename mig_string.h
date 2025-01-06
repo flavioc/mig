@@ -44,5 +44,6 @@ extern void strfree(string_t string);
 
 extern const char *strbool(bool v);
 extern const char *strstring(const_string_t string);
+extern char *strupper(const_string_t string);
 
 #endif	/* _MIG_STRING_H */

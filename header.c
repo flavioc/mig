@@ -82,13 +82,20 @@ WriteEpilog(FILE *file, const char *protect)
 static void
 WriteUserRoutine(FILE *file, const routine_t *rt)
 {
+    char *defName = strupper(rt->rtUserName);
     fprintf(file, "\n");
     fprintf(file, "/* %s %s */\n", rtRoutineKindToStr(rt->rtKind), rt->rtName);
+    fprintf(file, "#define MIG_RPC_HAVE_%s\n", defName);
+    fprintf(file, "#define MIG_RPC_REQUEST_ID_%s %d\n",
+            defName, rt->rtNumber + SubsystemBase);
+    fprintf(file, "#define MIG_RPC_REPLY_ID_%s %d\n",
+            defName, rt->rtNumber + SubsystemBase + 100);
     WriteMigExternal(file);
     fprintf(file, "%s %s\n", ReturnTypeStr(rt), rt->rtUserName);
     fprintf(file, "(\n");
     WriteList(file, rt->rtArgs, WriteUserVarDecl, akbUserArg, ",\n", "\n");
     fprintf(file, ");\n");
+    strfree(defName);
 }
 
 void
@@ -137,14 +144,21 @@ WriteRoutineList(FILE *file, const statement_t *stats)
 static void
 WriteServerRoutine(FILE *file, const routine_t *rt)
 {
+    char *defName = strupper(rt->rtServerName);
     fprintf(file, "\n");
     fprintf(file, "/* %s %s */\n", rtRoutineKindToStr(rt->rtKind), rt->rtName);
+    fprintf(file, "#define MIG_RPC_HAVE_%s\n", defName);
+    fprintf(file, "#define MIG_RPC_REQUEST_ID_%s %d\n",
+            defName, rt->rtNumber + SubsystemBase);
+    fprintf(file, "#define MIG_RPC_REPLY_ID_%s %d\n",
+            defName, rt->rtNumber + SubsystemBase + 100);
     WriteMigExternal(file);
     fprintf(file, "%s %s\n", ReturnTypeStr(rt), rt->rtServerName);
     fprintf(file, "(\n");
     WriteList(file, rt->rtArgs, WriteServerVarDecl,
 	      akbServerArg, ",\n", "\n");
     fprintf(file, ");\n");
+    strfree(defName);
 }
 
 void
