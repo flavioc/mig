@@ -766,6 +766,14 @@ WriteExtractArg(FILE *file, const argument_t *arg)
 	    WriteInitializeCount(file, arg);
     }
 
+    /* Ensure strings are null-terminated */
+    const ipc_type_t *it = arg->argType;
+    if (akCheck(arg->argKind, akbSend) && it->itString && !it->itVarArray) {
+	const size_t total_bytes = (it->itSize * it->itNumber)/8;
+	fprintf(file, "\t/* Ensure %s is null-terminated */\n", arg->argVarName);
+	fprintf(file, "\t%s[%d] = \'\\0\';\n", InArgMsgField(arg), total_bytes - 1);
+    }
+
     if (akCheckAll(arg->argKind, akbReturnSnd|akbPointer))
 	WriteInitializePtr(file, arg);
     if (akCheckAll(arg->argKind, akbSendRcv|akbPointer)) {
