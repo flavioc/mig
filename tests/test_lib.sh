@@ -20,7 +20,13 @@
 
 MIGCOM="$BUILDDIR/migcom"
 TEST_DIR="$SRCDIR/tests"
-CFLAGS="-I$TEST_DIR/includes"
+
+# Honour an externally-supplied CFLAGS so that cross-build / non-Hurd
+# hosts can point the test harness at their installed Mach userland
+# headers (e.g. `make check CFLAGS=-I/path/to/mach/include`). The
+# test-suite's own stubs come first so test-controlled definitions
+# always win, with external paths searched as a fallback.
+CFLAGS="-I$TEST_DIR/includes ${CFLAGS:-}"
 
 failure () {
   msg="$1"
