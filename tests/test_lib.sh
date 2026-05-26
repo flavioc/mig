@@ -38,7 +38,7 @@ run_mig () {
   file="$1"
   module="$2"
   echo "Generating stubs for $module..."
-  cpp $file -I$TEST_DIR | $MIGCOM -server $module-server.c -user $module-user.c -header $module-header.h
+  ${CC:-cc} -E -x c $file -I$TEST_DIR | $MIGCOM -server $module-server.c -user $module-user.c -header $module-header.h
 }
 
 test_module () {
